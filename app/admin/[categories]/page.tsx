@@ -46,7 +46,11 @@ export default function AdminProductListPage() {
             {loading ? (
                 <p className="px-5 py-8 text-center text-sm text-muted">정보를 불러오는 중입니다.</p>
             ) : (
-                <ProductList products={products} onReload={() => setReloadKey((key) => key + 1)} />
+                <ProductList
+                    key={`${categories}-${reloadKey}`}
+                    products={products}
+                    onReload={() => setReloadKey((key) => key + 1)}
+                />
             )}
         </div>
     )

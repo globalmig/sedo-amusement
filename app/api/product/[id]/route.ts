@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { uploadProductImage, deleteProductImage } from "@/lib/uploadImage";
+import { deleteProductImage, isOwnStorageUrl } from "@/lib/uploadImage";
 import { DemoProduct } from "@/types/demo";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
-
-async function requireAdmin() {
-    const cookieStore = await cookies();
-    return verifySessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value);
-}
+import { requireAdmin } from "@/lib/auth";
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -48,18 +42,15 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             return NextResponse.json({ error: "제품을 찾을 수 없습니다." }, { status: 404 });
         }
 
-        const formData = await request.formData();
+        const body = await request.json();
 
-        const name = String(formData.get("name") ?? "").trim();
-        const category = String(formData.get("category") ?? "").trim();
-        const spec = String(formData.get("spec") ?? "").trim();
-        const features = String(formData.get("features") ?? "").trim();
-        const priceRaw = String(formData.get("price") ?? "").trim();
-        const mainImage = formData.get("main_image");
-        const newDetailImages = formData.getAll("detail_images");
-        const keptDetailImages: string[] = JSON.parse(
-            String(formData.get("existing_detail_images") ?? "[]")
-        );
+        const name = String(body.name ?? "").trim();
+        const category = String(body.category ?? "").trim();
+        const spec = String(body.spec ?? "").trim();
+        const features = String(body.features ?? "").trim();
+        const priceRaw = body.price != null ? String(body.price).trim() : "";
+        const mainImageUrl = body.main_image_url;
+        const detailImageUrls: unknown[] = Array.isArray(body.detail_images) ? body.detail_images : [];
 
         if (!name) {
             return NextResponse.json({ error: "상품이름을 입력해주세요." }, { status: 400 });
@@ -78,31 +69,24 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             return NextResponse.json({ error: "가격은 숫자로 입력해주세요." }, { status: 400 });
         }
 
-        if (!(mainImage instanceof File && mainImage.size > 0) && !existing.main_image_url) {
+        if (!isOwnStorageUrl(mainImageUrl)) {
             return NextResponse.json({ error: "대표이미지를 등록해주세요." }, { status: 400 });
         }
 
-        // 대표이미지 교체
-        let mainImageUrl = existing.main_image_url;
-        if (mainImage instanceof File && mainImage.size > 0) {
-            mainImageUrl = await uploadProductImage(mainImage, "main");
-            if (existing.main_image_url) {
-                await deleteProductImage(existing.main_image_url);
-            }
+        if (!detailImageUrls.every(isOwnStorageUrl)) {
+            return NextResponse.json({ error: "잘못된 이미지 URL이 포함되어 있습니다." }, { status: 400 });
+        }
+
+        // 대표이미지가 교체된 경우 기존 이미지를 스토리지에서 삭제
+        if (mainImageUrl !== existing.main_image_url && existing.main_image_url) {
+            await deleteProductImage(existing.main_image_url);
         }
 
         // 목록에서 제외된 기존 상세이미지는 스토리지에서도 삭제
         const removedDetailImages = (existing.detail_images ?? []).filter(
-            (url) => !keptDetailImages.includes(url)
+            (url) => !detailImageUrls.includes(url)
         );
         await Promise.all(removedDetailImages.map((url) => deleteProductImage(url)));
-
-        const newDetailImageUrls: string[] = [];
-        for (const file of newDetailImages) {
-            if (file instanceof File && file.size > 0) {
-                newDetailImageUrls.push(await uploadProductImage(file, "detail"));
-            }
-        }
 
         const { data, error } = await supabaseAdmin
             .from("demo")
@@ -113,7 +97,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
                 features: features || null,
                 price,
                 main_image_url: mainImageUrl,
-                detail_images: [...keptDetailImages, ...newDetailImageUrls],
+                detail_images: detailImageUrls,
             })
             .eq("id", id)
             .select()

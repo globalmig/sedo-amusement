@@ -3,8 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useCreate } from "@/hooks/useCreate";
 import { useUpdate } from "@/hooks/useUpdate";
 import { USER_CATEGORY } from "@/datas/categories";
+import { supabaseClient } from "@/lib/supabaseClient";
+import { STORAGE_BUCKET } from "@/lib/storage";
 import Toast from "../common/Toast";
 import Link from "next/link";
+import Image from "next/image";
 
 const PRODUCT_CATEGORIES = USER_CATEGORY.products.categories ?? [];
 
@@ -50,8 +53,7 @@ function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
     return (
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-black/10">
             {previewUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={previewUrl} alt={file.name} className="h-full w-full object-cover" />
+                <Image src={previewUrl} alt={file.name} fill sizes="80px" className="object-cover" />
             )}
             <button
                 type="button"
@@ -88,6 +90,7 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
 
     const [vaild, setVaild] = useState<string | null>(null);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         if (!mainImage) return;
@@ -146,9 +149,28 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
         setNewDetailImages((prev) => prev.filter((_, i) => i !== index));
     }, []);
 
+    // Vercel 서버를 거치지 않고 Supabase Storage에 직접 업로드: 서버에서 서명된 업로드 URL을
+    // 발급받아 브라우저가 곧바로 그 URL로 파일을 전송하고, 공개 URL만 돌려받는다.
+    const uploadImage = useCallback(async (file: File, folder: "main" | "detail") => {
+        const res = await fetch("/api/product/upload-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ folder, fileName: file.name, fileType: file.type, fileSize: file.size }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "이미지 업로드 준비에 실패했습니다.");
+
+        const { error } = await supabaseClient.storage
+            .from(STORAGE_BUCKET)
+            .uploadToSignedUrl(result.path, result.token, file);
+        if (error) throw new Error("이미지 업로드에 실패했습니다.");
+
+        return result.publicUrl as string;
+    }, []);
+
     const onSubmitForm = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
-        if (loading) return;
+        if (loading || uploading) return;
 
         if (!form.name.trim()) { setVaild("제품 이름을 입력해주세요."); return; }
         if (!form.category) { setVaild("카테고리를 선택해주세요."); return; }
@@ -156,22 +178,34 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
         if (form.price && Number.isNaN(Number(form.price))) { setVaild("가격은 숫자로 입력해주세요."); return; }
         if (!mainImage && !existingMainImageUrl) { setVaild("대표이미지를 등록해주세요."); return; }
 
-        const formData = new FormData();
-        formData.append("name", form.name);
-        formData.append("category", form.category);
-        formData.append("spec", form.spec);
-        formData.append("features", form.features);
-        formData.append("price", form.price);
-        if (mainImage) formData.append("main_image", mainImage);
-        newDetailImages.forEach((file) => formData.append("detail_images", file));
+        setUploading(true);
+        try {
+            const mainImageUrl = mainImage ? await uploadImage(mainImage, "main") : existingMainImageUrl!;
+            const newDetailImageUrls = await Promise.all(
+                newDetailImages.map((file) => uploadImage(file, "detail"))
+            );
 
-        if (isEditMode) {
-            formData.append("existing_detail_images", JSON.stringify(existingDetailImages));
-            await update(editId, formData);
-        } else {
-            await create(formData);
+            const payload = {
+                name: form.name,
+                category: form.category,
+                spec: form.spec,
+                features: form.features,
+                price: form.price,
+                main_image_url: mainImageUrl,
+                detail_images: [...existingDetailImages, ...newDetailImageUrls],
+            };
+
+            if (isEditMode) {
+                await update(editId, payload);
+            } else {
+                await create(payload);
+            }
+        } catch (err) {
+            setVaild(err instanceof Error ? err.message : "이미지 업로드에 실패했습니다.");
+        } finally {
+            setUploading(false);
         }
-    }, [form, mainImage, existingMainImageUrl, newDetailImages, existingDetailImages, create, update, loading, isEditMode, editId]);
+    }, [form, mainImage, existingMainImageUrl, newDetailImages, existingDetailImages, create, update, loading, uploading, isEditMode, editId, uploadImage]);
 
     return (
         <>
@@ -244,7 +278,7 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
 
                     <div className="flex flex-col gap-1.5">
                         <label htmlFor="price" className="form-label">가격</label>
-                        <p className="text-[0.9rem] text-muted">가격 미입력 시, '가격 문의'로 표시됩니다.</p>
+                        <p className="text-[0.9rem] text-muted">가격 미입력 시, &apos;가격 문의&apos;로 표시됩니다.</p>
                         <input
                             type="number"
                             id="price"
@@ -277,11 +311,12 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
                             </span>
                         </div>
                         {(mainImagePreview || existingMainImageUrl) && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                                src={mainImagePreview ?? existingMainImageUrl ?? undefined}
+                            <Image
+                                src={mainImagePreview ?? existingMainImageUrl ?? ""}
                                 alt="대표이미지 미리보기"
                                 className="mt-1 h-28 w-28 rounded-lg border border-black/10 object-cover"
+                                width={112}
+                                height={112}
                             />
                         )}
                     </div>
@@ -310,8 +345,7 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
                             <div className="mt-1 flex flex-wrap gap-3">
                                 {existingDetailImages.map((url) => (
                                     <div key={url} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-black/10">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={url} alt="상세이미지" className="h-full w-full object-cover" />
+                                        <Image src={url} alt="상세이미지" fill sizes="80px" className="object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => removeExistingDetailImage(url)}
@@ -333,10 +367,12 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
                         <Link href="/admin" className="btn-ghost flex-1 text-center">
                             취소
                         </Link>
-                        <button type="submit" disabled={loading} className="btn-primary flex-1 cursor-pointer">
-                            {loading
-                                ? (isEditMode ? "수정 중..." : "등록 중...")
-                                : (isEditMode ? "수정" : "등록")}
+                        <button type="submit" disabled={loading || uploading} className="btn-primary flex-1 cursor-pointer">
+                            {uploading
+                                ? "이미지 업로드 중..."
+                                : loading
+                                    ? (isEditMode ? "수정 중..." : "등록 중...")
+                                    : (isEditMode ? "수정" : "등록")}
                         </button>
                     </div>
                 </div>
