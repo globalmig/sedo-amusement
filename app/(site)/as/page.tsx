@@ -1,6 +1,7 @@
 import CategoryBanner from "@/components/common/CategoryBanner";
 import { COMPANY_INFO } from "@/datas/company";
 import Link from "next/link";
+import Image from "next/image";
 
 const SELF_CHECK_ITEMS = [
     {
@@ -47,11 +48,22 @@ const PROMISES = [
     },
 ];
 
-// TODO: 실제 출장 수리 현장 사진이 준비되면 배경색 placeholder를 next/image로 교체
 const FIELD_CASES = [
-    { title: "출장 수리 현장", description: "매장 방문 후 1시간 이내 1차 진단을 완료합니다." },
-    { title: "부품 교체 전/후", description: "정품 부품 교체로 재고장 위험을 최소화합니다." },
-    { title: "정기 점검 현장", description: "월 1회 정기 점검으로 사전에 이상 유무를 확인합니다." },
+    {
+        title: "출장 수리 현장",
+        description: "매장 방문 후 1시간 이내 1차 진단을 완료합니다.",
+        image: "/images/as_1.png",
+    },
+    {
+        title: "부품 교체 전/후",
+        description: "정품 부품 교체로 재고장 위험을 최소화합니다.",
+        image: "/images/as_2.jpg",
+    },
+    {
+        title: "정기 점검 현장",
+        description: "월 1회 정기 점검으로 사전에 이상 유무를 확인합니다.",
+        image: "/images/as_3.jpg",
+    },
 ];
 
 const FAQ_ITEMS = [
@@ -106,12 +118,12 @@ export default function AsPage() {
                             해결되는 경우가 많습니다.
                         </p>
 
-                        <div className="mt-10 flex flex-wrap gap-4">
+                        <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-4">
                             {SELF_CHECK_ITEMS.map((item, index) => (
-                                <div key={item.title} className="card basis-full p-5 sm:basis-1/2 pc:basis-1/5">
-                                    <span className="text-xl font-black text-primary">{index + 1}</span>
-                                    <h3 className="mt-2 text-sm font-bold text-title">{item.title}</h3>
-                                    <p className="mt-2 text-xs leading-5 text-body">{item.description}</p>
+                                <div key={item.title} className="card basis-full p-5 sm:basis-1/2 pc:basis-0 pc:flex-1 pc:p-6">
+                                    <span className="text-xl font-black text-primary pc:text-2xl">{index + 1}</span>
+                                    <h3 className="mt-2 text-sm font-bold text-title pc:mt-3 pc:text-[1.3rem]">{item.title}</h3>
+                                    <p className="mt-2 text-xs leading-5 text-body pc:text-[1rem] pc:leading-6">{item.description}</p>
                                 </div>
                             ))}
                         </div>
@@ -128,12 +140,12 @@ export default function AsPage() {
                         아래 4단계 절차를 통해 빠르고 정확하게 A/S를 접수해 드립니다.
                     </p>
 
-                    <div className="mt-10 flex flex-wrap gap-6">
+                    <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
                         {AS_STEPS.map((item) => (
-                            <div key={item.step} className="card basis-full p-6 sm:basis-1/2 pc:basis-1/4">
-                                <span className="text-2xl font-black text-primary">{item.step}</span>
-                                <h3 className="mt-3 text-base font-bold text-title">{item.title}</h3>
-                                <p className="mt-2 text-sm leading-6 text-body">{item.description}</p>
+                            <div key={item.step} className="card basis-full p-6 sm:basis-1/2 pc:basis-0 pc:flex-1 pc:p-8">
+                                <span className="text-2xl font-black text-primary pc:text-3xl">{item.step}</span>
+                                <h3 className="mt-3 text-base font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
+                                <p className="mt-2 text-sm leading-6 text-body pc:text-[1rem]">{item.description}</p>
                             </div>
                         ))}
                     </div>
@@ -145,34 +157,42 @@ export default function AsPage() {
                         <p className="text-sm font-bold tracking-widest text-primary">OUR PROMISE</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">우리의 약속</h2>
 
-                        <div className="mt-10 flex flex-wrap gap-6">
+                        <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
                             {PROMISES.map((item, index) => (
-                                <div key={item.title} className="card basis-full p-6 sm:basis-1/3 pc:p-8">
-                                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-black text-white">
+                                <div key={item.title} className="card basis-full p-6 sm:basis-1/3 pc:basis-0 pc:flex-1 pc:p-8">
+                                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-black text-white pc:h-12 pc:w-12 pc:text-base">
                                         {index + 1}
                                     </span>
-                                    <h3 className="mt-5 text-lg font-bold text-title">{item.title}</h3>
-                                    <p className="mt-2 text-sm leading-6 text-body">{item.description}</p>
+                                    <h3 className="mt-5 text-lg font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
+                                    <p className="mt-2 text-sm leading-6 text-body pc:text-[1rem]">{item.description}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* 5. 실제 현장 사진과 결과 */}
+                {/* 5. 실제 현장 사진 */}
                 <section className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     <p className="text-sm font-bold tracking-widest text-primary">FIELD CASE</p>
-                    <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">실제 현장 사진과 결과</h2>
+                    <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">실제 현장 사진</h2>
                     <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
                         세도어뮤즈먼트 엔지니어가 직접 방문해 처리한 A/S 현장입니다.
                     </p>
 
-                    <div className="mt-10 flex flex-wrap gap-6">
+                    <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
                         {FIELD_CASES.map((item) => (
-                            <div key={item.title} className="basis-full sm:basis-1/3">
-                                <div className="aspect-4/3 w-full rounded-xl bg-surface" />
-                                <h3 className="mt-4 text-sm font-bold text-title">{item.title}</h3>
-                                <p className="mt-1 text-xs leading-5 text-body">{item.description}</p>
+                            <div key={item.title} className="basis-full sm:basis-1/3 pc:basis-0 pc:flex-1">
+                                <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-surface">
+                                    <Image
+                                        src={item.image}
+                                        alt={item.title}
+                                        fill
+                                        sizes="(min-width: 1024px) 33vw, 100vw"
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <h3 className="mt-4 text-sm font-bold text-title pc:text-lg">{item.title}</h3>
+                                <p className="mt-1 text-xs leading-5 text-body pc:text-sm">{item.description}</p>
                             </div>
                         ))}
                     </div>

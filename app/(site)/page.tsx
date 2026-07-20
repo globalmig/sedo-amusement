@@ -153,10 +153,10 @@ export default async function Home() {
                                             </div>
                                         </div>
                                         <div>
-                                            <h3 className="mt-2 text-xl font-black text-white transition-colors duration-500 pc:text-4xl pc:group-hover:text-title">
+                                            <h3 className="mt-2 text-xl font-black text-white transition-colors duration-500 pc:mt-4 pc:text-4xl pc:group-hover:text-title">
                                                 {item.title}
                                             </h3>
-                                            <ul className="mt-8 space-y-1.5 text-xs leading-5 text-white/80 transition-colors duration-500 pc:text-base pc:leading-7 pc:group-hover:text-title">
+                                            <ul className="mt-2 space-y-1.5 text-xs leading-5 text-white/80 transition-colors duration-500 pc:text-base pc:leading-7 pc:mt-6 pc:group-hover:text-title">
                                                 {item.points.map((point) => (
                                                     <li key={point}><span className="text-primary">⦁</span> {point}</li>
                                                 ))}

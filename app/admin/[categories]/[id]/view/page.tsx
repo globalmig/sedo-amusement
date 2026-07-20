@@ -6,7 +6,6 @@ import ProductImageGallery from "@/components/board/ProductImageGallery";
 import ProductInfoTable from "@/components/board/ProductInfoTable";
 import PrevNextNavbar from "@/components/common/PrevNextNavbar";
 import { getProducts } from "@/lib/products";
-import Image from "next/image";
 
 interface AdminProductViewPageProps {
     params: Promise<{ categories: string; id: string }>;
@@ -48,8 +47,8 @@ export default async function AdminProductViewPage({ params }: AdminProductViewP
             </div>
             <ProductInfoTable product={product} />
             <PrevNextNavbar
-                prevItem={prev ? { href: `/products/${categories}/${prev.id}`, title: prev.name } : null}
-                nextItem={next ? { href: `/products/${categories}/${next.id}`, title: next.name } : null}
+                prevItem={prev ? { href: `/admin/${categories}/${prev.id}/view`, title: prev.name } : null}
+                nextItem={next ? { href: `/admin/${categories}/${next.id}/view`, title: next.name } : null}
                 prevLabel="이전 제품"
                 nextLabel="다음 제품"
             />

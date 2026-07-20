@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { uploadProductImage } from "@/lib/uploadImage";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
+import { isOwnStorageUrl } from "@/lib/uploadImage";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -28,20 +27,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        const cookieStore = await cookies();
-        if (!verifySessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value)) {
+        if (!(await requireAdmin())) {
             return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
         }
 
-        const formData = await request.formData();
+        const body = await request.json();
 
-        const name = String(formData.get("name") ?? "").trim();
-        const category = String(formData.get("category") ?? "").trim();
-        const spec = String(formData.get("spec") ?? "").trim();
-        const features = String(formData.get("features") ?? "").trim();
-        const priceRaw = String(formData.get("price") ?? "").trim();
-        const mainImage = formData.get("main_image");
-        const detailImages = formData.getAll("detail_images");
+        const name = String(body.name ?? "").trim();
+        const category = String(body.category ?? "").trim();
+        const spec = String(body.spec ?? "").trim();
+        const features = String(body.features ?? "").trim();
+        const priceRaw = body.price != null ? String(body.price).trim() : "";
+        const mainImageUrl = body.main_image_url;
+        const detailImageUrls: unknown[] = Array.isArray(body.detail_images) ? body.detail_images : [];
 
         if (!name) {
             return NextResponse.json({ error: "상품이름을 입력해주세요." }, { status: 400 });
@@ -60,17 +58,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "가격은 숫자로 입력해주세요." }, { status: 400 });
         }
 
-        if (!(mainImage instanceof File) || mainImage.size === 0) {
+        if (!isOwnStorageUrl(mainImageUrl)) {
             return NextResponse.json({ error: "대표이미지를 등록해주세요." }, { status: 400 });
         }
 
-        const mainImageUrl = await uploadProductImage(mainImage, "main");
-
-        const detailImageUrls: string[] = [];
-        for (const file of detailImages) {
-            if (file instanceof File && file.size > 0) {
-                detailImageUrls.push(await uploadProductImage(file, "detail"));
-            }
+        if (!detailImageUrls.every(isOwnStorageUrl)) {
+            return NextResponse.json({ error: "잘못된 이미지 URL이 포함되어 있습니다." }, { status: 400 });
         }
 
         const { data, error } = await supabaseAdmin

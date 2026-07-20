@@ -1,43 +1,32 @@
 import { supabaseAdmin } from "./supabaseAdmin";
+import { STORAGE_BUCKET } from "./storage";
 
-const BUCKET = "demo-images";
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const STORAGE_URL_MARKER = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
 
-// demo 테이블용 이미지 업로드 (대표이미지/상세이미지 공용)
-export async function uploadProductImage(file: File, folder: "main" | "detail") {
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-        throw new Error("이미지 파일(jpg, png, webp, gif)만 업로드할 수 있습니다.");
-    }
-    if (file.size > MAX_IMAGE_SIZE) {
-        throw new Error("이미지 파일은 5MB 이하만 업로드할 수 있습니다.");
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    // 한글/공백 등이 섞인 파일명은 공개 URL에서 깨질 수 있어 안전한 문자로 치환
-    const safeName = file.name
+// 서명된 업로드 URL을 발급할 스토리지 경로 생성
+// (한글/공백 등이 섞인 파일명은 공개 URL에서 깨질 수 있어 안전한 문자로 치환)
+export function buildStoragePath(fileName: string, folder: "main" | "detail") {
+    const safeName = fileName
         .normalize("NFKD")
         .replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const filePath = `${folder}/${Date.now()}_${safeName}`;
+    return `${folder}/${Date.now()}_${safeName}`;
+}
 
-    const { error } = await supabaseAdmin.storage
-        .from(BUCKET)
-        .upload(filePath, arrayBuffer, {
-            contentType: file.type,
-            upsert: false,
-        });
-
-    if (error) throw new Error(`이미지 업로드에 실패했습니다. (${error.message})`);
-
-    const { data } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(filePath);
+export function getPublicImageUrl(path: string) {
+    const { data } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path);
     return data.publicUrl;
 }
 
+// 클라이언트가 보낸 이미지 URL이 실제로 우리 버킷 소속인지 검증 (임의 외부 URL 주입 방지)
+export function isOwnStorageUrl(url: unknown): url is string {
+    return typeof url === "string" && url.startsWith(supabaseUrl) && url.includes(STORAGE_URL_MARKER);
+}
+
 export async function deleteProductImage(publicUrl: string) {
-    const marker = `/storage/v1/object/public/${BUCKET}/`;
-    const markerIndex = publicUrl.indexOf(marker);
+    const markerIndex = publicUrl.indexOf(STORAGE_URL_MARKER);
     if (markerIndex === -1) return;
 
-    const filePath = publicUrl.slice(markerIndex + marker.length);
-    await supabaseAdmin.storage.from(BUCKET).remove([filePath]);
+    const filePath = publicUrl.slice(markerIndex + STORAGE_URL_MARKER.length);
+    await supabaseAdmin.storage.from(STORAGE_BUCKET).remove([filePath]);
 }
