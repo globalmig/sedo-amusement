@@ -20,7 +20,10 @@ export default function AdminProductListPage() {
             setLoading(true);
             try {
                 const res = await fetch(`/api/product?category=${categories}`);
-                const { data } = await res.json();
+                const { data, error } = await res.json();
+                if (!res.ok || error) {
+                    console.error("제품 목록 조회 실패:", error ?? res.status);
+                }
                 setProducts(data ?? []);
             } catch (err) {
                 console.error("Fail data load...", err);

@@ -26,6 +26,10 @@ export async function POST(request: Request) {
             .eq('admin_id', admin_id)
             .single();
 
+        if (error) {
+            console.error("admin_user 조회 실패:", error.message);
+        }
+
         if (error || !admin) {
             return NextResponse.json({ error: INVALID_CREDENTIALS_MESSAGE }, { status: 401 });
         }
