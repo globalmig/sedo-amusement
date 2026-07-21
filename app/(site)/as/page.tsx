@@ -94,19 +94,20 @@ export default function AsPage() {
                 basePath="/as"
             />
             <article>
-                <div></div>
                 {/* 1. 메인 메시지 */}
-                <section className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-24">
-                    <p className="text-sm font-bold tracking-widest text-primary">SERVICE PHILOSOPHY</p>
-                    <h2 className="mx-auto mt-4 max-w-2xl whitespace-pre-line text-2xl font-black leading-snug text-title pc:text-5xl">
-                        {"우리의 목표는 고장이 아닌,\n당신의 수익 중단 없는 운영입니다."}
+                <section>
+                    <div className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-24">
+                        <p className="text-sm font-bold tracking-widest text-primary">SERVICE PHILOSOPHY</p>
+                    <h2 className="mx-auto mt-4 whitespace-pre-line text-2xl font-black leading-snug text-title pc:text-5xl">
+                        판매에서 끝이 아닙니다.<br/>걱정없는 사후관리로 든든하게
                     </h2>
                     <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-body pc:text-base">
-                        세도어뮤즈먼트의 A/S는 기기를 고치는 것에서 끝나지 않습니다. 매장의
-                        가동 중단 시간을 최소화하여 고객님의 매출 손실을 막는 것이 저희의
-                        진짜 목표입니다.
+                        운영하시면서 불편한 점이 없도록 빠르고 친절하게 지원해 드립니다.
                     </p>
+                    </div>
                 </section>
+
+                <div className="border-b border-b-muted/20"></div>
 
                 {/* 2. 자가 점검 가이드 */}
                 <section className="bg-surface">
@@ -117,7 +118,7 @@ export default function AsPage() {
                             출동 전, 아래 항목을 먼저 확인해보세요. 간단한 점검만으로 바로
                             해결되는 경우가 많습니다.
                         </p>
-
+                        {/* 체크리스트처럼 ui 변경 */}
                         <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-4">
                             {SELF_CHECK_ITEMS.map((item, index) => (
                                 <div key={item.title} className="card basis-full p-5 sm:basis-1/2 pc:basis-0 pc:flex-1 pc:p-6">
@@ -129,6 +130,8 @@ export default function AsPage() {
                         </div>
                     </div>
                 </section>
+
+                <div className="border-b border-b-muted/20"></div>
 
                 {/* 3. A/S 프로세스 */}
                 <section className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
@@ -152,7 +155,7 @@ export default function AsPage() {
                 </section>
 
                 {/* 4. 우리의 약속 */}
-                <section className="bg-surface">
+                <section className="bg-primary/50">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                         <p className="text-sm font-bold tracking-widest text-primary">OUR PROMISE</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">우리의 약속</h2>
@@ -172,29 +175,31 @@ export default function AsPage() {
                 </section>
 
                 {/* 5. 실제 현장 사진 */}
-                <section className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                    <p className="text-sm font-bold tracking-widest text-primary">FIELD CASE</p>
-                    <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">실제 현장 사진</h2>
-                    <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
-                        세도어뮤즈먼트 엔지니어가 직접 방문해 처리한 A/S 현장입니다.
-                    </p>
+                <section>
+                    <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
+                        <p className="text-sm font-bold tracking-widest text-primary">FIELD CASE</p>
+                        <h2 className="mt-4 text-2xl font-black text-wthie pc:text-5xl">실제 현장 사진</h2>
+                        <p className="mt-3 max-w-xl text-sm leading-6 pc:text-base">
+                            세도어뮤즈먼트 엔지니어가 직접 방문해 처리한 A/S 현장입니다.
+                        </p>
 
-                    <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
-                        {FIELD_CASES.map((item) => (
-                            <div key={item.title} className="basis-full sm:basis-1/3 pc:basis-0 pc:flex-1">
-                                <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-surface">
-                                    <Image
-                                        src={item.image}
-                                        alt={item.title}
-                                        fill
-                                        sizes="(min-width: 1024px) 33vw, 100vw"
-                                        className="object-cover"
-                                    />
+                        <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
+                            {FIELD_CASES.map((item) => (
+                                <div key={item.title} className="basis-full sm:basis-1/3 pc:basis-0 pc:flex-1">
+                                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-surface">
+                                        <Image
+                                            src={item.image}
+                                            alt={item.title}
+                                            fill
+                                            sizes="(min-width: 1024px) 33vw, 100vw"
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    <h3 className="mt-4 text-sm font-bold text-title pc:text-lg">{item.title}</h3>
+                                    <p className="mt-1 text-xs leading-5 text-body pc:text-sm">{item.description}</p>
                                 </div>
-                                <h3 className="mt-4 text-sm font-bold text-title pc:text-lg">{item.title}</h3>
-                                <p className="mt-1 text-xs leading-5 text-body pc:text-sm">{item.description}</p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </section>
 
