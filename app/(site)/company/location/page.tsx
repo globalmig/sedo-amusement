@@ -44,8 +44,12 @@ export default function LocationPage() {
                                     </p>
                                 </li>
                                 <li className="flex gap-4 py-4 pc:py-6">
-                                    <p className="w-20 shrink-0 font-bold text-title">운영시간</p>
-                                    <p className="text-body">{COMPANY_INFO.bizHours}</p>
+                                    <p className="w-20 shrink-0 font-bold text-title pc:hidden">운영시간</p>
+                                    <p className="text-body pc:hidden">{COMPANY_INFO.bizHours}</p>
+                                    <div className="hidden pc:block bg-primary rounded-xl w-full p-5 pb-10">
+                                        <p className="font-bold text-white">운영시간</p>
+                                        <p className="text-white mt-2">{COMPANY_INFO.bizHours}</p>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
