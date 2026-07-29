@@ -1,6 +1,8 @@
 import CategoryBanner from "@/components/common/CategoryBanner";
+import ContactButtons from "@/components/common/ContactButtons";
+import FaqList from "@/components/common/FaqList";
 import { COMPANY_INFO } from "@/datas/company";
-import Link from "next/link";
+import { FAQ_ITEMS } from "@/datas/faq";
 import Image from "next/image";
 
 const SELF_CHECK_ITEMS = [
@@ -52,36 +54,17 @@ const FIELD_CASES = [
     {
         title: "출장 수리 현장",
         description: "매장 방문 후 1시간 이내 1차 진단을 완료합니다.",
-        image: "/images/as_1.png",
+        image: "/images/as-visit-repair.png",
     },
     {
         title: "부품 교체 전/후",
         description: "정품 부품 교체로 재고장 위험을 최소화합니다.",
-        image: "/images/as_2.jpg",
+        image: "/images/as-parts-replacement.jpg",
     },
     {
         title: "정기 점검 현장",
         description: "월 1회 정기 점검으로 사전에 이상 유무를 확인합니다.",
-        image: "/images/as_3.jpg",
-    },
-];
-
-const FAQ_ITEMS = [
-    {
-        q: "A/S 접수는 어떻게 하나요?",
-        a: "대표번호로 전화 주시면 담당 엔지니어가 증상을 확인 후 방문 일정을 안내해 드립니다. 별도의 신청서 작성은 필요하지 않습니다.",
-    },
-    {
-        q: "출동 A/S는 전국 어디서나 가능한가요?",
-        a: "전국 협력 엔지니어 네트워크를 통해 지역에 관계없이 출동 서비스를 제공하고 있습니다.",
-    },
-    {
-        q: "무상 A/S 기간은 얼마인가요?",
-        a: "구매하신 기종 기준 1년간 무상 A/S가 기본 제공되며, 이후에는 유상 점검으로 전환됩니다.",
-    },
-    {
-        q: "부품 수급이 필요한 경우 얼마나 걸리나요?",
-        a: "재고 부품은 통상 1~2일 내 처리되며, 특수 부품의 경우 사전에 예상 소요 기간을 안내해 드립니다.",
+        image: "/images/as-regular-checkup.jpg",
     },
 ];
 
@@ -212,32 +195,12 @@ export default function AsPage() {
                         <p className="mt-3 text-sm text-white/70 pc:text-base">
                             {COMPANY_INFO.bizHours} · 지금 바로 상담하시면 가장 빠른 방문 일정을 안내해 드립니다.
                         </p>
-                        <Link href={COMPANY_INFO.phoneHref} className="btn-primary mt-8 inline-flex px-8 py-3.5 text-base">
-                            {COMPANY_INFO.phone} 지금 긴급 수리 상담하기
-                        </Link>
+                        <ContactButtons className="mt-8" phoneText="지금 긴급 수리 상담하기" emailText="A/S 이메일 문의하기" />
                     </div>
                 </section>
 
                 {/* FAQ */}
-                <section className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                    <p className="text-sm font-bold tracking-widest text-primary">FAQ</p>
-                    <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">자주 묻는 질문</h2>
-
-                    <div className="mt-10 divide-y divide-black/5 border-t border-b border-black/5">
-                        {FAQ_ITEMS.map((item) => (
-                            <div key={item.q} className="py-6">
-                                <p className="flex gap-3 text-base font-bold text-title">
-                                    <span className="text-primary">Q</span>
-                                    {item.q}
-                                </p>
-                                <p className="mt-3 flex gap-3 text-sm leading-6 text-body">
-                                    <span className="font-bold text-muted">A</span>
-                                    {item.a}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
+                <FaqList items={FAQ_ITEMS} />
             </article>
         </>
     );

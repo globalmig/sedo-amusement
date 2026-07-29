@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { deleteProductImage, isOwnStorageUrl } from "@/lib/uploadImage";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import { requireAdmin } from "@/lib/auth";
 
 interface RouteParams {
@@ -12,7 +12,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { id } = await params;
 
     const { data, error } = await supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .eq("id", id)
         .single();
@@ -33,10 +33,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const { id } = await params;
 
         const { data: existing, error: fetchError } = await supabaseAdmin
-            .from("demo")
+            .from("products")
             .select("*")
             .eq("id", id)
-            .single<DemoProduct>();
+            .single<Product>();
 
         if (fetchError || !existing) {
             return NextResponse.json({ error: "제품을 찾을 수 없습니다." }, { status: 404 });
@@ -89,7 +89,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         await Promise.all(removedDetailImages.map((url) => deleteProductImage(url)));
 
         const { data, error } = await supabaseAdmin
-            .from("demo")
+            .from("products")
             .update({
                 name,
                 category,
@@ -123,10 +123,10 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     const { id } = await params;
 
     const { data: existing } = await supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .eq("id", id)
-        .single<DemoProduct>();
+        .single<Product>();
 
     if (existing) {
         const imagesToDelete = [existing.main_image_url, ...(existing.detail_images ?? [])].filter(
@@ -135,7 +135,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
         await Promise.all(imagesToDelete.map((url) => deleteProductImage(url)));
     }
 
-    const { error } = await supabaseAdmin.from("demo").delete().eq("id", id);
+    const { error } = await supabaseAdmin.from("products").delete().eq("id", id);
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });

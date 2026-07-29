@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import ProductImageGallery from "@/components/board/ProductImageGallery";
 import ProductInfoTable from "@/components/board/ProductInfoTable";
 import PrevNextNavbar from "@/components/common/PrevNextNavbar";
@@ -15,10 +15,10 @@ export default async function AdminProductViewPage({ params }: AdminProductViewP
     const { categories, id } = await params;
 
     const { data: product } = await supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .eq("id", id)
-        .single<DemoProduct>();
+        .single<Product>();
 
     if (!product) notFound();
 

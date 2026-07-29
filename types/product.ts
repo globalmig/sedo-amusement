@@ -1,5 +1,4 @@
-// Supabase "demo" 테이블 행 타입
-export interface DemoProduct {
+export interface Product {
   id: number;
   name: string;
   category: string | null;

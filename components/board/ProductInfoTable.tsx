@@ -1,4 +1,4 @@
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import { getProductCategoryLabel } from "@/datas/categories";
 
 function formatPrice(price: number | null) {
@@ -7,7 +7,7 @@ function formatPrice(price: number | null) {
 }
 
 interface ProductInfoTableProps {
-  product: DemoProduct;
+  product: Product;
 }
 
 // 제품 상세 정보 표 (사용자/관리자 상세 페이지 공용)

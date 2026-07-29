@@ -150,33 +150,6 @@ export default function Header() {
                             className={`text-base font-bold transition-colors hover:text-primary ${isScroll ? "text-title" : "text-white"}`}>
                             {COMPANY_INFO.phone}
                         </Link>
-                        <div className="flex items-center gap-3.5">
-                            <Link
-                                href={COMPANY_INFO.instagramUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="인스타그램"
-                                className={`transition-colors hover:text-primary ${isScroll ? "text-title" : "text-white"}`}
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true" className="h-5 w-5">
-                                    <rect x="3" y="3" width="18" height="18" rx="5" strokeLinecap="round" strokeLinejoin="round" />
-                                    <circle cx="12" cy="12" r="4" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M17.5 6.5h.01" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </Link>
-                            <Link
-                                href={COMPANY_INFO.naverShoppingUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="네이버쇼핑"
-                                className={`transition-colors hover:text-primary ${isScroll ? "text-title" : "text-white"}`}
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true" className="h-5 w-5">
-                                    <path d="M6 8V6a6 6 0 0 1 12 0v2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <rect x="3" y="8" width="18" height="13" rx="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </Link>
-                        </div>
                     </div>
 
                     <button

@@ -1,4 +1,4 @@
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import { COMPANY_INFO } from "@/datas/company";
 import { getProductCategoryLabel } from "@/datas/categories";
 import Link from "next/link";
@@ -11,7 +11,7 @@ function formatPrice(price: number | null) {
 }
 
 interface ProductDetailProps {
-  product: DemoProduct;
+  product: Product;
 }
 
 // 제품 상세 정보: 이미지 갤러리 + 설명 + 상세 정보 표 + 상담 CTA

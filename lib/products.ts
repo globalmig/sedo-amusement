@@ -1,10 +1,10 @@
 import { supabaseAdmin } from "./supabaseAdmin";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 
-// 공개 사이트에서 사용하는 제품 조회 헬퍼 (demo 테이블 기준)
-export async function getProducts(category?: string): Promise<DemoProduct[]> {
+// 공개 사이트에서 사용하는 제품 조회 헬퍼 (products 테이블 기준)
+export async function getProducts(category?: string): Promise<Product[]> {
     let query = supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -22,12 +22,12 @@ export async function getProducts(category?: string): Promise<DemoProduct[]> {
     return data ?? [];
 }
 
-export async function getProductById(id: number): Promise<DemoProduct | null> {
+export async function getProductById(id: number): Promise<Product | null> {
     const { data, error } = await supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .eq("id", id)
-        .single<DemoProduct>();
+        .single<Product>();
 
     if (error || !data) return null;
 
