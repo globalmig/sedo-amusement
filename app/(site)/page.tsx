@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Slide from "@/components/slide/Slide";
 import ProductGalley from "@/components/board/ProductGalley";
-import { COMPANY_INFO } from "@/datas/company";
+import ContactButtons from "@/components/common/ContactButtons";
+import FaqList from "@/components/common/FaqList";
+import { FAQ_ITEMS } from "@/datas/faq";
 import { getProducts } from "@/lib/products";
 
 type IconProps = { className?: string };
@@ -186,18 +188,19 @@ export default async function Home() {
                     </div>
                 </section>
 
+                {/* FAQ Preview */}
+                <FaqList items={FAQ_ITEMS.slice(0, 4)} moreHref="/as" moreLabel="더보기" />
+
                 {/* CTA */}
                 <section className="bg-title">
                     <div className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-20">
                         <h2 className="text-2xl font-black text-white pc:text-5xl">
-                            지금 바로 전화 상담을 받아보세요
+                            지금 바로 상담을 받아보세요
                         </h2>
                         <p className="mt-3 text-sm text-white/70 pc:text-base">
-                            복잡한 상담 폼 없이, 전화 한 통으로 빠르게 견적을 안내해 드립니다.
+                            복잡한 상담 폼 없이, 전화나 이메일로 빠르게 견적을 안내해 드립니다.
                         </p>
-                        <Link href={COMPANY_INFO.phoneHref} className="btn-primary mt-8 inline-flex px-8 py-3.5 text-base">
-                            {COMPANY_INFO.phone} 전화 상담하기
-                        </Link>
+                        <ContactButtons className="mt-8" />
                     </div>
                 </section>
             </article>

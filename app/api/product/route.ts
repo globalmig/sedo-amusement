@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const category = searchParams.get("category");
 
     let query = supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         }
 
         const { data, error } = await supabaseAdmin
-            .from("demo")
+            .from("products")
             .insert({
                 name,
                 category,

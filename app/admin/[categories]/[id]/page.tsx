@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import ProductForm from "@/components/form/ProductForm";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 
 interface AdminProductDetailPageProps {
     params: Promise<{ categories: string; id: string }>;
@@ -11,10 +11,10 @@ export default async function AdminProductDetailPage({ params }: AdminProductDet
     const { id } = await params;
 
     const { data: product } = await supabaseAdmin
-        .from("demo")
+        .from("products")
         .select("*")
         .eq("id", id)
-        .single<DemoProduct>();
+        .single<Product>();
 
     if (!product) notFound();
 

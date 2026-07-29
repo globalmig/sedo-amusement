@@ -7,7 +7,7 @@ import { usePagination } from "@/hooks/usePagination";
 import Toast from "../common/Toast";
 import Pagination from "../common/Pagination";
 import Skeleton from "../common/Skeleton";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -17,7 +17,7 @@ function formatPrice(price: number | null) {
 }
 
 interface ProductListProps {
-  products: DemoProduct[];
+  products: Product[];
   onReload: () => void;
 }
 

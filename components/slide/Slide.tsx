@@ -63,9 +63,9 @@ export default function Slide() {
                             <p className="text-sm font-bold tracking-widest text-primary pc:text-base">
                                 {slide.eyebrow}
                             </p>
-                            <h2 className="mt-4 whitespace-pre-line text-3xl font-black leading-tight text-white pc:text-5xl">
+                            <h1 className="mt-4 whitespace-pre-line text-3xl font-black leading-tight text-white pc:text-5xl">
                                 {slide.heading}
-                            </h2>
+                            </h1>
                             <p className="mt-5 max-w-md text-sm leading-6 text-white/80 pc:text-base">
                                 {slide.description}
                             </p>

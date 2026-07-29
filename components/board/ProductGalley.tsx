@@ -1,5 +1,5 @@
 "use client";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import { usePagination } from "@/hooks/usePagination";
 import ProductCard from "./ProductCard";
 import Pagination from "../common/Pagination";
@@ -7,7 +7,7 @@ import Pagination from "../common/Pagination";
 const ITEMS_PER_PAGE = 8;
 
 interface ProductGalleyProps {
-  products: DemoProduct[];
+  products: Product[];
 }
 
 // 사용자 제품 리스트: ProductCard 그리드형 렌더링

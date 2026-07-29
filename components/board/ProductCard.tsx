@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Skeleton from "../common/Skeleton";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import { getProductCategoryLabel } from "@/datas/categories";
 
 function formatPrice(price: number | null) {
@@ -12,7 +12,7 @@ function formatPrice(price: number | null) {
 }
 
 interface ProductCardProps {
-  product: DemoProduct;
+  product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {

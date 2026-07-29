@@ -3,14 +3,14 @@ import ProductList from "@/components/board/ProductList";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { DemoProduct } from "@/types/demo";
+import { Product } from "@/types/product";
 import { ADMIN_CATEGORY } from "@/datas/categories";
 
 export default function AdminProductListPage() {
     const { categories } = useParams<{ categories: string }>();
     const categoryName = ADMIN_CATEGORY.admin.categories?.find((c) => c.url === categories)?.name ?? categories;
 
-    const [products, setProducts] = useState<DemoProduct[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     // ProductList에서 삭제 완료 Toast를 닫을 때 이 값을 증가시켜 아래 effect를 재실행(재조회)함
     const [reloadKey, setReloadKey] = useState(0);
