@@ -10,6 +10,16 @@ interface ProductDetailPageProps {
   params: Promise<{ categories: string; id: string }>;
 }
 
+type IconProps = { className?: string };
+
+function ArrowLeftIcon({ className }: IconProps) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
+            <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    );
+}
+
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { categories, id } = await params;
   const category = USER_CATEGORY.products.categories?.find((c) => c.url === categories);
@@ -35,8 +45,9 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           />
     <article>
       <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
-        <Link href={`/products/${categories}`} className="text-sm text-muted hover:text-primary">
-          &lt; {category.name} 목록으로
+        <Link href={`/products/${categories}`} className="inline-flex items-center gap-1 text-sm text-muted hover:text-primary">
+          <ArrowLeftIcon className="h-4 w-4" />
+          {category.name} 목록으로
         </Link>
 
         <div className="mt-6">

@@ -21,7 +21,7 @@ export default function ProductInfoTable({ product }: ProductInfoTableProps) {
         <tbody className="divide-y divide-black/5">
           <tr>
             <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 text-left font-medium text-title pc:w-40">
-              상품명
+              제품명
             </th>
             <td className="px-6 py-4 text-body">{product.name || "-"}</td>
           </tr>

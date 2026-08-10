@@ -53,7 +53,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const detailImageUrls: unknown[] = Array.isArray(body.detail_images) ? body.detail_images : [];
 
         if (!name) {
-            return NextResponse.json({ error: "상품이름을 입력해주세요." }, { status: 400 });
+            return NextResponse.json({ error: "제품이름을 입력해주세요." }, { status: 400 });
         }
 
         if (!category) {

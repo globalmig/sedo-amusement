@@ -22,7 +22,7 @@ export default function LocationPage() {
                         {/* 지도 */}
                         <div className="mt-8 rounded-2xl overflow-hidden">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca4917084e395%3A0x647e7f2ea0e55b49!2z7ISc7Jq47Yq567OE7IucIOyEseuPmeq1rCDshLHsiJjsnbTroZwgNjU!5e0!3m2!1sko!2skr!4v1784517500277!5m2!1sko!2skr"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3157.0862085734893!2d127.0805151!3d37.7410319!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca283296c09df%3A0x89d28ea2d075841e!2z6rK96riw64-EIOyaqOygleq2keyCnA!5e0!3m2!1sko!2skr!4v1784517500277!5m2!1sko!2skr"
                                 width="600"
                                 height="450"
                                 className="border-0 w-full pc:w-150 pc:h-100"

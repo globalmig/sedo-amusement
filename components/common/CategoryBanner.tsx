@@ -46,7 +46,7 @@ export default function CategoryBanner({
                                 type="button"
                                 onClick={() => setIsOpen((prev) => !prev)}
                                 className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-white"
-                            >
+                            > 
                                 {activeTab ? activeTab.name : "카테고리 선택"}
                                 <svg
                                     viewBox="0 0 24 24"

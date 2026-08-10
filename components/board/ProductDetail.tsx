@@ -28,7 +28,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
         <div className="flex flex-col pc:basis-1/2">
-          <span className="w-fit rounded-full bg-point px-3 py-1 text-xs font-medium text-white">
+          <span className="w-fit rounded-full bg-base-dark/80 px-3 py-1 text-xs font-medium text-white">
             {getProductCategoryLabel(product.category)}
           </span>
           <h1 className="mt-3 text-2xl font-black text-title pc:text-3xl">{product.name}</h1>
@@ -39,12 +39,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </p>
           )}
 
-          <div className="mt-auto flex flex-wrap gap-3 pt-6">
+          <div className="mt-auto pt-6">
             <Link href={COMPANY_INFO.phoneHref} className="btn-primary">
-              {COMPANY_INFO.phone} 전화 상담
-            </Link>
-            <Link href={`${COMPANY_INFO.phoneHref}`} className="btn-ghost">
-              견적 문의하기
+              상담 문의
             </Link>
           </div>
         </div>

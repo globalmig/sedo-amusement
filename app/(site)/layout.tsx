@@ -1,6 +1,5 @@
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
-import FloatingCallButton from "@/components/common/FloatingCallButton";
 
 export default function SiteLayout({
     children,
@@ -12,7 +11,7 @@ export default function SiteLayout({
             <Header />
             {children}
             <Footer />
-            <FloatingCallButton />
+            {/* <FloatingCallButton /> */}
         </>
     );
 }

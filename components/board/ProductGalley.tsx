@@ -4,7 +4,7 @@ import { usePagination } from "@/hooks/usePagination";
 import ProductCard from "./ProductCard";
 import Pagination from "../common/Pagination";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 12;
 
 interface ProductGalleyProps {
   products: Product[];
