@@ -34,13 +34,8 @@ interface ProductFormInitialData {
 interface ProductFormOwnProps {
     editId?: number;
     initialData?: ProductFormInitialData;
-    // 카테고리 게시판에서 "제품 등록"으로 진입한 경우 해당 카테고리를 자동 선택 + 비활성화
-    lockedCategory?: string;
 }
 
-// 새 File 객체를 미리보기용 data URL로 변환
-// (blob URL + revoke 방식은 리액트의 effect 재실행 타이밍에 따라 미리보기가
-//  아직 화면에 남아있는데도 URL이 먼저 해제되어 깨진 이미지가 뜨는 문제가 있었음)
 function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -67,13 +62,12 @@ function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
     );
 }
 
-export default function ProductForm({ editId, initialData, lockedCategory }: ProductFormOwnProps = {}) {
+export default function ProductForm({ editId, initialData }: ProductFormOwnProps = {}) {
     const isEditMode = !!editId;
-    const isCategoryLocked = !!lockedCategory;
 
     const [form, setForm] = useState({
         name: initialData?.name ?? "",
-        category: initialData?.category ?? lockedCategory ?? "",
+        category: initialData?.category ?? "",
         spec: initialData?.spec ?? "",
         features: initialData?.features ?? "",
         price: initialData?.price != null ? String(initialData.price) : "",
@@ -149,8 +143,6 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
         setNewDetailImages((prev) => prev.filter((_, i) => i !== index));
     }, []);
 
-    // Vercel 서버를 거치지 않고 Supabase Storage에 직접 업로드: 서버에서 서명된 업로드 URL을
-    // 발급받아 브라우저가 곧바로 그 URL로 파일을 전송하고, 공개 URL만 돌려받는다.
     const uploadImage = useCallback(async (file: File, folder: "main" | "detail") => {
         const res = await fetch("/api/product/upload-url", {
             method: "POST",
@@ -236,10 +228,9 @@ export default function ProductForm({ editId, initialData, lockedCategory }: Pro
                             name="category"
                             value={form.category}
                             onChange={onChangeForm}
-                            disabled={isCategoryLocked}
-                            className="form-input disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted"
+                            className="form-input"
                         >
-                            <option value="" disabled>카테고리를 선택해주세요</option>
+                            <option value="">카테고리를 선택해주세요</option>
                             {PRODUCT_CATEGORIES.map((c) => (
                                 <option key={c.url} value={c.url}>{c.name}</option>
                             ))}

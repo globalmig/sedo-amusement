@@ -11,12 +11,7 @@ export default function AdminHeader() {
                 <div>
                     <ul className="flex items-center gap-4">
                         <li>
-                            <Link href="/admin/guide" className="text-sm font-semibold text-primary hover:underline">
-                                사용 가이드
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/" className="text-sm text-body hover:text-primary transition-colors">
+                            <Link href="/" className="text-sm font-semibold text-primary">
                                 사이트 돌아가기
                             </Link>
                         </li>

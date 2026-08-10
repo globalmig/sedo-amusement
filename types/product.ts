@@ -7,5 +7,6 @@ export interface Product {
   price: number | null;
   main_image_url: string | null;
   detail_images: string[] | null;
+  is_featured: boolean;
   created_at: string;
 }

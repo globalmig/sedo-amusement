@@ -10,7 +10,7 @@ export default async function AdminProductNewPage({ searchParams }: AdminProduct
     return (
         <div className="space-y-6">
             <h2 className="font-semibold text-title text-2xl">제품 등록</h2>
-            <ProductForm lockedCategory={category} />
+            <ProductForm/>
         </div>
     );
 }

@@ -2,7 +2,7 @@ import CategoryBanner from "@/components/common/CategoryBanner";
 import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
 import { COMPANY_INFO } from "@/datas/company";
-import { FAQ_ITEMS } from "@/datas/faq";
+import { FAQ_CATEGORIES, FAQ_ITEMS } from "@/datas/faq";
 import Image from "next/image";
 
 const SELF_CHECK_ITEMS = [
@@ -81,36 +81,58 @@ export default function AsPage() {
                 <section>
                     <div className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-24">
                         <p className="text-sm font-bold tracking-widest text-primary">SERVICE PHILOSOPHY</p>
-                    <h2 className="mx-auto mt-4 whitespace-pre-line text-2xl font-black leading-snug text-title pc:text-5xl">
-                        판매에서 끝이 아닙니다.<br/>걱정없는 사후관리로 든든하게
-                    </h2>
-                    <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-body pc:text-base">
-                        운영하시면서 불편한 점이 없도록 빠르고 친절하게 지원해 드립니다.
-                    </p>
+                        <h2 className="mx-auto mt-4 whitespace-pre-line text-2xl font-black leading-snug text-title pc:text-5xl">
+                            판매에서 끝이 아닙니다.<br />걱정없는 사후관리로 든든하게
+                        </h2>
+                        <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-body pc:text-base">
+                            운영하시면서 불편한 점이 없도록 빠르고 친절하게 지원해 드립니다.
+                        </p>
                     </div>
                 </section>
 
                 <div className="border-b border-b-muted/20"></div>
 
                 {/* 2. 자가 점검 가이드 */}
-                <section className="bg-surface">
+                <section id="self-check" className="scroll-mt-20 bg-surface">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                         <p className="text-sm font-bold tracking-widest text-primary">SELF-CHECK GUIDE</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">자가 점검 가이드</h2>
                         <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
-                            출동 전, 아래 항목을 먼저 확인해보세요. 간단한 점검만으로 바로
+                            A/S 요청 전, 아래 항목을 먼저 확인해보세요. 간단한 점검만으로 바로
                             해결되는 경우가 많습니다.
                         </p>
-                        {/* 체크리스트처럼 ui 변경 */}
-                        <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-4">
-                            {SELF_CHECK_ITEMS.map((item, index) => (
-                                <div key={item.title} className="card basis-full p-5 sm:basis-1/2 pc:basis-0 pc:flex-1 pc:p-6">
-                                    <span className="text-xl font-black text-primary pc:text-2xl">{index + 1}</span>
-                                    <h3 className="mt-2 text-sm font-bold text-title pc:mt-3 pc:text-[1.3rem]">{item.title}</h3>
-                                    <p className="mt-2 text-xs leading-5 text-body pc:text-[1rem] pc:leading-6">{item.description}</p>
-                                </div>
-                            ))}
+                        <div className="mt-10 pc:flex pc:justify-between">
+                            <div className="flex flex-col gap-4">
+                                {SELF_CHECK_ITEMS.map((item, index) => (
+                                    <div key={item.title} className="card basis-full p-4 sm:basis-1/2 pc:basis-0 pc:p-6">
+                                        <div className="flex gap-4 pb-2 border-b border-b-muted/20">
+                                            <div className="mx-0 my-auto flex items-center justify-center">
+                                                <Image src="/icons/self-check.png" 
+                                                alt="자가 점검 아이콘" 
+                                                width={42} 
+                                                height={42} 
+                                                className="w-4 h-auto pc:w-5"/>
+                                            </div>
+                                            <h3 className="text-sm font-bold text-title pc:text-[1.3rem]">
+                                                <span className="text-primary">0{index + 1}. </span>
+                                                {item.title}
+                                            </h3>
+                                        </div>
+                                        <p className="mt-2 leading-5 text-body pc:text-[1rem] pc:leading-6">{item.description}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="hidden pc:block">
+                                <Image 
+                                src="/images/self-guide.png" 
+                                alt="자가 점검 가이드" 
+                                width={505} 
+                                height={497}
+                                className="w-120 h-auto"
+                                />
+                            </div>
                         </div>
+
                     </div>
                 </section>
 
@@ -138,7 +160,7 @@ export default function AsPage() {
                 </section>
 
                 {/* 4. 우리의 약속 */}
-                <section className="bg-primary/50">
+                {/* <section className="bg-primary/50">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                         <p className="text-sm font-bold tracking-widest text-primary">OUR PROMISE</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">우리의 약속</h2>
@@ -155,10 +177,10 @@ export default function AsPage() {
                             ))}
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* 5. 실제 현장 사진 */}
-                <section>
+                {/* <section>
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                         <p className="text-sm font-bold tracking-widest text-primary">FIELD CASE</p>
                         <h2 className="mt-4 text-2xl font-black text-wthie pc:text-5xl">실제 현장 사진</h2>
@@ -184,15 +206,15 @@ export default function AsPage() {
                             ))}
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* 6. CTA */}
-                <section className="bg-title">
+                <section className="bg-[#FFA73C]">
                     <div className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-20">
                         <h2 className="text-2xl font-black text-white pc:text-5xl">
                             매출 손실, 더는 방치하지 마세요
                         </h2>
-                        <p className="mt-3 text-sm text-white/70 pc:text-base">
+                        <p className="mt-3 text-sm text-white pc:text-base">
                             {COMPANY_INFO.bizHours} · 지금 바로 상담하시면 가장 빠른 방문 일정을 안내해 드립니다.
                         </p>
                         <ContactButtons className="mt-8" phoneText="지금 긴급 수리 상담하기" emailText="A/S 이메일 문의하기" />
@@ -200,7 +222,7 @@ export default function AsPage() {
                 </section>
 
                 {/* FAQ */}
-                <FaqList items={FAQ_ITEMS} />
+                <FaqList items={FAQ_ITEMS} categories={FAQ_CATEGORIES} />
             </article>
         </>
     );

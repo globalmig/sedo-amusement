@@ -22,6 +22,22 @@ export async function getProducts(category?: string): Promise<Product[]> {
     return data ?? [];
 }
 
+// 관리자가 주요 상품으로 지정한(is_featured) 제품만 조회
+export async function getFeaturedProducts(): Promise<Product[]> {
+    const { data, error } = await supabaseAdmin
+        .from("products")
+        .select("*")
+        .eq("is_featured", true)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("주요 상품 조회 실패:", error.message);
+        return [];
+    }
+
+    return data ?? [];
+}
+
 export async function getProductById(id: number): Promise<Product | null> {
     const { data, error } = await supabaseAdmin
         .from("products")
