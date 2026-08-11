@@ -48,7 +48,6 @@ export default function ProductList({ products, onReload }: ProductListProps) {
   const [completedMessage, setCompletedMessage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loadedUrls, setLoadedUrls] = useState<Set<string>>(new Set());
-  // 서버 재조회 없이 즉시 반영하기 위한 주요 상품 상태의 낙관적 오버라이드
   const [featuredOverride, setFeaturedOverride] = useState<Record<number, boolean>>({});
 
   const markLoaded = (url: string) => {
@@ -78,11 +77,10 @@ export default function ProductList({ products, onReload }: ProductListProps) {
     const result = await updateFeatured(`${product.id}/featured`, { is_featured: next });
     if (!result) {
       setFeaturedOverride((prev) => ({ ...prev, [product.id]: current }));
-      setErrorMsg("주요 상품 설정에 실패했습니다.");
+      setErrorMsg("주요 제품 설정에 실패했습니다.");
     }
   };
 
-  // 완료 Toast를 닫을 때 목록을 다시 불러와 삭제된 항목을 화면에 반영
   const closeCompletedToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
     setCompletedMessage(value);
     if (value === null) {
@@ -109,7 +107,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
               <th className="px-5 py-3">제품이름</th>
               <th className="px-5 py-3">카테고리</th>
               <th className="px-5 py-3">가격</th>
-              <th className="px-5 py-3 text-center">주요상품</th>
+              <th className="px-5 py-3 text-center">주요제품</th>
               <th className="px-5 py-3 text-right">관리</th>
             </tr>
           </thead>
@@ -157,7 +155,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
                       type="button"
                       onClick={() => toggleFeatured(product)}
                       aria-pressed={isFeatured}
-                      title={isFeatured ? "주요 상품에서 제외" : "주요 상품으로 등록"}
+                      title={isFeatured ? "주요 제품에서 제외" : "주요 제품으로 등록"}
                       className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors ${
                         isFeatured ? "text-primary" : "text-black/20 hover:text-primary"
                       }`}

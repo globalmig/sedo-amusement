@@ -7,6 +7,25 @@ import { USER_CATEGORY } from "@/datas/categories";
 
 const PRODUCT_CATEGORIES = USER_CATEGORY.products.categories ?? [];
 
+function StarIcon({ className }: {className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      aria-hidden="true"
+      className={className}
+    >
+      <path
+        d="M12 3.3 14.6 9l6.2.6-4.7 4.1 1.4 6.1L12 16.8l-5.5 3 1.4-6.1-4.7-4.1L9.4 9 12 3.3Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function AdminProductListPage() {
     // null이면 전체 카테고리를 의미
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -50,29 +69,30 @@ export default function AdminProductListPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                <h2 className="text-xl font-semibold text-title">
-                    제품관리
-                </h2>
-                <div className="relative">
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
-                    >
-                        <circle cx={11} cy={11} r={7} strokeLinecap="round" strokeLinejoin="round" />
-                        <path d="M21 21l-4.35-4.35" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="제품명 검색"
-                        className="w-60 rounded-lg border border-black/20 bg-white/30 py-2 pl-9 pr-3 text-sm text-body outline-none focus:border-primary"
-                    />
-                </div>
+                    <h2 className="text-xl font-semibold text-title">
+                        제품관리
+                    </h2>
+                    <div className="relative">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            aria-hidden="true"
+                            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+                        >
+                            <circle cx={11} cy={11} r={7} strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M21 21l-4.35-4.35" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="제품명 검색"
+                            className="w-60 rounded-lg border border-black/20 bg-white/30 py-2 pl-9 pr-3 text-sm text-body outline-none focus:border-primary"
+                        />
+                    </div>
+                    <button type="button"><StarIcon className="h-5 w-5" /> 주요 제품만</button>
                 </div>
                 <Link
                     href={`/admin/new${activeCategory ? `?category=${activeCategory}` : ""}`}
@@ -87,11 +107,10 @@ export default function AdminProductListPage() {
                     <button
                         type="button"
                         onClick={() => setActiveCategory(null)}
-                        className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                            activeCategory === null
+                        className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition-colors ${activeCategory === null
                                 ? "border-primary font-semibold text-primary"
                                 : "border-transparent text-muted hover:text-title"
-                        }`}
+                            }`}
                     >
                         전체
                     </button>
@@ -100,11 +119,10 @@ export default function AdminProductListPage() {
                             key={category.url}
                             type="button"
                             onClick={() => setActiveCategory(category.url)}
-                            className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                                activeCategory === category.url
+                            className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition-colors ${activeCategory === category.url
                                     ? "border-primary font-semibold text-primary"
                                     : "border-transparent text-muted hover:text-title"
-                            }`}
+                                }`}
                         >
                             {category.name}
                         </button>

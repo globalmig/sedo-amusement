@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import AdminSideMenu from "@/components/common/AdminSideMenu";
 import AdminHeader from "@/components/common/AdminHeader";
+
+export const metadata: Metadata = {
+    title: "관리자 페이지",
+    robots: { index: false, follow: false },
+};
 
 export default function AdminLayout({
     children,

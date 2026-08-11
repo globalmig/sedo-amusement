@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import ProductGalley from "@/components/board/ProductGalley";
@@ -6,6 +7,18 @@ import { getProducts } from "@/lib/products";
 
 interface ProductListPageProps {
   params: Promise<{ categories: string }>;
+}
+
+export async function generateMetadata({ params }: ProductListPageProps): Promise<Metadata> {
+  const { categories } = await params;
+  const category = USER_CATEGORY.products.categories?.find((c) => c.url === categories);
+
+  if (!category) return {};
+
+  return {
+    title: category.name,
+    description: `세도어뮤즈먼트가 정품으로 공급하는 ${category.name} 라인업을 확인하세요. 합리적인 가격과 전국 A/S를 함께 제공합니다.`,
+  };
 }
 
 export default async function ProductListPage({ params }: ProductListPageProps) {
