@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import { USER_CATEGORY } from "@/datas/categories";
+
+export const metadata: Metadata = {
+    title: "사업 영역",
+    description:
+        "전자오락기 유통, 설치·시공, A/S·유지보수, 상시 재고 공급까지 세도어뮤즈먼트가 제공하는 사업 영역을 소개합니다.",
+};
 
 const BUSINESS_AREAS = [
     {

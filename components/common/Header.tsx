@@ -121,8 +121,8 @@ export default function Header() {
                                         </ul>
                                         {/* 서브 카테고리 */}
                                         {c.categories && (
-                                            <ul className={`transition-all duration-500 ease-in-out pc:absolute pc:top-full pc:mt-2 pc:left-0 pc:w-62.5 pc:rounded-lg  pc:bg-primary pc:shadow-card
-                                                ${isTarget ? "max-h-100 opacity-100 translate-y-0 visible" : "max-h-0 opacity-0 -translate-y-2 invisible"}`}>
+                                            <ul className={`overflow-hidden transition-all duration-500 ease-in-out pc:absolute pc:top-full pc:mt-2 pc:left-0 pc:w-62.5 pc:rounded-lg  pc:bg-primary pc:shadow-card
+                                                ${isTarget ? "max-h-125 opacity-100 translate-y-0 visible mb-2 pc:mb-0" : "max-h-0 opacity-0 -translate-y-2 invisible mb-0"}`}>
                                                 {c.categories.map((sub) => (
                                                     <li key={sub.url}
                                                         className="hover:bg-surface pc:hover:bg-surface transition-colors border-b border-black/5 pc:border-white/20 last:border-0"

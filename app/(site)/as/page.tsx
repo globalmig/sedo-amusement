@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
 import { COMPANY_INFO } from "@/datas/company";
 import { FAQ_CATEGORIES, FAQ_ITEMS } from "@/datas/faq";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+    title: "A/S 및 사후관리 안내",
+    description:
+        "전국 출장 A/S와 정품 파츠 교체, 정기 점검까지 책임지는 세도어뮤즈먼트의 사후관리 서비스를 안내합니다. 자가 점검 가이드와 A/S 접수 절차를 확인해보세요.",
+};
 
 const SELF_CHECK_ITEMS = [
     {

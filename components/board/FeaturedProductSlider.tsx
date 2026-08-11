@@ -11,7 +11,40 @@ interface FeaturedProductSliderProps {
   products: Product[];
 }
 
-// 메인페이지 전용: 관리자가 지정한 주요 상품을 ProductCard 단위로 자동 슬라이드
+interface ArrowProps {
+  onClick?: () => void;
+}
+
+function PrevArrow({ onClick }: ArrowProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="이전 제품"
+      className="absolute left-0 top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white shadow-md transition-opacity hover:opacity-90 pc:h-12 pc:w-12"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 pc:h-5 pc:w-5" aria-hidden="true">
+        <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
+function NextArrow({ onClick }: ArrowProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="다음 제품"
+      className="absolute right-0 top-1/2 z-10 flex h-9 w-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white shadow-md transition-opacity hover:opacity-90 pc:h-12 pc:w-12"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 pc:h-5 pc:w-5" aria-hidden="true">
+        <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
 export default function FeaturedProductSlider({ products }: FeaturedProductSliderProps) {
   if (products.length === 0) {
     return (
@@ -23,7 +56,9 @@ export default function FeaturedProductSlider({ products }: FeaturedProductSlide
 
   const settings = {
     dots: false,
-    arrows: false,
+    arrows: true,
+    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow />,
     speed: 600,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -49,7 +84,7 @@ export default function FeaturedProductSlider({ products }: FeaturedProductSlide
   };
 
   return (
-    <div className="featured-product-slider">
+    <div className="featured-product-slider relative">
       <Slider {...settings}>
         {products.map((product) => (
           <div key={product.id} className="px-2 pb-10">

@@ -1,13 +1,31 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ProductDetail from "@/components/board/ProductDetail";
 import PrevNextNavbar2 from "@/components/common/PrevNextNavbar2";
-import { USER_CATEGORY } from "@/datas/categories";
+import { USER_CATEGORY, getProductCategoryLabel } from "@/datas/categories";
 import { getProductById, getProducts } from "@/lib/products";
 import CategoryBanner from "@/components/common/CategoryBanner";
 
 interface ProductDetailPageProps {
   params: Promise<{ categories: string; id: string }>;
+}
+
+export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
+  const { categories, id } = await params;
+  const product = await getProductById(Number(id));
+
+  if (!product) return {};
+
+  const categoryLabel = getProductCategoryLabel(categories);
+  const description =
+    product.features?.replace(/\s+/g, " ").trim().slice(0, 120) ??
+    `세도어뮤즈먼트가 정품으로 공급하는 ${categoryLabel} 기종, ${product.name}을(를) 확인하세요.`;
+
+  return {
+    title: product.name,
+    description,
+  };
 }
 
 type IconProps = { className?: string };

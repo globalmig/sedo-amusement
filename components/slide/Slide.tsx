@@ -11,7 +11,7 @@ const SLIDES = [
         image: "/images/arcade-zone-wide.png",
         eyebrow: "SEDO AMUSEMENT",
         heading: "20년 전통의\n전자오락기 유통 전문기업",
-        description: "오락실 · 키즈카페를 위한 검증된 게임기를 세도어뮤즈먼트가 책임집니다.",
+        description: "오락실·키즈카페를 위한 검증된 게임기를 세도어뮤즈먼트가 책임집니다.",
     },
     {
         image: "/images/arcade-racing.jpg",
@@ -23,7 +23,7 @@ const SLIDES = [
         image: "/images/arcade-slot-close.png",
         eyebrow: "A/S & SUPPORT",
         heading: "전국 어디서나\n신속한 사후관리",
-        description: "설치 이후에도 끝까지 책임지는 세도어뮤즈먼트의 A/S 시스템.",
+        description: "설치 이후에도 끝까지 책임지는 세도어뮤즈먼트의 A/S 시스템",
     },
 ] as const;
 
@@ -81,7 +81,7 @@ export default function Slide() {
                                     <h1 className="mt-4 whitespace-pre-line text-3xl font-black leading-tight text-white pc:text-5xl">
                                         {slide.heading}
                                     </h1>
-                                    <p className="mt-5 max-w-md text-sm leading-6 text-white/80 pc:text-base">
+                                    <p className="mt-5 text-sm leading-6 text-white/80 pc:text-base">
                                         {slide.description}
                                     </p>
                                     <div className="mt-8 flex flex-wrap gap-3">
@@ -100,63 +100,23 @@ export default function Slide() {
                         </div>
                     ))}
                 </Slider>
-
-                <div className="absolute inset-x-0 bottom-0 z-20">
-                    {/* Mobile */}
-                    <div className="relative pc:hidden">
-                        <Image
-                            src="/images/Rectangle2.png"
-                            alt=""
-                            width={516}
-                            height={109}
-                            sizes="80vw"
-                            aria-hidden="true"
-                            className="ml-auto h-auto w-[95%]"
-                        />
-                        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center text-center">
-                            <p className="text-base font-bold text-white">궁금한 점이 있으시면?</p>
-                            <Link
-                                href="/as#self-check"
-                                className="mt-1 inline-flex items-center gap-1 text-sm underline text-white"
-                            >
-                                빠른 해결 가이드 바로가기
-                                <ArrowRightIcon className="h-4 w-4" />
-                            </Link>
-                        </div>
-                    </div>
-                    {/* Desktop */}
+            </div>
+            <div className="bg-primary">
+                <div className="mx-auto flex max-w-300 flex-col gap-6 px-[5%] py-8 pc:flex-row pc:items-center pc:justify-between pc:px-0 pc:py-10">
                     <div>
-                        <Image
-                            src="/images/Rectangle1.png"
-                            alt=""
-                            width={1529}
-                            height={97}
-                            sizes="80vw"
-                            aria-hidden="true"
-                            className="absolute right-0 bottom-0 hidden h-auto w-4/5 pc:block"
-                        />
-                        <div className="relative hidden pc:z-30 pc:flex pc:items-center pc:justify-between">
-                            <div className="flex items-center gap-4">
-                                <PhoneIcon className="h-6 w-6 shrink-0 text-white" />
-                                <div>
-                                    <Link href={COMPANY_INFO.phoneHref} className="text-2xl font-black text-white hover:underline">
-                                        {COMPANY_INFO.phone}
-                                    </Link>
-                                    <p className="mt-1 text-sm text-white">
-                                        구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <Link
-                                href="/as#self-check"
-                            >
-                                빠른 해결 가이드 바로가기
-                                <ArrowRightIcon className="h-4 w-4" />
-                            </Link>
+                        <div className="flex items-center gap-3">
+                            <PhoneIcon className="h-6 w-6 text-white" />
+                            <p className="text-xl font-bold text-white pc:text-2xl">031-824-5851</p>
                         </div>
+                        <p className="mt-2 text-sm text-white/90 pc:text-base">구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.</p>
                     </div>
-                    
+                    <Link
+                        href="/as"
+                        className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-white px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10 pc:self-auto"
+                    >
+                        빠른 해결 가이드 바로가기
+                        <ArrowRightIcon className="h-4 w-4" />
+                    </Link>
                 </div>
             </div>
         </main>

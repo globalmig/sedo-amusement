@@ -6,7 +6,6 @@ interface RouteParams {
     params: Promise<{ id: string }>;
 }
 
-// 관리자 제품 목록에서 주요 상품(is_featured) 여부만 빠르게 토글하는 전용 엔드포인트
 export async function PATCH(request: Request, { params }: RouteParams) {
     if (!(await requireAdmin())) {
         return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });

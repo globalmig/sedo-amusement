@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import { USER_CATEGORY } from "@/datas/categories";
+
+export const metadata: Metadata = {
+    title: "인사말",
+    description:
+        "20년간 전자오락기 유통 한 분야에 집중해온 세도어뮤즈먼트의 인사말입니다. 정품 게임기의 안정적인 공급과 사후관리를 약속드립니다.",
+};
 
 export default function CompanyPage() {
 

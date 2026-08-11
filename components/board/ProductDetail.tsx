@@ -4,6 +4,7 @@ import { getProductCategoryLabel } from "@/datas/categories";
 import Link from "next/link";
 import ProductImageGallery from "./ProductImageGallery";
 import ProductInfoTable from "./ProductInfoTable";
+import ProductShippingInfo from "./ProductShippingInfo";
 
 function formatPrice(price: number | null) {
   if (price === null) return "가격 문의";
@@ -14,7 +15,6 @@ interface ProductDetailProps {
   product: Product;
 }
 
-// 제품 상세 정보: 이미지 갤러리 + 설명 + 상세 정보 표 + 상담 CTA
 export default function ProductDetail({ product }: ProductDetailProps) {
   return (
     <div className="space-y-8">
@@ -41,13 +41,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
           <div className="mt-auto pt-6">
             <Link href={COMPANY_INFO.phoneHref} className="btn-primary">
-              상담 문의
+              가격 문의
             </Link>
           </div>
         </div>
       </div>
 
       <ProductInfoTable product={product} />
+      <ProductShippingInfo />
     </div>
   );
 }

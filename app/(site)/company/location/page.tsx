@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import { USER_CATEGORY } from "@/datas/categories";
 import { COMPANY_INFO } from "@/datas/company";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+    title: "오시는 길",
+    description: `세도어뮤즈먼트 사무실 위치와 연락처를 안내합니다. 주소: ${COMPANY_INFO.address} · 전화: ${COMPANY_INFO.phone}`,
+};
 
 export default function LocationPage() {
     return (
