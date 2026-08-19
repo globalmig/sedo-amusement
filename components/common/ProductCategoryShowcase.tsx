@@ -43,7 +43,7 @@ export default function ProductCategoryShowcase() {
                 <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
                     <div>
                         <p className="text-sm font-bold tracking-widest text-primary">DISCOVER OUR LINEUP</p>
-                        <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">원하시는 다양한 제품을 확인해보세요</h2>
+                        <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">원하시는 다양한 제품을 확인해보세요.</h2>
                     </div>
                     <Link href="/products" className="text-sm font-semibold text-primary hover:underline">
                         전체 카테고리 제품 보기 &gt;

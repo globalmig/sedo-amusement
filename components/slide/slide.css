@@ -8,3 +8,19 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+@keyframes slide-gauge-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.gauge-fill {
+  transform-origin: left;
+  animation-name: slide-gauge-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
