@@ -1,4 +1,5 @@
 "use client"
+import { useRef, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "./slide.css";
@@ -43,7 +44,36 @@ function ArrowRightIcon({ className }: { className?: string }) {
     );
 }
 
+function ChevronLeftIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
+            <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    );
+}
+
+function PauseIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+            <rect x="6" y="5" width="4" height="14" rx="1" />
+            <rect x="14" y="5" width="4" height="14" rx="1" />
+        </svg>
+    );
+}
+
+function PlayIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+            <path d="M8 5v14l11-7-11-7Z" />
+        </svg>
+    );
+}
+
 export default function Slide() {
+    const sliderRef = useRef<Slider>(null);
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(true);
+
     const settings = {
         dots: false,
         arrows: false,
@@ -54,12 +84,21 @@ export default function Slide() {
         pauseOnHover: false,
         slidesToShow: 1,
         slidesToScroll: 1,
+        beforeChange: (_current: number, next: number) => setCurrentSlide(next),
+    };
+
+    const goPrev = () => sliderRef.current?.slickPrev();
+    const goNext = () => sliderRef.current?.slickNext();
+    const togglePlay = () => {
+        if (isPlaying) sliderRef.current?.slickPause();
+        else sliderRef.current?.slickPlay();
+        setIsPlaying((prev) => !prev);
     };
 
     return (
         <main className="relative w-full">
             <div className="relative h-180 w-full overflow-hidden pc:h-200">
-                <Slider {...settings}>
+                <Slider ref={sliderRef} {...settings}>
                     {SLIDES.map((slide, index) => (
                         <div key={slide.heading} className="relative h-180 w-full pc:h-200">
                             <Image
@@ -100,6 +139,52 @@ export default function Slide() {
                         </div>
                     ))}
                 </Slider>
+
+                <div className="absolute inset-x-0 bottom-0 z-20 px-[5%] pb-6 pc:px-0 pc:pb-10">
+                    <div className="mx-auto flex max-w-300 items-center justify-between gap-6">
+                        <div className="flex flex-col gap-2">
+                            <p className="text-sm font-bold tracking-widest text-white pc:text-base">
+                                {String(currentSlide + 1).padStart(2, "0")}/{String(SLIDES.length).padStart(2, "0")}
+                            </p>
+                            <div className="h-0.5 w-40 overflow-hidden rounded-full bg-white/30 pc:w-64">
+                                <div
+                                    key={currentSlide}
+                                    className="gauge-fill h-full w-full bg-white"
+                                    style={{
+                                        animationDuration: `${settings.autoplaySpeed}ms`,
+                                        animationPlayState: isPlaying ? "running" : "paused",
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <button
+                                type="button"
+                                onClick={goPrev}
+                                aria-label="이전 슬라이드"
+                                className="text-white transition-opacity hover:opacity-70"
+                            >
+                                <ChevronLeftIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={togglePlay}
+                                aria-label={isPlaying ? "슬라이드 멈춤" : "슬라이드 재생"}
+                                className="text-white transition-opacity hover:opacity-70"
+                            >
+                                {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5" />}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={goNext}
+                                aria-label="다음 슬라이드"
+                                className="text-white transition-opacity hover:opacity-70"
+                            >
+                                <ArrowRightIcon className="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className="bg-primary">
                 <div className="mx-auto flex max-w-300 flex-col gap-6 px-[5%] py-8 pc:flex-row pc:items-center pc:justify-between pc:px-0 pc:py-10">

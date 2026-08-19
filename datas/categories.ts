@@ -17,7 +17,7 @@ export const USER_CATEGORY: { [key: string]: { title: string; categories?: { nam
             { name: "캐주얼게임", url: "casual" },
             { name: "스포츠게임", url: "sports" },
             { name: "비디오게임", url: "video" },
-            { name: "라이드 어트렉션", url: "ride-attraction" },
+            { name: "라이드 어트렉션", url: "attraction" },
             { name: "시설게임", url: "facility" },
             { name: "교환기", url: "exchange" },
         ],
@@ -37,6 +37,7 @@ export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: { na
         categories: [
             { name: "제품관리", url: "products" },
             { name: "사용 가이드", url: "guide" },
+            { name: "이미지 편집", url: "create-image" },
         ],
     },
 }

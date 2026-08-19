@@ -5,6 +5,7 @@ import ProductCategoryShowcase from "@/components/common/ProductCategoryShowcase
 import FeaturedProductSlider from "@/components/board/FeaturedProductSlider";
 import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
+import StatCounter from "@/components/common/StatCounter";
 import { FAQ_ITEMS } from "@/datas/faq";
 import { getFeaturedProducts } from "@/lib/products";
 
@@ -147,14 +148,7 @@ export default async function Home() {
                                     제조사 정품만을 취급하여 고장률을 낮추고, 구매 이후 발생할 수 있는 A/S 문제까지 깔끔하게 연결해 드리는 든든한 유통 파트너가 되겠습니다.
                                 </p>
                             </div>
-                            <div className="flex justify-between pt-8 pc:flex pc:w-44.25 pc:flex-none pc:flex-col pc:gap-12.5 pc:border-0 pc:pt-0">
-                                {STATS.map((stat) => (
-                                    <div key={stat.label} className="flex flex-col gap-1">
-                                        <p className="text-xs font-bold text-primary mb-2  pc:text-base">{stat.label}</p>
-                                        <p className="text-xl font-bold text-title pc:text-[42px]">{stat.value}</p>
-                                    </div>
-                                ))}
-                            </div>
+                            <StatCounter stats={STATS} />
                         </div>
                     </div>
                 </section>
