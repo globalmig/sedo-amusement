@@ -48,6 +48,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
   const [completedMessage, setCompletedMessage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loadedUrls, setLoadedUrls] = useState<Set<string>>(new Set());
+  // 토글여부 (true/false)
   const [featuredOverride, setFeaturedOverride] = useState<Record<number, boolean>>({});
 
   const markLoaded = (url: string) => {
@@ -67,14 +68,21 @@ export default function ProductList({ products, onReload }: ProductListProps) {
     },
   });
 
+  // useUpdate hook 호출, baseUrl: /api/product
   const { update: updateFeatured } = useUpdate<{ is_featured: boolean }>("/api/product");
 
+  // 주요 제품 토클
   const toggleFeatured = async (product: Product) => {
+    // 현재 토글 상태 : override (토글 변동 상태) 가 없으면 원래 DB에 있는 is_featured를 가져옴
     const current = featuredOverride[product.id] ?? product.is_featured;
+    // 다음 토글 상태
     const next = !current;
+    // api 요청 전, 토글상태를 먼저 바꿈 (UI먼저 변경)
     setFeaturedOverride((prev) => ({ ...prev, [product.id]: next }));
 
+    // /api/product/${product.id}/featured 호출, 요청 body: { is_featured: next }
     const result = await updateFeatured(`${product.id}/featured`, { is_featured: next });
+    // api 호출 실패시 rollback
     if (!result) {
       setFeaturedOverride((prev) => ({ ...prev, [product.id]: current }));
       setErrorMsg("주요 제품 설정에 실패했습니다.");
@@ -98,7 +106,66 @@ export default function ProductList({ products, onReload }: ProductListProps) {
 
   return (
     <>
-      <div className="card overflow-x-auto">
+      {/* 모바일: 카드형 리스트 */}
+      <div className="space-y-3 pc:hidden">
+        {currentItems.map((product, localIndex) => {
+          const rowNumber = totalCount - ((currentPage - 1) * ITEMS_PER_PAGE + localIndex);
+          const mainImageUrl = product.main_image_url;
+          const isFeatured = featuredOverride[product.id] ?? product.is_featured;
+          return (
+            <div key={product.id} className="card flex gap-3 p-4">
+              {mainImageUrl ? (
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
+                  {!loadedUrls.has(mainImageUrl) && (
+                    <Skeleton className="absolute inset-0 m-0! p-0!" />
+                  )}
+                  <Image
+                    src={mainImageUrl}
+                    alt={product.name}
+                    fill
+                    sizes="64px"
+                    className={`object-cover ${loadedUrls.has(mainImageUrl) ? "" : "invisible"}`}
+                    onLoad={() => markLoaded(mainImageUrl)}
+                  />
+                </div>
+              ) : (
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-surface text-xs text-muted">
+                  없음
+                </span>
+              )}
+
+              <div className="min-w-0 flex-1">
+                <div className="flex justify-between">
+                  <div>
+                    <Link
+                      href={`/admin/products/${product.category}/${product.id}/view`}
+                    >
+                      <p className="font-medium text-title">{product.name}</p>
+                      <p className="mt-1 text-sm text-body">
+                        {getProductCategoryLabel(product.category)} · {formatPrice(product.price)}
+                      </p>
+                    </Link>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => toggleFeatured(product)}
+                    aria-pressed={isFeatured}
+                    title={isFeatured ? "주요 제품에서 제외" : "주요 제품으로 등록"}
+                    className={`inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors ${isFeatured ? "text-primary" : "text-black/20 hover:text-primary"
+                      }`}
+                  >
+                    <StarIcon filled={isFeatured} className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* PC: 테이블형 리스트 */}
+      <div className="hidden card overflow-x-auto pc:block">
         <table className="w-full min-w-150 text-sm">
           <thead>
             <tr className="border-b border-black/5 bg-surface text-left text-xs font-semibold uppercase tracking-wider text-muted">
@@ -156,9 +223,8 @@ export default function ProductList({ products, onReload }: ProductListProps) {
                       onClick={() => toggleFeatured(product)}
                       aria-pressed={isFeatured}
                       title={isFeatured ? "주요 제품에서 제외" : "주요 제품으로 등록"}
-                      className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors ${
-                        isFeatured ? "text-primary" : "text-black/20 hover:text-primary"
-                      }`}
+                      className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors ${isFeatured ? "text-primary" : "text-black/20 hover:text-primary"
+                        }`}
                     >
                       <StarIcon filled={isFeatured} className="h-5 w-5" />
                     </button>

@@ -31,7 +31,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           <span className="w-fit rounded-full bg-base-dark/80 px-3 py-1 text-xs font-medium text-white">
             {getProductCategoryLabel(product.category)}
           </span>
-          <h1 className="mt-3 text-2xl font-black text-title pc:text-3xl">{product.name}</h1>
+          <h2 className="mt-3 text-2xl font-black text-title pc:text-3xl">{product.name}</h2>
           <p className="mt-2 text-xl font-bold text-point">{formatPrice(product.price)}</p>
           {product.features && (
             <p className="mt-4 whitespace-pre-line text-sm leading-7 text-body pc:text-base">

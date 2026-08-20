@@ -11,7 +11,7 @@ import { getFeaturedProducts } from "@/lib/products";
 
 type IconProps = { className?: string };
 
-// 품질 관리: 방패 + 체크
+// 품질 관리
 function QualityIcon({ className }: IconProps) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
@@ -21,7 +21,7 @@ function QualityIcon({ className }: IconProps) {
     );
 }
 
-// 전국 신속 A/S: 렌치
+// 전국 신속 A/S
 function SupportIcon({ className }: IconProps) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
@@ -30,7 +30,7 @@ function SupportIcon({ className }: IconProps) {
     );
 }
 
-// 합리적인 유통가: 가격표
+// 합리적인 유통가
 function PriceTagIcon({ className }: IconProps) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">

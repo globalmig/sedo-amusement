@@ -9,7 +9,6 @@ interface ProductListPageProps {
   params: Promise<{ categories: string }>;
 }
 
-// 데이터 정의 부분
 export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   crane: "높은 가동률과 매장 수익을 책임지는 필수 인형뽑기·경품기입니다.",
   shooting: "뛰어난 몰입감과 화려한 연출의 1인·다인용 사격을 즐길 수 있습니다.",

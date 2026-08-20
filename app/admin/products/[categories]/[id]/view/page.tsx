@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { Product } from "@/types/product";
 import ProductImageGallery from "@/components/board/ProductImageGallery";
 import ProductInfoTable from "@/components/board/ProductInfoTable";
+import DeleteProductButton from "@/components/board/DeleteProductButton";
 import PrevNextNavbar from "@/components/common/PrevNextNavbar";
 import { getProducts } from "@/lib/products";
 
@@ -32,12 +33,7 @@ export default async function AdminProductViewPage({ params }: AdminProductViewP
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-title">제품 상세보기</h2>
-                <Link href={`/admin/products/${categories}/${id}`} className="btn-primary">
-                    수정하기
-                </Link>
-            </div>
+            <h2 className="text-xl font-semibold text-title">제품 상세보기</h2>
             <div className="pc:max-w-100">
                 <ProductImageGallery
                     mainImageUrl={product.main_image_url}
@@ -46,6 +42,12 @@ export default async function AdminProductViewPage({ params }: AdminProductViewP
                 />
             </div>
             <ProductInfoTable product={product} />
+            <div className="flex gap-3">
+                <Link href={`/admin/products/${categories}/${id}`} className="btn-primary">
+                    수정하기
+                </Link>
+                <DeleteProductButton productId={product.id} />
+            </div>
             <PrevNextNavbar
                 prevItem={prev ? { href: `/admin/products/${categories}/${prev.id}/view`, title: prev.name } : null}
                 nextItem={next ? { href: `/admin/products/${categories}/${next.id}/view`, title: next.name } : null}
