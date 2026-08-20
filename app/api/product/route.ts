@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ data });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request) { 
     try {
         if (!(await requireAdmin())) {
             return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });

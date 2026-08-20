@@ -28,7 +28,7 @@ export const USER_CATEGORY: { [key: string]: { title: string; categories?: { nam
 }
 
 export function getProductCategoryLabel(slug: string | null) {
-    return USER_CATEGORY.products.categories?.find((c) => c.url === slug)?.name ?? "미분류";
+    return USER_CATEGORY.products.categories?.find((c) => c.url === slug)?.name;
 }
 
 export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: { name: string, url: string }[], banner?: string } } = {
@@ -36,8 +36,8 @@ export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: { na
         title: "관리자 페이지",
         categories: [
             { name: "제품관리", url: "products" },
+            { name: "제품 사진 편집", url: "create-image" },
             { name: "사용 가이드", url: "guide" },
-            { name: "이미지 편집", url: "create-image" },
         ],
     },
 }

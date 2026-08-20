@@ -11,7 +11,7 @@ async function getCroppedImageBlob(imageSrc: string, cropArea: Area): Promise<Bl
     image.src = imageSrc;
     await new Promise<void>((resolve, reject) => {
         image.onload = () => resolve();
-        image.onerror = () => reject(new Error('이미지를 불러오지 못했습니다.'));
+        image.onerror = () => reject(new Error('사진를 불러오지 못했습니다.'));
     });
 
     const canvas = document.createElement('canvas');
@@ -35,7 +35,7 @@ async function getCroppedImageBlob(imageSrc: string, cropArea: Area): Promise<Bl
     return new Promise((resolve, reject) => {
         canvas.toBlob((blob) => {
             if (blob) resolve(blob);
-            else reject(new Error('이미지 변환에 실패했습니다.'));
+            else reject(new Error('사진 변환에 실패했습니다.'));
         }, 'image/png');
     });
 }
@@ -90,7 +90,7 @@ export default function ImageBgRemover() {
             setCroppedUrl(URL.createObjectURL(blob));
             setStep('result');
         } catch {
-            setError('이미지를 자르는 중 문제가 발생했습니다.');
+            setError('사진를 자르는 중 문제가 발생했습니다.');
         } finally {
             setProcessing(false);
         }
@@ -129,14 +129,14 @@ export default function ImageBgRemover() {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                className="block text-sm text-body file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:opacity-90"
+                className="block text-sm text-body file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-3 pc:file:py-2 file:text-sm file:font-semibold file:text-white hover:file:opacity-90"
             />
 
             {error && <p className="text-sm text-red-500">{error}</p>}
 
             {step === 'crop' && originalSrc && (
                 <div className="flex flex-col gap-4">
-                    <div className="relative h-100 w-full overflow-hidden rounded-lg border border-black/10 bg-surface">
+                    <div className="relative h-72 w-full overflow-hidden rounded-lg border border-black/10 bg-surface pc:h-100">
                         <Cropper
                             image={originalSrc}
                             crop={crop}
@@ -164,14 +164,14 @@ export default function ImageBgRemover() {
                             type="button"
                             onClick={applyCrop}
                             disabled={processing || !cropArea}
-                            className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer rounded-lg bg-primary px-4 py-3 pc:py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {processing ? '자르는 중...' : '1:1로 자르기'}
                         </button>
                         <button
                             type="button"
                             onClick={reset}
-                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-2 text-sm font-semibold text-body hover:bg-surface"
+                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-3 pc:py-2 text-sm font-semibold text-body hover:bg-surface"
                         >
                             취소
                         </button>
@@ -182,12 +182,12 @@ export default function ImageBgRemover() {
             {step === 'result' && croppedUrl && (
                 <div className="flex flex-col gap-4">
                     <div
-                        className="mx-auto flex h-80 w-80 items-center justify-center overflow-hidden rounded-lg border border-black/10 bg-[repeating-conic-gradient(#e5e5e5_0deg_90deg,#ffffff_90deg_180deg)] bg-size-[20px_20px]"
+                        className="mx-auto flex aspect-square w-full max-w-80 items-center justify-center overflow-hidden rounded-lg border border-black/10 bg-[repeating-conic-gradient(#e5e5e5_0deg_90deg,#ffffff_90deg_180deg)] bg-size-[20px_20px]"
                     >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={resultUrl ?? croppedUrl}
-                            alt="편집된 이미지"
+                            alt="편집된 사진"
                             className="h-full w-full object-contain"
                         />
                     </div>
@@ -197,14 +197,14 @@ export default function ImageBgRemover() {
                             type="button"
                             onClick={removeBg}
                             disabled={processing || !!resultUrl}
-                            className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer rounded-lg bg-primary px-4 py-3 pc:py-2 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {processing ? '배경 제거 중...' : resultUrl ? '배경 제거 완료' : '배경 제거(누끼 따기)'}
                         </button>
                         <button
                             type="button"
                             onClick={handleDownload}
-                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-2 text-sm font-semibold text-body hover:bg-surface"
+                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-3 pc:py-2 text-sm font-semibold text-body hover:bg-surface"
                         >
                             다운로드
                         </button>
@@ -214,22 +214,22 @@ export default function ImageBgRemover() {
                                 setResultUrl(null);
                                 setStep('crop');
                             }}
-                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-2 text-sm font-semibold text-body hover:bg-surface"
+                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-3 pc:py-2 text-sm font-semibold text-body hover:bg-surface"
                         >
                             다시 자르기
                         </button>
                         <button
                             type="button"
                             onClick={reset}
-                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-2 text-sm font-semibold text-body hover:bg-surface"
+                            className="cursor-pointer rounded-lg border border-black/10 px-4 py-3 pc:py-2 text-sm font-semibold text-body hover:bg-surface"
                         >
-                            새 이미지 업로드
+                            다른 사진 편집하기
                         </button>
                     </div>
 
                     {processing && (
                         <p className="text-sm text-muted">
-                            처리 중입니다. 이미지 크기에 따라 다소 시간이 걸릴 수 있어요.
+                            처리 중입니다. 사진 크기에 따라 다소 시간이 걸릴 수 있어요.
                         </p>
                     )}
                 </div>

@@ -8,13 +8,13 @@ interface IPaginationProps {
 }
 
 export default function Pagination({
-  totalCount,
-  itemsPerPage,
-  pagesPerGroup = 5,
-  onPageChange,
+  totalCount, // 총 데이터 수
+  itemsPerPage, // 페이지 당 데이터 수
+  pagesPerGroup = 5, // 페이지 그룹
+  onPageChange, // 페이지 변경
 }: IPaginationProps) {
 
-  const pageCount = Math.ceil(totalCount / itemsPerPage);
+  const pageCount = Math.ceil(totalCount / itemsPerPage); // 페이지 수
   const [currentPage, setCurrentPage] = useState(1);
   const [groupStart, setGroupStart] = useState(1);
 
@@ -43,11 +43,11 @@ export default function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-center gap-1 mt-8">
+    <div className="flex items-center justify-center gap-1.5 mt-8 pc:gap-1">
       <button
         onClick={handlePrev}
         disabled={currentPage <= 1}
-        className="w-8 h-8 flex items-center justify-center rounded-lg text-sm text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="w-10 h-10 flex items-center justify-center rounded-lg text-base text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-sm"
       >
         ‹
       </button>
@@ -56,7 +56,7 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => handlePageClick(page)}
-          className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+          className={`w-10 h-10 flex items-center justify-center rounded-lg text-base font-medium transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-sm ${
             currentPage === page
               ? "bg-primary text-white"
               : "text-body hover:bg-surface"
@@ -69,7 +69,7 @@ export default function Pagination({
       <button
         onClick={handleNext}
         disabled={currentPage >= pageCount}
-        className="w-8 h-8 flex items-center justify-center rounded-lg text-sm text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="w-10 h-10 flex items-center justify-center rounded-lg text-base text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-sm"
       >
         ›
       </button>

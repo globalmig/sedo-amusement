@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 
 export interface ToastProps {
-    vaild: string | null;
-    setVaild: Dispatch<SetStateAction<string | null>>;
-    onConfirm?: () => void;
+    vaild: string | null; // 컴포넌트 내에 들어갈 Text
+    setVaild: Dispatch<SetStateAction<string | null>>; // Text 변경
+    onConfirm?: () => void; // 확인/취소 (컴포넌트 용도에 따라 사용)
 }
 
 export default function Toast({ vaild, setVaild, onConfirm }: ToastProps) {

@@ -164,13 +164,29 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         e.preventDefault();
         if (loading || uploading) return;
 
-        if (!form.name.trim()) { setVaild("제품 이름을 입력해주세요."); return; }
-        if (!form.category) { setVaild("카테고리를 선택해주세요."); return; }
-        if (!form.spec.trim()) { setVaild("규격을 입력해주세요."); return; }
-        if (form.price && Number.isNaN(Number(form.price))) { setVaild("가격은 숫자로 입력해주세요."); return; }
-        if (!mainImage && !existingMainImageUrl) { setVaild("대표이미지를 등록해주세요."); return; }
+        if (!form.name.trim()) {
+            setVaild("제품 이름을 입력해주세요.");
+            return;
+        }
+        if (!form.category) {
+            setVaild("카테고리를 선택해주세요.");
+            return;
+        }
+        if (!form.spec.trim()) {
+            setVaild("규격을 입력해주세요.");
+            return;
+        }
+        if (form.price && Number.isNaN(Number(form.price))) {
+            setVaild("가격은 숫자로 입력해주세요.");
+            return;
+        }
+        if (!mainImage && !existingMainImageUrl) {
+            setVaild("대표이미지를 등록해주세요.");
+            return;
+        }
 
         setUploading(true);
+        
         try {
             const mainImageUrl = mainImage ? await uploadImage(mainImage, "main") : existingMainImageUrl!;
             const newDetailImageUrls = await Promise.all(
@@ -255,7 +271,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
 
                     <div className="flex flex-col gap-1.5">
                         <label htmlFor="features" className="form-label">특징</label>
-                         <p className="text-[0.9rem] text-muted">특징 입력은 필수가 아닙니다. 공란일 시, 제품 상세 정보란에 공란으로 표시됩니다.</p>
+                        <p className="text-[0.9rem] text-muted">특징 입력은 필수가 아닙니다. 공란일 시, 제품 상세 정보란에 공란으로 표시됩니다.</p>
                         <textarea
                             id="features"
                             name="features"
@@ -286,18 +302,18 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             대표이미지 <span className="text-red-400">*</span>
                         </label>
                         <p className="text-[0.9rem] text-muted mb-4">
-                            제품의 대표 이미지를 선택해주세요. <br/>
+                            제품의 대표 이미지를 선택해주세요. <br />
                             이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.
                         </p>
                         <div className="flex items-center gap-3">
                             <input type="file" id="main_image" accept="image/*" className="hidden" onChange={onChangeMainImage} />
                             <label
                                 htmlFor="main_image"
-                                className="px-4 py-2 bg-surface hover:bg-gray-200 text-body text-sm font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
+                                className="px-4 py-2.5 pc:py-2 bg-surface hover:bg-gray-200 text-body text-sm font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
                             >
                                 파일 선택
                             </label>
-                            <span className="text-sm text-muted truncate">
+                            <span className="min-w-0 flex-1 truncate text-sm text-muted">
                                 {mainImage?.name ?? (existingMainImageUrl ? "기존 이미지 사용 중" : "선택된 파일 없음")}
                             </span>
                         </div>
@@ -315,15 +331,15 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     <div className="flex flex-col gap-1.5">
                         <label className="form-label">상세이미지 (여러 장 등록 가능)</label>
                         <p className="text-[0.9rem] text-muted mb-4">
-                            제품의 상세 이미지를 선택해주세요. 상세 이미지 등록은 필수가 아닙니다.<br/>
-                            이미지를 등록하지 않을 경우, 제품 상세 정보란에 이미지를 표시하지 않습니다.<br/>
+                            제품의 상세 이미지를 선택해주세요. 상세 이미지 등록은 필수가 아닙니다.<br />
+                            이미지를 등록하지 않을 경우, 제품 상세 정보란에 이미지를 표시하지 않습니다.<br />
                             이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.
                         </p>
                         <div className="flex items-center gap-3">
                             <input type="file" id="detail_images" accept="image/*" multiple className="hidden" onChange={onChangeDetailImages} />
                             <label
                                 htmlFor="detail_images"
-                                className="px-4 py-2 bg-surface hover:bg-gray-200 text-body text-sm font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
+                                className="px-4 py-2.5 pc:py-2 bg-surface hover:bg-gray-200 text-body text-sm font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
                             >
                                 파일 추가
                             </label>
