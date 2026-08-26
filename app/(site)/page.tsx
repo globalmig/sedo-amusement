@@ -7,7 +7,7 @@ import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
 import StatCounter from "@/components/common/StatCounter";
 import { FAQ_ITEMS } from "@/datas/faq";
-import { getFeaturedProducts } from "@/lib/products";
+import { getRandomRecommendedProducts } from "@/lib/products";
 
 type IconProps = { className?: string };
 
@@ -78,14 +78,14 @@ const PROCESS_STEPS = [
 ];
 
 export default async function Home() {
-    const previewProducts = await getFeaturedProducts();
+    const previewProducts = await getRandomRecommendedProducts(10);
 
     return (
         <>
             <Slide />
                 {/* Product Preview */}
                 <section className="bg-white">
-                    <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
+                    <div className="mx-auto max-w-300 px-[5%] pt-16 pc:px-0 pc:pt-24">
                         <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
                             <div className="flex flex-col gap-4">
                                 <p className="text-sm font-bold tracking-widest text-primary">OUR PRODUCTS</p>
@@ -97,9 +97,11 @@ export default async function Home() {
                                     정품 인증부터 전국 A/S까지, 믿을 수 있는 제품만 소개합니다.
                                 </p>
                             </div>
-                            <Link href="/products/crane" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-                                전체 제품 보기
-                                <ArrowRightIcon className="h-4 w-4" />
+                            <Link href="/products/hit" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                                히트상품 보기
+                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-colors hover:bg-primary/90">
+                                    <ArrowRightIcon className="h-4 w-4" />
+                                </span>
                             </Link>
                         </div>
 
@@ -126,10 +128,11 @@ export default async function Home() {
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="mt-10">
-                            <FeaturedProductSlider products={previewProducts} />
-                        </div>
+                    {/* max-w-300 제약 없이 뷰포트 우측 끝까지 이어지는 풀블리드 슬라이더 */}
+                    <div className="mt-10 pb-16 pl-[5%] pc:pb-24 pc:pl-[max(0px,calc((100vw-1200px)/2))]">
+                        <FeaturedProductSlider products={previewProducts} />
                     </div>
                 </section>
 
@@ -162,8 +165,12 @@ export default async function Home() {
                         <p className="text-sm font-bold tracking-widest text-primary">PROCESS</p>
                         <h2 className="mt-4 text-2xl font-black text-white pc:text-5xl">구매/납품 프로세스</h2>
                         <div className="mt-10 grid grid-cols-1 gap-4 pc:mt-16 pc:grid-cols-4 pc:gap-6">
-                            {PROCESS_STEPS.map((step) => (
-                                <div key={step.no} className="rounded-xl bg-white/8 p-6">
+                            {PROCESS_STEPS.map((step, index) => (
+                                <div
+                                    key={step.no}
+                                    className="animate-process-glow rounded-xl bg-white/8 p-6"
+                                    style={{ animationDelay: `${index}s` }}
+                                >
                                     <p className="text-sm font-bold text-primary">{step.no}</p>
                                     <h3 className="mt-3 text-lg font-bold text-white pc:text-xl">{step.title}</h3>
                                     <p className="mt-3 text-sm leading-relaxed text-white/60">{step.desc}</p>

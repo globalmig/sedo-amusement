@@ -25,6 +25,21 @@
 
   /* 데스크탑 전용 브레이크포인트 (PC 이상 화면) */
   --breakpoint-pc: 64rem;
+
+  --animate-process-glow: process-glow 10s ease-in-out infinite;
+}
+
+@keyframes process-glow {
+  0%,
+  25%,
+  100% {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+  }
+  10% {
+    box-shadow:
+      0 0 0 1px rgb(255 140 0 / 0.3),
+      0 10px 24px -10px rgb(255 140 0 / 0.35);
+  }
 }
 
 body {

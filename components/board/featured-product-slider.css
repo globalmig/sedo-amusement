@@ -1,3 +1,11 @@
+/* box-shadow는 레이아웃 크기에 영향을 주지 않으므로, slick-list에 여유 공간을 만들고
+   동일한 크기의 음수 margin으로 상쇄하면(위치/트랙 계산에는 영향 없이) overflow:hidden에
+   그림자가 잘리지 않을 만큼의 여백만 확보할 수 있음 */
+.featured-product-slider .slick-list {
+  margin: -24px;
+  padding: 24px;
+}
+
 .featured-product-slider .slick-dots li button:before {
   font-size: 8px;
   color: #ff8c00;

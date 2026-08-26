@@ -1,7 +1,28 @@
 import { supabaseAdmin } from "./supabaseAdmin";
-import { Product } from "@/types/product";
+import { Product, ProductType } from "@/types/product";
+
+// 제품 노출 우선순위: 신제품 > 히트상품 > 추천상품 > 그 외
+const PRODUCT_TYPE_PRIORITY: Record<string, number> = {
+    new: 0,
+    hit: 1,
+    recommend: 2,
+    all: 3,
+};
+
+function sortByProductTypePriority(products: Product[]): Product[] {
+    return [...products].sort((a, b) => {
+        const priorityDiff =
+            (PRODUCT_TYPE_PRIORITY[a.product_type ?? "all"] ?? 3) -
+            (PRODUCT_TYPE_PRIORITY[b.product_type ?? "all"] ?? 3);
+
+        if (priorityDiff !== 0) return priorityDiff;
+
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+}
 
 // 공개 사이트에서 사용하는 제품 조회 헬퍼 (products 테이블 기준)
+// 신제품 > 히트상품 > 추천상품 > 그 외 순으로 정렬, 동일 분류 내에서는 최신 등록순
 export async function getProducts(category?: string): Promise<Product[]> {
     let query = supabaseAdmin
         .from("products")
@@ -19,23 +40,44 @@ export async function getProducts(category?: string): Promise<Product[]> {
         return [];
     }
 
-    return data ?? [];
+    return sortByProductTypePriority(data ?? []);
 }
 
-// 관리자가 주요 제품으로 지정한(is_featured) 제품만 조회
-export async function getFeaturedProducts(): Promise<Product[]> {
+// 제품 분류(신제품/히트상품/추천상품) 기준 조회
+export async function getProductsByType(productType: string): Promise<Product[]> {
     const { data, error } = await supabaseAdmin
         .from("products")
         .select("*")
-        .eq("is_featured", true)
+        .eq("product_type", productType as ProductType)
         .order("created_at", { ascending: false });
 
     if (error) {
-        console.error("주요 제품 조회 실패:", error.message);
+        console.error("분류별 제품 조회 실패:", error.message);
         return [];
     }
 
     return data ?? [];
+}
+
+// 홈페이지 대표 제품 슬라이더용: 추천상품 중 무작위로 limit개 조회
+export async function getRandomRecommendedProducts(limit: number): Promise<Product[]> {
+    const { data, error } = await supabaseAdmin
+        .from("products")
+        .select("*")
+        .eq("product_type", "recommend" as ProductType);
+
+    if (error) {
+        console.error("추천 제품 조회 실패:", error.message);
+        return [];
+    }
+
+    const products = data ?? [];
+    for (let i = products.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [products[i], products[j]] = [products[j], products[i]];
+    }
+
+    return products.slice(0, limit);
 }
 
 export async function getProductById(id: number): Promise<Product | null> {

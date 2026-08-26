@@ -36,10 +36,10 @@ const SELF_CHECK_ITEMS = [
 ];
 
 const AS_STEPS = [
-    { step: "01", title: "접수", description: "전화로 매장명, 기종, 증상을 알려주세요." },
-    { step: "02", title: "1차 진단", description: "담당 엔지니어가 증상을 확인하고 방문 일정을 안내합니다." },
-    { step: "03", title: "방문 · 수리", description: "약속된 일정에 방문하여 점검 및 수리를 진행합니다." },
-    { step: "04", title: "완료 확인", description: "정상 작동을 확인한 뒤 A/S 내역을 안내해 드립니다." },
+    { step: "01", title: "접수", description: "전화로 매장명, 기종, 증상을 알려주세요.", icon: "/icons/process-1.png" },
+    { step: "02", title: "1차 진단", description: "담당 엔지니어가 증상을 확인하고 방문 일정을 안내합니다.", icon: "/icons/process-2.png" },
+    { step: "03", title: "방문 · 수리", description: "약속된 일정에 방문하여 점검 및 수리를 진행합니다.", icon: "/icons/process-3.png" },
+    { step: "04", title: "완료 확인", description: "정상 작동을 확인한 뒤 A/S 내역을 안내해 드립니다.", icon: "/icons/process-4.png" },
 ];
 
 const PROMISES = [
@@ -84,22 +84,8 @@ export default function AsPage() {
                 basePath="/as"
             />
             <article>
-                {/* 1. 메인 메시지 */}
-                <section>
-                    <div className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-24">
-                        <p className="text-sm font-bold tracking-widest text-primary">SERVICE PHILOSOPHY</p>
-                        <h2 className="mx-auto mt-4 whitespace-pre-line text-2xl font-black leading-snug text-title pc:text-5xl">
-                            판매에서 끝이 아닙니다.<br />걱정없는 사후관리로 든든하게
-                        </h2>
-                        <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-body pc:text-base">
-                            운영하시면서 불편한 점이 없도록 빠르고 친절하게 지원해 드립니다.
-                        </p>
-                    </div>
-                </section>
 
-                <div className="border-b border-b-muted/20"></div>
-
-                {/* 2. 자가 점검 가이드 */}
+                {/* 자가 점검 가이드 */}
                 <section id="self-check" className="scroll-mt-20 bg-surface">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                         <p className="text-sm font-bold tracking-widest text-primary">SELF-CHECK GUIDE</p>
@@ -114,11 +100,11 @@ export default function AsPage() {
                                     <div key={item.title} className="card basis-full p-4 sm:basis-1/2 pc:basis-0 pc:p-6">
                                         <div className="flex gap-4 pb-2 border-b border-b-muted/20">
                                             <div className="mx-0 my-auto flex items-center justify-center">
-                                                <Image src="/icons/self-check.png" 
-                                                alt="자가 점검 아이콘" 
-                                                width={42} 
-                                                height={42} 
-                                                className="w-4 h-auto pc:w-5"/>
+                                                <Image src="/icons/self-check.png"
+                                                    alt="자가 점검 아이콘"
+                                                    width={42}
+                                                    height={42}
+                                                    className="w-4 h-auto pc:w-5" />
                                             </div>
                                             <h3 className="text-sm font-bold text-title pc:text-[1.3rem]">
                                                 <span className="text-primary">0{index + 1}. </span>
@@ -130,12 +116,12 @@ export default function AsPage() {
                                 ))}
                             </div>
                             <div className="hidden pc:block">
-                                <Image 
-                                src="/images/self-guide.png" 
-                                alt="자가 점검 가이드" 
-                                width={505} 
-                                height={497}
-                                className="w-120 h-auto"
+                                <Image
+                                    src="/images/self-guide.png"
+                                    alt="자가 점검 가이드"
+                                    width={505}
+                                    height={497}
+                                    className="w-120 h-auto"
                                 />
                             </div>
                         </div>
@@ -143,88 +129,35 @@ export default function AsPage() {
                     </div>
                 </section>
 
-                <div className="border-b border-b-muted/20"></div>
-
-                {/* 3. A/S 프로세스 */}
-                <section className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                    <p className="text-sm font-bold tracking-widest text-primary">PROCESS</p>
-                    <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">
-                        그래도 해결되지 않으셨다면
-                    </h2>
-                    <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
-                        아래 4단계 절차를 통해 빠르고 정확하게 A/S를 접수해 드립니다.
-                    </p>
-
-                    <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
-                        {AS_STEPS.map((item) => (
-                            <div key={item.step} className="card basis-full p-6 sm:basis-1/2 pc:basis-0 pc:flex-1 pc:p-8">
-                                <span className="text-2xl font-black text-primary pc:text-3xl">{item.step}</span>
-                                <h3 className="mt-3 text-base font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
-                                <p className="mt-2 text-sm leading-6 text-body pc:text-[1rem]">{item.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* 4. 우리의 약속 */}
-                {/* <section className="bg-primary/50">
+                {/* A/S 프로세스 */}
+                <section className="bg-white">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-sm font-bold tracking-widest text-primary">OUR PROMISE</p>
-                        <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">우리의 약속</h2>
-
-                        <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
-                            {PROMISES.map((item, index) => (
-                                <div key={item.title} className="card basis-full p-6 sm:basis-1/3 pc:basis-0 pc:flex-1 pc:p-8">
-                                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-black text-white pc:h-12 pc:w-12 pc:text-base">
-                                        {index + 1}
-                                    </span>
-                                    <h3 className="mt-5 text-lg font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
-                                    <p className="mt-2 text-sm leading-6 text-body pc:text-[1rem]">{item.description}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section> */}
-
-                {/* 5. 실제 현장 사진 */}
-                {/* <section>
-                    <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-sm font-bold tracking-widest text-primary">FIELD CASE</p>
-                        <h2 className="mt-4 text-2xl font-black text-wthie pc:text-5xl">실제 현장 사진</h2>
-                        <p className="mt-3 max-w-xl text-sm leading-6 pc:text-base">
-                            세도어뮤즈먼트 엔지니어가 직접 방문해 처리한 A/S 현장입니다.
-                        </p>
-
-                        <div className="mt-10 flex flex-wrap pc:flex-nowrap gap-6">
-                            {FIELD_CASES.map((item) => (
-                                <div key={item.title} className="basis-full sm:basis-1/3 pc:basis-0 pc:flex-1">
-                                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-surface">
-                                        <Image
-                                            src={item.image}
-                                            alt={item.title}
-                                            fill
-                                            sizes="(min-width: 1024px) 33vw, 100vw"
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                    <h3 className="mt-4 text-sm font-bold text-title pc:text-lg">{item.title}</h3>
-                                    <p className="mt-1 text-xs leading-5 text-body pc:text-sm">{item.description}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section> */}
-
-                {/* 6. CTA */}
-                <section className="bg-[#FFA73C]">
-                    <div className="mx-auto max-w-300 px-[5%] py-16 text-center pc:px-0 pc:py-20">
-                        <h2 className="text-2xl font-black text-white pc:text-5xl">
-                            매출 손실, 더는 방치하지 마세요
+                        <p className="text-sm font-bold tracking-widest text-primary">PROCESS</p>
+                        <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">
+                            그래도 해결되지 않으셨다면
                         </h2>
-                        <p className="mt-3 text-sm text-white pc:text-base">
-                            {COMPANY_INFO.bizHours} · 지금 바로 상담하시면 가장 빠른 방문 일정을 안내해 드립니다.
+                        <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
+                            아래 4단계 절차를 통해 빠르고 정확하게 A/S를 접수해 드립니다.
                         </p>
-                        <ContactButtons className="mt-8" phoneText="지금 긴급 수리 상담하기" emailText="A/S 이메일 문의하기" />
+
+                        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 pc:grid-cols-4">
+                            {AS_STEPS.map((item) => (
+                                <div key={item.step} className="card flex min-h-56 flex-col justify-between gap-8 p-6 pc:p-8">
+                                    <div>
+                                        <span className="text-2xl font-black text-primary pc:text-3xl">{item.step}</span>
+                                        <h3 className="mt-3 text-base font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
+                                        <p className="mt-2 text-sm leading-6 text-body pc:text-[1rem]">{item.description}</p>
+                                    </div>
+                                    <Image
+                                        src={item.icon}
+                                        alt=""
+                                        width={48}
+                                        height={48}
+                                        className="h-10 w-10 self-end pc:h-12 pc:w-12"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 

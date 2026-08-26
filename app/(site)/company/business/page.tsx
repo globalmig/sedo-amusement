@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import { USER_CATEGORY } from "@/datas/categories";
 
@@ -12,18 +13,22 @@ const BUSINESS_AREAS = [
     {
         title: "전자오락기 유통",
         description: "크레인, 슈팅, 리듬, 레이싱 등 다양한 게임기를 제조사와 직거래로 공급합니다.",
+        icon: "/icons/business-1.png",
     },
     {
         title: "설치 · 시공",
         description: "매장 동선을 고려한 배치 설계부터 전기·설치 시공까지 원스톱으로 진행합니다.",
+        icon: "/icons/business-2.png",
     },
     {
         title: "A/S · 유지보수",
         description: "전국 출동 네트워크를 통해 고장 접수 후 신속하게 방문하여 수리합니다.",
+        icon: "/icons/business-3.png",
     },
     {
         title: "상시 재고 · 신속 공급",
         description: "다양한 기종을 상시 재고로 보유하여 주문 즉시 빠르게 공급합니다.",
+        icon: "/icons/business-4.png",
     },
 ];
 
@@ -43,24 +48,30 @@ export default function BusinessPage() {
                     <p className="text-sm font-bold tracking-widest text-primary">BUSINESS</p>
                     <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">사업 영역</h2>
 
-                    <div className="mt-10 flex flex-wrap gap-6">
+                    <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 pc:grid-cols-4">
                         {BUSINESS_AREAS.map((area, index) => (
-                            <div key={area.title} className="group">
-                                <div
-                                    className="card w-full p-6 pc:w-70.5 pc:p-8 pc:pb-30
-                                group-hover:bg-primary transition-colors
-                                ">
-                                    <span
-                                        className="text-sm font-black text-primary group-hover:text-white transition-colors pc:text-lg">
+                            <div
+                                key={area.title}
+                                className="group card flex min-h-56 flex-col justify-between gap-8 p-6 transition-colors pc:p-8"
+                            >
+                                <div>
+                                    <span className="text-sm font-black text-primary transition-colors pc:text-lg">
                                         0{index + 1}
                                     </span>
-                                    <h3 className="mt-3 text-lg font-bold text-title group-hover:text-white transition-colors pc:text-[1.3rem]">
+                                    <h3 className="mt-3 text-lg font-bold text-title transition-colors pc:text-[1.3rem]">
                                         {area.title}
                                     </h3>
-                                    <p className="mt-2 text-sm leading-6 text-body group-hover:text-white pc:text-[1rem] transition-colors pc:mt-3">
+                                    <p className="mt-2 text-sm leading-6 text-body transition-colors pc:mt-3 pc:text-[1rem]">
                                         {area.description}
                                     </p>
                                 </div>
+                                <Image
+                                    src={area.icon}
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    className="h-10 w-10 self-end transition duration-300 pc:h-12 pc:w-12"
+                                />
                             </div>
                         ))}
                     </div>

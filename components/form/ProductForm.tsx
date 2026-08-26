@@ -2,18 +2,34 @@
 import { useCallback, useEffect, useState } from "react";
 import { useCreate } from "@/hooks/useCreate";
 import { useUpdate } from "@/hooks/useUpdate";
-import { USER_CATEGORY } from "@/datas/categories";
+import { USER_CATEGORY, PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { STORAGE_BUCKET } from "@/lib/storage";
 import Toast from "../common/Toast";
 import Link from "next/link";
 import Image from "next/image";
 
-const PRODUCT_CATEGORIES = USER_CATEGORY.products.categories ?? [];
+const PRODUCT_TYPES = USER_CATEGORY.products.categories ?? [];
+
+function ChevronDownIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+            className={className}
+        >
+            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    );
+}
 
 export interface ProductFormValues {
     name: string;
     category: string;
+    product_type: string;
     spec: string;
     features: string;
     price: string;
@@ -24,6 +40,7 @@ export interface ProductFormValues {
 interface ProductFormInitialData {
     name?: string;
     category?: string | null;
+    product_type?: string | null;
     spec?: string | null;
     features?: string | null;
     price?: number | null;
@@ -68,6 +85,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     const [form, setForm] = useState({
         name: initialData?.name ?? "",
         category: initialData?.category ?? "",
+        product_type: initialData?.product_type ?? "all",
         spec: initialData?.spec ?? "",
         features: initialData?.features ?? "",
         price: initialData?.price != null ? String(initialData.price) : "",
@@ -196,6 +214,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             const payload = {
                 name: form.name,
                 category: form.category,
+                product_type: form.product_type,
                 spec: form.spec,
                 features: form.features,
                 price: form.price,
@@ -239,18 +258,42 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                         <label htmlFor="category" className="form-label">
                             카테고리 <span className="text-red-400">*</span>
                         </label>
-                        <select
-                            id="category"
-                            name="category"
-                            value={form.category}
-                            onChange={onChangeForm}
-                            className="form-input"
-                        >
-                            <option value="">카테고리를 선택해주세요</option>
-                            {PRODUCT_CATEGORIES.map((c) => (
-                                <option key={c.url} value={c.url}>{c.name}</option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <select
+                                id="category"
+                                name="category"
+                                value={form.category}
+                                onChange={onChangeForm}
+                                className="form-input appearance-none pr-9"
+                            >
+                                <option value="">카테고리를 선택해주세요</option>
+                                {PRODUCT_GAME_CATEGORIES.map((c) => (
+                                    <option key={c.url} value={c.url}>{c.name}</option>
+                                ))}
+                            </select>
+                            <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="product_type" className="form-label">
+                            분류 <span className="text-red-400">*</span>
+                        </label>
+                        <p className="text-[0.9rem] text-muted">사용자 페이지의 신제품/히트상품/추천상품 분류에 사용됩니다.</p>
+                        <div className="relative">
+                            <select
+                                id="product_type"
+                                name="product_type"
+                                value={form.product_type}
+                                onChange={onChangeForm}
+                                className="form-input appearance-none pr-9"
+                            >
+                                {PRODUCT_TYPES.map((t) => (
+                                    <option key={t.url} value={t.url}>{t.name}</option>
+                                ))}
+                            </select>
+                            <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-1.5">

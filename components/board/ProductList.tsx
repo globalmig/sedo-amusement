@@ -8,31 +8,29 @@ import { usePagination } from "@/hooks/usePagination";
 import Toast from "../common/Toast";
 import Pagination from "../common/Pagination";
 import Skeleton from "../common/Skeleton";
-import { Product } from "@/types/product";
-import { getProductCategoryLabel } from "@/datas/categories";
+import { Product, ProductType } from "@/types/product";
+import { getProductCategoryLabel, USER_CATEGORY } from "@/datas/categories";
 
 const ITEMS_PER_PAGE = 12;
+
+const PRODUCT_TYPE_OPTIONS = USER_CATEGORY.products.categories ?? [];
 
 function formatPrice(price: number | null) {
   if (price === null) return "가격 문의";
   return `${price.toLocaleString("ko-KR")}원`;
 }
 
-function StarIcon({ filled, className }: { filled: boolean; className?: string }) {
+function ChevronDownIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill={filled ? "currentColor" : "none"}
+      fill="none"
       stroke="currentColor"
-      strokeWidth={1.5}
+      strokeWidth={2}
       aria-hidden="true"
       className={className}
     >
-      <path
-        d="M12 3.3 14.6 9l6.2.6-4.7 4.1 1.4 6.1L12 16.8l-5.5 3 1.4-6.1-4.7-4.1L9.4 9 12 3.3Z"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -48,8 +46,8 @@ export default function ProductList({ products, onReload }: ProductListProps) {
   const [completedMessage, setCompletedMessage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loadedUrls, setLoadedUrls] = useState<Set<string>>(new Set());
-  // 토글여부 (true/false)
-  const [featuredOverride, setFeaturedOverride] = useState<Record<number, boolean>>({});
+  // 목록에서 즉시 변경한 분류(신제품/히트상품/추천상품) 값을 서버 응답 전까지 미리 반영
+  const [productTypeOverride, setProductTypeOverride] = useState<Record<number, ProductType>>({});
 
   const markLoaded = (url: string) => {
     setLoadedUrls((prev) => (prev.has(url) ? prev : new Set(prev).add(url)));
@@ -69,23 +67,21 @@ export default function ProductList({ products, onReload }: ProductListProps) {
   });
 
   // useUpdate hook 호출, baseUrl: /api/product
-  const { update: updateFeatured } = useUpdate<{ is_featured: boolean }>("/api/product");
+  const { update: updateProductType } = useUpdate<{ product_type: ProductType }>("/api/product");
 
-  // 주요 제품 토클
-  const toggleFeatured = async (product: Product) => {
-    // 현재 토글 상태 : override (토글 변동 상태) 가 없으면 원래 DB에 있는 is_featured를 가져옴
-    const current = featuredOverride[product.id] ?? product.is_featured;
-    // 다음 토글 상태
-    const next = !current;
-    // api 요청 전, 토글상태를 먼저 바꿈 (UI먼저 변경)
-    setFeaturedOverride((prev) => ({ ...prev, [product.id]: next }));
+  // 분류(신제품/히트상품/추천상품) 변경
+  const changeProductType = async (product: Product, next: ProductType) => {
+    const current = productTypeOverride[product.id] ?? product.product_type ?? "all";
+    if (current === next) return;
+    // api 요청 전, 분류를 먼저 바꿈 (UI먼저 변경)
+    setProductTypeOverride((prev) => ({ ...prev, [product.id]: next }));
 
-    // /api/product/${product.id}/featured 호출, 요청 body: { is_featured: next }
-    const result = await updateFeatured(`${product.id}/featured`, { is_featured: next });
+    // /api/product/${product.id}/type 호출, 요청 body: { product_type: next }
+    const result = await updateProductType(`${product.id}/type`, { product_type: next });
     // api 호출 실패시 rollback
     if (!result) {
-      setFeaturedOverride((prev) => ({ ...prev, [product.id]: current }));
-      setErrorMsg("주요 제품 설정에 실패했습니다.");
+      setProductTypeOverride((prev) => ({ ...prev, [product.id]: current }));
+      setErrorMsg("분류 변경에 실패했습니다.");
     }
   };
 
@@ -111,7 +107,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
         {currentItems.map((product, localIndex) => {
           const rowNumber = totalCount - ((currentPage - 1) * ITEMS_PER_PAGE + localIndex);
           const mainImageUrl = product.main_image_url;
-          const isFeatured = featuredOverride[product.id] ?? product.is_featured;
+          const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
           return (
             <div key={product.id} className="card flex gap-3 p-4">
               {mainImageUrl ? (
@@ -135,28 +131,25 @@ export default function ProductList({ products, onReload }: ProductListProps) {
               )}
 
               <div className="min-w-0 flex-1">
-                <div className="flex justify-between">
-                  <div>
-                    <Link
-                      href={`/admin/products/${product.category}/${product.id}/view`}
-                    >
-                      <p className="font-medium text-title">{product.name}</p>
-                      <p className="mt-1 text-sm text-body">
-                        {getProductCategoryLabel(product.category)} · {formatPrice(product.price)}
-                      </p>
-                    </Link>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => toggleFeatured(product)}
-                    aria-pressed={isFeatured}
-                    title={isFeatured ? "주요 제품에서 제외" : "주요 제품으로 등록"}
-                    className={`inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors ${isFeatured ? "text-primary" : "text-black/20 hover:text-primary"
-                      }`}
+                <Link
+                  href={`/admin/products/${product.category}/${product.id}/view`}
+                >
+                  <p className="font-medium text-title">{product.name}</p>
+                  <p className="mt-1 text-sm text-body">
+                    {getProductCategoryLabel(product.category)} · {formatPrice(product.price)}
+                  </p>
+                </Link>
+                <div className="relative mt-2 inline-block">
+                  <select
+                    value={currentType}
+                    onChange={(e) => changeProductType(product, e.target.value as ProductType)}
+                    className="appearance-none rounded-lg border border-black/20 bg-white/30 py-1.5 pl-2 pr-8 text-xs text-body outline-none focus:border-primary"
                   >
-                    <StarIcon filled={isFeatured} className="h-5 w-5" />
-                  </button>
+                    {PRODUCT_TYPE_OPTIONS.map((option) => (
+                      <option key={option.url} value={option.url}>{option.name}</option>
+                    ))}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
                 </div>
               </div>
             </div>
@@ -174,7 +167,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
               <th className="px-5 py-3">제품이름</th>
               <th className="px-5 py-3">카테고리</th>
               <th className="px-5 py-3">가격</th>
-              <th className="px-5 py-3 text-center">주요제품</th>
+              <th className="px-5 py-3 text-center">분류</th>
               <th className="px-5 py-3 text-right">관리</th>
             </tr>
           </thead>
@@ -182,7 +175,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
             {currentItems.map((product, localIndex) => {
               const rowNumber = totalCount - ((currentPage - 1) * ITEMS_PER_PAGE + localIndex);
               const mainImageUrl = product.main_image_url;
-              const isFeatured = featuredOverride[product.id] ?? product.is_featured;
+              const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
               return (
                 <tr key={product.id} className="border-b border-black/5 last:border-0 hover:bg-surface/60">
                   <td className="px-5 py-3.5 text-muted">{rowNumber}</td>
@@ -218,16 +211,18 @@ export default function ProductList({ products, onReload }: ProductListProps) {
                   <td className="px-5 py-3.5 font-medium text-body">{getProductCategoryLabel(product.category)}</td>
                   <td className="px-5 py-3.5 text-body">{formatPrice(product.price)}</td>
                   <td className="px-5 py-3.5 text-center">
-                    <button
-                      type="button"
-                      onClick={() => toggleFeatured(product)}
-                      aria-pressed={isFeatured}
-                      title={isFeatured ? "주요 제품에서 제외" : "주요 제품으로 등록"}
-                      className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors ${isFeatured ? "text-primary" : "text-black/20 hover:text-primary"
-                        }`}
-                    >
-                      <StarIcon filled={isFeatured} className="h-5 w-5" />
-                    </button>
+                    <div className="relative inline-block">
+                      <select
+                        value={currentType}
+                        onChange={(e) => changeProductType(product, e.target.value as ProductType)}
+                        className="appearance-none rounded-lg border border-black/20 bg-white/30 py-1.5 pl-2 pr-8 text-xs text-body outline-none focus:border-primary"
+                      >
+                        {PRODUCT_TYPE_OPTIONS.map((option) => (
+                          <option key={option.url} value={option.url}>{option.name}</option>
+                        ))}
+                      </select>
+                      <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+                    </div>
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex justify-end gap-3">

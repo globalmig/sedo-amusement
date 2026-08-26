@@ -1,51 +1,34 @@
 "use client";
+import { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./featured-product-slider.css";
 import { Product } from "@/types/product";
-import ProductCard from "./ProductCard";
+import FeaturedProductCard from "./FeaturedProductCard";
 import Link from "next/link";
 
 interface FeaturedProductSliderProps {
   products: Product[];
 }
 
-interface ArrowProps {
-  onClick?: () => void;
-}
-
-function PrevArrow({ onClick }: ArrowProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="이전 제품"
-      className="absolute left-0 top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white shadow-md transition-opacity hover:opacity-90 pc:h-12 pc:w-12"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 pc:h-5 pc:w-5" aria-hidden="true">
-        <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  );
-}
-
-function NextArrow({ onClick }: ArrowProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="다음 제품"
-      className="absolute right-0 top-1/2 z-10 flex h-9 w-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white shadow-md transition-opacity hover:opacity-90 pc:h-12 pc:w-12"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 pc:h-5 pc:w-5" aria-hidden="true">
-        <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  );
+function getCardWidth() {
+  if (typeof window === "undefined") return 360;
+  if (window.innerWidth >= 1024) return 360; 
+  if (window.innerWidth >= 640) return 260;
+  return 180;
 }
 
 export default function FeaturedProductSlider({ products }: FeaturedProductSliderProps) {
+  const [cardWidth, setCardWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCardWidth(getCardWidth());
+    const onResize = () => setCardWidth(getCardWidth());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   if (products.length === 0) {
     return (
       <div className="py-16 text-center text-sm text-muted">
@@ -54,41 +37,30 @@ export default function FeaturedProductSlider({ products }: FeaturedProductSlide
     );
   }
 
+  if (cardWidth === null) {
+    return <div className="h-103" aria-hidden="true" />;
+  }
+
   const settings = {
     dots: false,
-    arrows: true,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
+    arrows: false,
+    infinite: products.length > 1,
+    variableWidth: true,
     speed: 600,
-    slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: products.length > 1,
     autoplaySpeed: 3000,
     pauseOnHover: true,
-    responsive: [
-    {
-      breakpoint: 1024, // 1024px 이하 (태블릿)
-      settings: {
-        slidesToShow: 3,
-        slidesToScroll: 1,
-      },
-    },
-    {
-      breakpoint: 640, // 640px 이하 (모바일)
-      settings: {
-        slidesToShow: 2,
-        slidesToScroll: 1,
-      },
-    },
-  ],
   };
 
   return (
     <div className="featured-product-slider relative">
-      <Slider {...settings}>
+      <Slider key={cardWidth} {...settings}>
         {products.map((product) => (
-          <div key={product.id} className="px-2 pb-10">
-            <ProductCard product={product} />
+          <div key={product.id} style={{ width: cardWidth + 20 }}>
+            <div style={{ width: cardWidth }}>
+              <FeaturedProductCard product={product} />
+            </div>
           </div>
         ))}
       </Slider>

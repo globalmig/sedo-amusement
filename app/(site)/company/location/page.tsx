@@ -49,6 +49,10 @@ export default function LocationPage() {
                                         <Link href={COMPANY_INFO.phoneHref} className="hover:text-primary">{COMPANY_INFO.phone}</Link>
                                     </p>
                                 </li>
+                                <li className="flex gap-4 border-b border-black/5 py-4 pc:py-6">
+                                    <p className="w-20 shrink-0 font-bold text-title">이메일</p>
+                                    <p className="text-body">{COMPANY_INFO.email}</p>
+                                </li>
                                 <li className="flex gap-4 py-4 pc:py-6">
                                     <p className="w-20 shrink-0 font-bold text-title pc:hidden">운영시간</p>
                                     <p className="text-body pc:hidden">{COMPANY_INFO.bizHours}</p>

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ProductDetail from "@/components/board/ProductDetail";
 import PrevNextNavbar2 from "@/components/common/PrevNextNavbar2";
-import { USER_CATEGORY, getProductCategoryLabel } from "@/datas/categories";
-import { getProductById, getProducts } from "@/lib/products";
+import { USER_CATEGORY, getProductTypeLabel } from "@/datas/categories";
+import { getProductById, getProducts, getProductsByType } from "@/lib/products";
 import CategoryBanner from "@/components/common/CategoryBanner";
 
 interface ProductDetailPageProps {
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
 
   if (!product) return {};
 
-  const categoryLabel = getProductCategoryLabel(categories);
+  const categoryLabel = getProductTypeLabel(categories);
   const description =
     product.features?.replace(/\s+/g, " ").trim().slice(0, 120) ??
     `세도어뮤즈먼트가 정품으로 공급하는 ${categoryLabel} 기종, ${product.name}을(를) 확인하세요.`;
@@ -45,7 +45,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   if (!category || !product) notFound();
 
-  const sameCategoryProducts = await getProducts(categories);
+  const sameCategoryProducts =
+    categories === "all" ? await getProducts() : await getProductsByType(categories);
   const currentIndex = sameCategoryProducts.findIndex((p) => p.id === product.id);
   const prev = currentIndex > 0 ? sameCategoryProducts[currentIndex - 1] : null;
   const next =

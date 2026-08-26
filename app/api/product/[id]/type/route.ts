@@ -6,6 +6,8 @@ interface RouteParams {
     params: Promise<{ id: string }>;
 }
 
+const VALID_PRODUCT_TYPES = ["all", "new", "hit", "recommend"];
+
 export async function PATCH(request: Request, { params }: RouteParams) {
     if (!(await requireAdmin())) {
         return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
@@ -13,11 +15,15 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     const { id } = await params;
     const body = await request.json();
-    const is_featured = Boolean(body.is_featured);
+    const product_type = String(body.product_type ?? "").trim();
+
+    if (!VALID_PRODUCT_TYPES.includes(product_type)) {
+        return NextResponse.json({ error: "올바르지 않은 분류입니다." }, { status: 400 });
+    }
 
     const { data, error } = await supabaseAdmin
         .from("products")
-        .update({ is_featured })
+        .update({ product_type })
         .eq("id", id)
         .select()
         .single();

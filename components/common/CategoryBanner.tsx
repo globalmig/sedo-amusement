@@ -25,6 +25,8 @@ export default function CategoryBanner({
 }: CategoryBannerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const activeTab = tabs?.find((tab) => tab.url === activeUrl);
+    // 제품소개 전체(all) 탭은 "전체" 대신 "제품소개"로 표시
+    const activeTabLabel = activeUrl === "all" ? "제품소개" : activeTab?.name;
 
     return (
         <div className="pt-16 bg-title pc:pt-20">
@@ -47,7 +49,7 @@ export default function CategoryBanner({
                                 onClick={() => setIsOpen((prev) => !prev)}
                                 className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-white"
                             > 
-                                {activeTab ? activeTab.name : "카테고리 선택"}
+                                {activeTabLabel ?? "카테고리 선택"}
                                 <svg
                                     viewBox="0 0 24 24"
                                     fill="none"

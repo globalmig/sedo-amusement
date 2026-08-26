@@ -97,10 +97,10 @@ export default function Slide() {
 
     return (
         <main className="relative w-full">
-            <div className="relative h-180 w-full overflow-hidden pc:h-200">
+            <div className="relative h-133 w-full overflow-hidden pc:h-175">
                 <Slider ref={sliderRef} {...settings}>
                     {SLIDES.map((slide, index) => (
-                        <div key={slide.heading} className="relative h-180 w-full pc:h-200">
+                        <div key={slide.heading} className="relative h-133 w-full pc:h-175">
                             <Image
                                 src={slide.image}
                                 alt=""
@@ -113,14 +113,14 @@ export default function Slide() {
                             <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/50 to-black/10" />
 
                             <div className="relative z-10 flex h-full items-center">
-                                <div className="slide-content w-full max-w-300 px-[5%] pc:mx-auto pc:px-0">
+                                <div className="slide-content w-full max-w-300 whitespace-normal px-[5%] pc:mx-auto pc:px-0">
                                     <p className="text-sm font-bold tracking-widest text-primary pc:text-base">
                                         {slide.eyebrow}
                                     </p>
                                     <h1 className="mt-4 whitespace-pre-line text-3xl font-black leading-tight text-white pc:text-5xl">
                                         {slide.heading}
                                     </h1>
-                                    <p className="mt-5 text-sm leading-6 text-white/80 pc:text-base">
+                                    <p className="mt-5 max-w-140 whitespace-normal text-sm leading-6 text-white/80 pc:text-base">
                                         {slide.description}
                                     </p>
                                     <div className="mt-8 flex flex-wrap gap-3">
@@ -128,7 +128,7 @@ export default function Slide() {
                                             전화 상담하기
                                         </Link>
                                         <Link
-                                            href="/products/crane"
+                                            href="/products"
                                             className="inline-flex items-center justify-center rounded-lg border border-white/40 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
                                         >
                                             제품 둘러보기
@@ -187,17 +187,26 @@ export default function Slide() {
                 </div>
             </div>
             <div className="bg-primary">
-                <div className="mx-auto flex max-w-300 flex-col gap-6 px-[5%] py-8 pc:flex-row pc:items-center pc:justify-between pc:px-0 pc:py-10">
-                    <div>
+                <div className="mx-auto flex max-w-300 flex-col gap-3 px-[5%] py-5 pc:flex-row pc:items-center pc:justify-between pc:gap-6 pc:px-0 pc:py-6">
+                    {/* 모바일: 전화번호 대신 간단한 안내 문구만 노출 */}
+                    <div className="pc:hidden">
+                        <p className="text-base font-bold text-white">궁금한 점이 있으시다면?</p>
+                        <Link href="/as" className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
+                            빠른 해결 가이드 바로가기
+                            <ArrowRightIcon className="h-3.5 w-3.5" />
+                        </Link>
+                    </div>
+
+                    <div className="hidden pc:block">
                         <div className="flex items-center gap-3">
-                            <PhoneIcon className="h-6 w-6 text-white" />
-                            <p className="text-xl font-bold text-white pc:text-2xl">031-824-5851</p>
+                            <PhoneIcon className="h-5 w-5 text-white" />
+                            <p className="text-xl font-bold text-white">031-824-5851</p>
                         </div>
-                        <p className="mt-2 text-sm text-white/90 pc:text-base">구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.</p>
+                        <p className="mt-1 text-sm text-white/90">구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.</p>
                     </div>
                     <Link
                         href="/as"
-                        className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-white px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10 pc:self-auto"
+                        className="hidden items-center justify-center gap-2 rounded-full border border-white px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/10 pc:inline-flex"
                     >
                         빠른 해결 가이드 바로가기
                         <ArrowRightIcon className="h-4 w-4" />

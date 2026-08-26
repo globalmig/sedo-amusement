@@ -141,17 +141,20 @@ export default function ImageBgRemover() {
                             image={originalSrc}
                             crop={crop}
                             zoom={zoom}
+                            minZoom={0.3}
+                            maxZoom={3}
                             aspect={1}
+                            restrictPosition={zoom >= 1}
                             onCropChange={setCrop}
                             onZoomChange={setZoom}
                             onCropComplete={onCropComplete}
                         />
                     </div>
                     <div className="flex items-center gap-3">
-                        <label className="text-sm text-body">확대</label>
+                        <label className="text-sm text-body">확대/축소</label>
                         <input
                             type="range"
-                            min={1}
+                            min={0.3}
                             max={3}
                             step={0.01}
                             value={zoom}

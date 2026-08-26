@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ProductGalley from "@/components/board/ProductGalley";
+import ProductGalleryFilter from "@/components/board/ProductGalleryFilter";
 import { getProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
@@ -8,13 +8,18 @@ export const metadata: Metadata = {
     "크레인/경품, 슈팅, 리듬, 레이싱, 스포츠, 비디오게임 등 세도어뮤즈먼트가 취급하는 전자오락기 전체 라인업을 확인하세요.",
 };
 
-export default async function ProductListPage() {
+interface ProductListPageProps {
+  searchParams: Promise<{ category?: string }>;
+}
+
+export default async function ProductListPage({ searchParams }: ProductListPageProps) {
+  const { category } = await searchParams;
   const products = await getProducts();
 
   return (
     <article>
       <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
-        <ProductGalley products={products} />
+        <ProductGalleryFilter products={products} initialCategory={category ?? null} />
       </div>
     </article>
   );

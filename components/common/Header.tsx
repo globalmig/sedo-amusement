@@ -55,7 +55,7 @@ export default function Header() {
     return (
         <>
             <header className={`fixed top-0 left-0 z-40 w-full border-b duration-500
-                ${isScroll ? "bg-white border-b-gray-200" : "bg-black/70"}`}>
+                ${isScroll ? "bg-white border-b-gray-200" : "bg-black/85"}`}>
 
                 <div className="flex py-3 items-center justify-between px-[5%] pc:mx-auto pc:max-w-300 pc:px-0">
                     
@@ -85,6 +85,8 @@ export default function Header() {
                         <ul className="pc:flex pc:h-full pc:items-stretch pc:justify-end">
                             {Object.entries(USER_CATEGORY).map(([key, c]) => {
                                 const isTarget = isOpenSub === key;
+                                // 제품소개는 하위 카테고리를 드롭다운으로 펼치지 않고 신제품 페이지로 바로 이동
+                                const hasDropdown = !!c.categories && key !== "products";
                                 return (
                                     <li key={key}
                                         className="pc:relative pc:flex pc:items-stretch"
@@ -95,7 +97,7 @@ export default function Header() {
                                             ${isTarget ? "bg-primary text-white pc:bg-transparent pc:text-primary" : "text-title"}
                                             ${!isTarget && (isScroll ? "pc:text-title" : "pc:text-white")}`}>
 
-                                            {c.categories ? (
+                                            {hasDropdown ? (
                                                 <li
                                                     onClick={() => !isPc && setIsOpenSub(isTarget ? null : key)}
                                                     className="flex w-full cursor-pointer items-center justify-between gap-2 font-bold pc:pointer-events-none pc:w-auto pc:font-semibold hover:text-primary">
@@ -112,7 +114,9 @@ export default function Header() {
                                                 </li>
                                             ) : (
                                                 <li>
-                                                    <Link href={`/${key}`} rel="canonical" onClick={() => setIsOpen(false)}
+                                                    <Link
+                                                        href={key === "products" ? `/${key}/${c.categories?.[0]?.url ?? ""}` : `/${key}`}
+                                                        rel="canonical" onClick={() => setIsOpen(false)}
                                                         className={`font-bold block cursor-pointer pc:text-base pc:font-semibold pc:hover:text-primary ${isScroll ? "pc:text-title" : "pc:text-white"}`}>
                                                         {c.title}
                                                     </Link>
@@ -120,10 +124,10 @@ export default function Header() {
                                             )}
                                         </ul>
                                         {/* 서브 카테고리 */}
-                                        {c.categories && (
+                                        {hasDropdown && (
                                             <ul className={`overflow-hidden transition-all duration-500 ease-in-out pc:absolute pc:top-full pc:mt-2 pc:left-0 pc:w-62.5 pc:rounded-lg  pc:bg-primary pc:shadow-card
                                                 ${isTarget ? "max-h-125 opacity-100 translate-y-0 visible mb-2 pc:mb-0" : "max-h-0 opacity-0 -translate-y-2 invisible mb-0"}`}>
-                                                {c.categories.map((sub) => (
+                                                {c.categories?.map((sub) => (
                                                     <li key={sub.url}
                                                         className="hover:bg-surface pc:hover:bg-surface transition-colors border-b border-black/5 pc:border-white/20 last:border-0"
                                                         onClick={() => setIsOpen(false)}>

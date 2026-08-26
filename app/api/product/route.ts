@@ -35,6 +35,7 @@ export async function POST(request: Request) {
 
         const name = String(body.name ?? "").trim();
         const category = String(body.category ?? "").trim();
+        const productTypeRaw = String(body.product_type ?? "").trim();
         const spec = String(body.spec ?? "").trim();
         const features = String(body.features ?? "").trim();
         const priceRaw = body.price != null ? String(body.price).trim() : "";
@@ -48,6 +49,9 @@ export async function POST(request: Request) {
         if (!category) {
             return NextResponse.json({ error: "카테고리를 선택해주세요." }, { status: 400 });
         }
+
+        const VALID_PRODUCT_TYPES = ["all", "new", "hit", "recommend"];
+        const product_type = VALID_PRODUCT_TYPES.includes(productTypeRaw) ? productTypeRaw : "all";
 
         if (!spec) {
             return NextResponse.json({ error: "규격을 입력해주세요." }, { status: 400 });
@@ -71,6 +75,7 @@ export async function POST(request: Request) {
             .insert({
                 name,
                 category,
+                product_type,
                 spec: spec || null,
                 features: features || null,
                 price,

@@ -3,38 +3,32 @@ import ProductList from "@/components/board/ProductList";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Product } from "@/types/product";
-import { USER_CATEGORY } from "@/datas/categories";
+import { PRODUCT_GAME_CATEGORIES, USER_CATEGORY } from "@/datas/categories";
 
-const PRODUCT_CATEGORIES = USER_CATEGORY.products.categories ?? [];
+const PRODUCT_CATEGORIES = PRODUCT_GAME_CATEGORIES;
+const PRODUCT_TYPE_OPTIONS = USER_CATEGORY.products.categories ?? [];
 
-function StarIcon({ className }: { className?: string }) {
+function ChevronDownIcon({ className }: { className?: string }) {
     return (
         <svg
             viewBox="0 0 24 24"
-            fill="currentColor"
+            fill="none"
             stroke="currentColor"
-            strokeWidth={1.5}
+            strokeWidth={2}
             aria-hidden="true"
             className={className}
         >
-            <path
-                d="M12 3.3 14.6 9l6.2.6-4.7 4.1 1.4 6.1L12 16.8l-5.5 3 1.4-6.1-4.7-4.1L9.4 9 12 3.3Z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
+            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 }
 
 export default function AdminProductListPage() {
-    // activeCategory: 선택된 카테고리 / null이면 전체 카테고리
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
-    // searchTerm : 검색어
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeFeatured, setActiveFeatured] = useState<boolean>(false);
+    const [activeProductType, setActiveProductType] = useState<string | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    // ProductList에서 삭제 완료 Toast를 닫을 때 이 값을 증가시켜 아래 effect를 재실행(재조회)함
     const [reloadKey, setReloadKey] = useState(0);
 
     useEffect(() => {
@@ -60,24 +54,21 @@ export default function AdminProductListPage() {
         setSearchTerm(e.target.value);
     }, []);
 
-    const onClickFilterIsFeatured = () => {
-        setActiveFeatured((prev) => !prev);
-    };
+    const onChangeProductTypeFilter = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        setActiveProductType(e.target.value || null);
+    }, []);
 
-    // 탭에서 선택한 카테고리와 검색어에 맞게 이미 불러온 전체 목록을 필터링
     const filteredProducts = useMemo(() => {
         const keyword = searchTerm.trim().toLowerCase();
 
         return products.filter((product) => {
-            if (activeFeatured) {
-                return product.is_featured === true;
-            }
             const matchesCategory = activeCategory ? product.category === activeCategory : true;
+            const matchesProductType = activeProductType ? product.product_type === activeProductType : true;
             const matchesKeyword = keyword ? product.name.toLowerCase().includes(keyword) : true;
-            return matchesCategory && matchesKeyword;
+            return matchesCategory && matchesProductType && matchesKeyword;
         });
 
-    }, [products, activeCategory, searchTerm, activeFeatured]); // 카테고리 변경, 검색어 변경, products 데이터 변동중 하나가 변경되면 연산
+    }, [products, activeCategory, activeProductType, searchTerm]);
 
     return (
         <div className="space-y-6">
@@ -106,14 +97,20 @@ export default function AdminProductListPage() {
                             className="w-full rounded-lg border border-black/20 bg-white/30 py-2.5 pl-9 pr-3 text-sm text-body outline-none focus:border-primary pc:w-60 pc:py-2"
                         />
                     </div>
-                    <div className="flex justify-between">
-                        <button
-                            type="button"
-                            onClick={onClickFilterIsFeatured}
-                            className={`flex w-[48%] pc:w-fit items-center gap-1.5 rounded-lg px-3 py-2.5 border text-sm ${activeFeatured ? "text-primary border-primary" : "text-body border-black/20"}`}
-                        >
-                            <StarIcon className="h-5 w-5" /> 주요 제품만 보기 {activeFeatured && "해제"}
-                        </button>
+                    <div className="flex justify-between gap-2">
+                        <div className="relative w-[48%] pc:w-fit">
+                            <select
+                                value={activeProductType ?? ""}
+                                onChange={onChangeProductTypeFilter}
+                                className="w-full appearance-none rounded-lg border border-black/20 bg-white/30 py-2.5 pc:py-2 pl-3 pr-9 text-sm text-body outline-none focus:border-primary"
+                            >
+                                <option value="">모든 분류 보기</option>
+                                {PRODUCT_TYPE_OPTIONS.map((option) => (
+                                    <option key={option.url} value={option.url}>{option.name}</option>
+                                ))}
+                            </select>
+                            <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        </div>
                         <button className="btn-primary w-[48%] text-center pc:hidden">
                             <Link
                                 href={`/admin/new${activeCategory ? `?category=${activeCategory}` : ""}`}
