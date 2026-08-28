@@ -73,13 +73,13 @@ export default function FaqList({
             <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                 <div className="flex gap-2 items-end justify-between">
                     <div>
-                        <p className="text-sm font-bold tracking-widest text-primary">{eyebrow}</p>
+                        <p className="text-base font-bold tracking-widest text-primary">{eyebrow}</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">{title}</h2>
                     </div>
                     {moreHref && (
                         <Link
                             href={moreHref}
-                            className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+                            className="inline-flex items-center gap-1 text-base font-semibold text-primary hover:underline"
                         >
                             {moreLabel}
                             <ChevronIcon className="h-4 w-4 -rotate-90" />
@@ -92,7 +92,7 @@ export default function FaqList({
                         <button
                             type="button"
                             onClick={() => selectCategory(ALL_CATEGORY_KEY)}
-                            className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${activeCategory === ALL_CATEGORY_KEY
+                            className={`rounded-full px-4 py-2 text-base font-semibold transition-colors ${activeCategory === ALL_CATEGORY_KEY
                                     ? "bg-primary text-white"
                                     : "bg-surface border-muted/20 border text-body hover:bg-primary/10"
                                 }`}
@@ -104,7 +104,7 @@ export default function FaqList({
                                 key={category.key}
                                 type="button"
                                 onClick={() => selectCategory(category.key)}
-                                className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${activeCategory === category.key
+                                className={`rounded-full px-4 py-2 text-base font-semibold transition-colors ${activeCategory === category.key
                                         ? "bg-primary text-white"
                                         : "bg-surface border-muted/20 border text-body hover:bg-primary/10"
                                     }`}
@@ -139,7 +139,7 @@ export default function FaqList({
                                     className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                                 >
                                     <div className="overflow-hidden">
-                                        <p className="flex gap-3 px-6 pb-5 text-sm leading-6 text-body">
+                                        <p className="flex gap-3 px-6 pb-5 text-base leading-6 text-body">
                                             <span className="font-bold text-muted">A</span>
                                             {item.a}
                                         </p>

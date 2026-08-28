@@ -1,9 +1,10 @@
 "use client"
 import ProductList from "@/components/board/ProductList";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Product } from "@/types/product";
 import { PRODUCT_GAME_CATEGORIES, USER_CATEGORY } from "@/datas/categories";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const PRODUCT_CATEGORIES = PRODUCT_GAME_CATEGORIES;
 const PRODUCT_TYPE_OPTIONS = USER_CATEGORY.products.categories ?? [];
@@ -27,28 +28,20 @@ export default function AdminProductListPage() {
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [activeProductType, setActiveProductType] = useState<string | null>(null);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [reloadKey, setReloadKey] = useState(0);
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        const load = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/product`);
-                const { data, error } = await res.json();
-                if (!res.ok || error) {
-                    console.error("제품 목록 조회 실패:", error ?? res.status);
-                }
-                setProducts(data ?? []);
-            } catch (err) {
-                console.error("Fail data load...", err);
-            } finally {
-                setLoading(false);
+    // 제품 불러오기
+    const { data: products = [], isLoading: loading } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () => {
+            const res = await fetch(`/api/product`);
+            const { data, error } = await res.json();
+            if (!res.ok || error) {
+                console.error("제품 목록 조회 실패:", error ?? res.status);
             }
-        };
-        load();
-    }, [reloadKey]);
+            return (data ?? []) as Product[];
+        },
+    });
 
     const onChangeSearchTerm = useCallback((e: any) => {
         setSearchTerm(e.target.value);
@@ -94,7 +87,7 @@ export default function AdminProductListPage() {
                             value={searchTerm}
                             onChange={onChangeSearchTerm}
                             placeholder="제품명 검색"
-                            className="w-full rounded-lg border border-black/20 bg-white/30 py-2.5 pl-9 pr-3 text-sm text-body outline-none focus:border-primary pc:w-60 pc:py-2"
+                            className="w-full rounded-lg border border-black/20 bg-white/30 py-2.5 pl-9 pr-3 text-base text-body outline-none focus:border-primary pc:w-60 pc:py-2"
                         />
                     </div>
                     <div className="flex justify-between gap-2">
@@ -102,7 +95,7 @@ export default function AdminProductListPage() {
                             <select
                                 value={activeProductType ?? ""}
                                 onChange={onChangeProductTypeFilter}
-                                className="w-full appearance-none rounded-lg border border-black/20 bg-white/30 py-2.5 pc:py-2 pl-3 pr-9 text-sm text-body outline-none focus:border-primary"
+                                className="w-full appearance-none rounded-lg border border-black/20 bg-white/30 py-2.5 pc:py-2 pl-3 pr-9 text-base text-body outline-none focus:border-primary"
                             >
                                 <option value="">모든 분류 보기</option>
                                 {PRODUCT_TYPE_OPTIONS.map((option) => (
@@ -135,7 +128,7 @@ export default function AdminProductListPage() {
                     <button
                         type="button"
                         onClick={() => setActiveCategory(null)}
-                        className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition-colors ${activeCategory === null
+                        className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-base font-medium transition-colors ${activeCategory === null
                             ? "border-primary font-semibold text-primary"
                             : "border-transparent text-muted hover:text-title"
                             }`}
@@ -147,7 +140,7 @@ export default function AdminProductListPage() {
                             key={category.url}
                             type="button"
                             onClick={() => setActiveCategory(category.url)}
-                            className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition-colors ${activeCategory === category.url
+                            className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-base font-medium transition-colors ${activeCategory === category.url
                                 ? "border-primary font-semibold text-primary"
                                 : "border-transparent text-muted hover:text-title"
                                 }`}
@@ -159,12 +152,11 @@ export default function AdminProductListPage() {
             </div>
 
             {loading ? (
-                <p className="px-5 py-8 text-center text-sm text-muted">정보를 불러오는 중입니다.</p>
+                <p className="px-5 py-8 text-center text-base text-muted">정보를 불러오는 중입니다.</p>
             ) : (
                 <ProductList
-                    key={reloadKey}
                     products={filteredProducts}
-                    onReload={() => setReloadKey((key) => key + 1)}
+                    onReload={() => queryClient.invalidateQueries({ queryKey: ["products"] })}
                 />
             )}
         </div>

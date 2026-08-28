@@ -22,7 +22,7 @@ export default function LocationPage() {
             <article>
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     {/* 오시는 길 */}
-                    <p className="text-sm font-bold tracking-widest text-primary">LOCATION</p>
+                    <p className="text-base font-bold tracking-widest text-primary">LOCATION</p>
                     <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">오시는 길</h2>
                     <div className="pc:flex pc:justify-between">
                         {/* 지도 */}

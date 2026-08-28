@@ -91,3 +91,10 @@ export async function getProductById(id: number): Promise<Product | null> {
 
     return data;
 }
+
+/*
+서버 컴포넌트에서만 import 되는 파일
+
+만약 이 함수들을 각 page.tsx마다 따로 짰다면,
+Supabase 쿼리 코드(supabaseAdmin.from("products").select(...))가 5곳에 복붙 -> 재사용
+*/

@@ -18,7 +18,7 @@ export default async function AdminGuideSectionPage({ params }: GuideSectionPage
     return (
         <div className="space-y-8 pb-10">
             <div>
-                <Link href="/admin/guide" className="text-sm font-semibold mb-4 text-primary hover:underline">
+                <Link href="/admin/guide" className="text-base font-semibold mb-4 text-primary hover:underline">
                     ← 가이드 목록으로
                 </Link>
                 <h2 className="mt-3 text-2xl font-black text-title">{data.title}</h2>

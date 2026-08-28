@@ -33,7 +33,7 @@ export default function CategoryBanner({
             <div className="mx-auto max-w-300 px-[5%] py-10 pc:px-0 pc:py-14">
                 <h1 className="text-2xl font-black text-white pc:text-3xl">{title}</h1>
                 {description && (
-                    <p className="mt-3 max-w-xl text-sm leading-6 text-white/70 pc:text-base">
+                    <p className="mt-3 max-w-xl text-base leading-6 text-white/70 pc:text-base">
                         {description}
                     </p>
                 )}
@@ -47,7 +47,7 @@ export default function CategoryBanner({
                             <button
                                 type="button"
                                 onClick={() => setIsOpen((prev) => !prev)}
-                                className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-white"
+                                className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2.5 text-base font-medium text-white"
                             > 
                                 {activeTabLabel ?? "카테고리 선택"}
                                 <svg
@@ -71,7 +71,7 @@ export default function CategoryBanner({
                                                 <Link
                                                     href={`${basePath}/${tab.url}`}
                                                     onClick={() => setIsOpen(false)}
-                                                    className={`block px-4 py-3 text-sm font-medium transition-colors ${
+                                                    className={`block px-4 py-3 text-base font-medium transition-colors ${
                                                         isActive ? "bg-white/10 text-white" : "text-white/90 hover:bg-white/10"
                                                     }`}
                                                 >
@@ -93,7 +93,7 @@ export default function CategoryBanner({
                                         <li key={tab.url}>
                                             <Link
                                                 href={`${basePath}/${tab.url}`}
-                                                className={`inline-block border-b-2 px-4 py-3.5 text-sm font-medium transition-colors ${
+                                                className={`inline-block border-b-2 px-4 py-3.5 text-base font-medium transition-colors ${
                                                     isActive
                                                         ? "border-primary text-white"
                                                         : "border-transparent text-white/60 hover:text-white"

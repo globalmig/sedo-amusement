@@ -28,13 +28,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
         <div className="flex flex-col pc:basis-1/2">
-          <span className="w-fit rounded-full bg-base-dark/80 px-3 py-1 text-xs font-medium text-white">
+          <span className="w-fit rounded-full bg-base-dark/80 px-3 py-1 text-base font-medium text-white">
             {getProductCategoryLabel(product.category)}
           </span>
           <h2 className="mt-3 text-2xl font-black text-title pc:text-3xl">{product.name}</h2>
           <p className="mt-2 text-xl font-bold text-point">{formatPrice(product.price)}</p>
           {product.features && (
-            <p className="mt-4 whitespace-pre-line text-sm leading-7 text-body pc:text-base">
+            <p className="mt-4 whitespace-pre-line text-base leading-7 text-body pc:text-base">
               {product.features}
             </p>
           )}

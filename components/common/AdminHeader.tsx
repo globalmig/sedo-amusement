@@ -9,7 +9,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-card">
             <div className="px-4 pc:px-6 h-14 flex items-center justify-between gap-3">
-                <h3 className="text-sm font-bold">
+                <h3 className="text-base font-bold">
                         <Link href="/admin" className="text-title hover:text-primary">ADMIN</Link>
                     </h3>
                 <div className="flex items-center gap-1">
@@ -35,7 +35,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 <div className="hidden pc:block">
                     <ul className="flex items-center gap-3 pc:gap-4">
                         <li>
-                            <Link href="/" className="text-xs pc:text-sm font-semibold text-primary">
+                            <Link href="/" className="text-base pc:text-base font-semibold text-primary">
                                 사이트 돌아가기
                             </Link>
                         </li>

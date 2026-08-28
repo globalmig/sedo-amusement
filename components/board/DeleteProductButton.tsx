@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDelete } from "@/hooks/useDelete";
+import { useMutation } from "@tanstack/react-query";
 import Toast from "../common/Toast";
 
 interface DeleteProductButtonProps {
@@ -14,13 +14,22 @@ export default function DeleteProductButton({ productId, redirectTo = "/admin/pr
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const { remove, loading } = useDelete("/api/product", {
+    const deleteMutation = useMutation({
+        mutationFn: async (id: number) => {
+            const response = await fetch(`/api/product/${id}`, { method: "DELETE" });
+            if (!response.ok) {
+                const result = await response.json().catch(() => null);
+                throw new Error(result?.error || "삭제에 실패했습니다.");
+            }
+            return true;
+        },
         onSuccess: () => {
             router.push(redirectTo);
             router.refresh();
         },
-        onError: (message) => setErrorMsg(message),
+        onError: (err: Error) => setErrorMsg(err.message || "서버 내부 오류가 발생했습니다."),
     });
+    const loading = deleteMutation.isPending;
 
     return (
         <>
@@ -36,7 +45,7 @@ export default function DeleteProductButton({ productId, redirectTo = "/admin/pr
             <Toast
                 vaild={confirmOpen ? "이 제품을 삭제하시겠습니까?" : null}
                 setVaild={() => setConfirmOpen(false)}
-                onConfirm={() => remove(productId)}
+                onConfirm={() => deleteMutation.mutate(productId)}
             />
             <Toast vaild={errorMsg} setVaild={() => setErrorMsg(null)} />
         </>

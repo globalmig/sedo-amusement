@@ -28,13 +28,13 @@ export default function PrevNextNavbar({
                         href={prevItem.href}
                         className="flex items-center gap-6 px-2 py-4 hover:bg-surface transition-colors"
                     >
-                        <span className="w-20 shrink-0 text-sm font-bold text-primary">{prevLabel}</span>
-                        <span className="text-sm text-body truncate">{prevItem.title}</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary">{prevLabel}</span>
+                        <span className="text-base text-body truncate">{prevItem.title}</span>
                     </Link>
                 ) : (
                     <div className="flex items-center gap-6 px-2 py-4">
-                        <span className="w-20 shrink-0 text-sm font-bold text-primary">{prevLabel}</span>
-                        <span className="text-sm text-muted">이전 글이 없습니다.</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary">{prevLabel}</span>
+                        <span className="text-base text-muted">이전 글이 없습니다.</span>
                     </div>
                 )}
             </div>
@@ -45,13 +45,13 @@ export default function PrevNextNavbar({
                         href={nextItem.href}
                         className="flex items-center gap-6 px-2 py-4 hover:bg-surface transition-colors"
                     >
-                        <span className="w-20 shrink-0 text-sm font-bold text-primary">{nextLabel}</span>
-                        <span className="text-sm text-body truncate">{nextItem.title}</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary">{nextLabel}</span>
+                        <span className="text-base text-body truncate">{nextItem.title}</span>
                     </Link>
                 ) : (
                     <div className="flex items-center gap-6 px-2 py-4">
-                        <span className="w-20 shrink-0 text-sm font-bold text-primary">{nextLabel}</span>
-                        <span className="text-sm text-muted">다음 글이 없습니다.</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary">{nextLabel}</span>
+                        <span className="text-base text-muted">다음 글이 없습니다.</span>
                     </div>
                 )}
             </div>

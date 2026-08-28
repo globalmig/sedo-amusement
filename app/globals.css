@@ -79,13 +79,13 @@ button {
   }
 
   h6 {
-    @apply text-sm pc:text-xl;
+    @apply text-base pc:text-xl;
   }
 
   p,
   li,
   a {
-    @apply text-[0.9rem] pc:text-base;
+    @apply text-base;
   }
 }
 
@@ -95,11 +95,11 @@ button {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-lg border border-black/10 px-5 py-2.5 text-sm font-semibold text-body transition-colors hover:bg-surface;
+    @apply inline-flex items-center justify-center rounded-lg border border-black/10 px-5 py-2.5 text-base font-semibold text-body transition-colors hover:bg-surface;
   }
 
   .form-label {
@@ -107,7 +107,7 @@ button {
   }
 
   .form-input {
-    @apply w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm text-title outline-none transition-colors focus:border-primary;
+    @apply w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-title outline-none transition-colors focus:border-primary;
   }
 
   .black-bg {

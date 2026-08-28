@@ -24,7 +24,7 @@ export default function AdminGuidePage() {
                             {index + 1}
                         </span>
                         <span className="text-xl font-bold text-title">{section.navTitle}</span>
-                        <span className="text-sm text-body">{section.description}</span>
+                        <span className="text-base text-body">{section.description}</span>
                     </Link>
                 ))}
             </div>

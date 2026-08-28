@@ -7,7 +7,7 @@ export default function ProductShippingInfo() {
       <h2 className="border-b border-black/5 px-6 py-4 text-base font-bold text-title">
         배송 및 환불/반품 안내
       </h2>
-      <div className="divide-y divide-black/5 text-sm">
+      <div className="divide-y divide-black/5 text-base">
         <div className="flex flex-col gap-2 px-6 py-4 pc:flex-row">
           <span className="w-28 shrink-0 font-medium text-title pc:w-40">배송정보</span>
           <p className="leading-7 text-body">

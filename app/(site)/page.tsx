@@ -88,16 +88,16 @@ export default async function Home() {
                     <div className="mx-auto max-w-300 px-[5%] pt-16 pc:px-0 pc:pt-24">
                         <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
                             <div className="flex flex-col gap-4">
-                                <p className="text-sm font-bold tracking-widest text-primary">OUR PRODUCTS</p>
+                                <p className="text-base font-bold tracking-widest text-primary">OUR PRODUCTS</p>
                                 <h2 className="text-2xl font-black leading-snug text-title pc:text-5xl pc:leading-tight">
                                     20년 유통 노하우가 검증한,<br />
                                     세도어뮤즈먼트 대표 제품
                                 </h2>
-                                <p className="text-sm leading-relaxed text-title/80 pc:text-base">
+                                <p className="text-base font-medium leading-relaxed text-title/80 pc:text-[20px]">
                                     정품 인증부터 전국 A/S까지, 믿을 수 있는 제품만 소개합니다.
                                 </p>
                             </div>
-                            <Link href="/products/hit" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                            <Link href="/products/hit" className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:underline">
                                 히트상품 보기
                                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-colors hover:bg-primary/90">
                                     <ArrowRightIcon className="h-4 w-4" />
@@ -109,28 +109,27 @@ export default async function Home() {
                             <div className="flex items-center gap-3">
                                 <QualityIcon className="h-8 w-8 shrink-0 text-primary" />
                                 <div>
-                                    <p className="text-sm font-bold text-title pc:text-base">품질 관리</p>
-                                    <p className="text-xs text-body pc:text-sm">제조사 정품만 엄선하여 공급</p>
+                                    <h3 className="text-lg font-bold text-title pc:text-xl">품질 관리</h3>
+                                    <p className="text-base text-body pc:text-base">제조사 정품만 엄선하여 공급</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <SupportIcon className="h-8 w-8 shrink-0 text-primary" />
                                 <div>
-                                    <p className="text-sm font-bold text-title pc:text-base">전국 신속 A/S</p>
-                                    <p className="text-xs text-body pc:text-sm">설치 이후에도 끝까지 책임</p>
+                                    <h3 className="text-lg font-bold text-title pc:text-xl">전국 신속 A/S</h3>
+                                    <p className="text-base text-body pc:text-base">설치 이후에도 끝까지 책임</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <PriceTagIcon className="h-8 w-8 shrink-0 text-primary" />
                                 <div>
-                                    <p className="text-sm font-bold text-title pc:text-base">합리적인 유통가</p>
-                                    <p className="text-xs text-body pc:text-sm">유통 전문 기업의 합리적 견적</p>
+                                    <h3 className="text-lg font-bold text-title pc:text-xl">합리적인 유통가</h3>
+                                    <p className="text-base text-body pc:text-base">유통 전문 기업의 합리적 견적</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* max-w-300 제약 없이 뷰포트 우측 끝까지 이어지는 풀블리드 슬라이더 */}
                     <div className="mt-10 pb-16 pl-[5%] pc:pb-24 pc:pl-[max(0px,calc((100vw-1200px)/2))]">
                         <FeaturedProductSlider products={previewProducts} />
                     </div>
@@ -141,12 +140,12 @@ export default async function Home() {
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                         <div className="flex flex-col gap-10 pc:flex-row pc:items-start pc:justify-between pc:gap-8">
                             <div className="flex flex-col items-start gap-4">
-                                <p className="text-sm font-bold tracking-widest text-primary">BRAND STORY</p>
+                                <p className="text-base font-bold tracking-widest text-primary">BRAND STORY</p>
                                 <h2 className="text-2xl font-black leading-snug text-title pc:text-5xl pc:leading-tight">
                                     매장 예산에 딱 맞는 오락기,<br />
                                     유통 전문 세도어뮤즈먼트와 상의하세요.
                                 </h2>
-                                <p className="text-sm leading-relaxed text-title/80 pc:text-lg pc:leading-[1.6]">
+                                <p className="text-base leading-relaxed text-title/80 pc:text-lg pc:leading-[1.6]">
                                     오락실부터 키즈카페까지, 매장 환경과 예산에 최적화된 80여 종의 기기를 정직하게 제안합니다.<br />
                                     제조사 정품만을 취급하여 고장률을 낮추고, 구매 이후 발생할 수 있는 A/S 문제까지 깔끔하게 연결해 드리는 든든한 유통 파트너가 되겠습니다.
                                 </p>
@@ -162,7 +161,7 @@ export default async function Home() {
                 {/* Process */}
                 <section className="bg-title">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-sm font-bold tracking-widest text-primary">PROCESS</p>
+                        <p className="text-base font-bold tracking-widest text-primary">PROCESS</p>
                         <h2 className="mt-4 text-2xl font-black text-white pc:text-5xl">구매/납품 프로세스</h2>
                         <div className="mt-10 grid grid-cols-1 gap-4 pc:mt-16 pc:grid-cols-4 pc:gap-6">
                             {PROCESS_STEPS.map((step, index) => (
@@ -171,9 +170,9 @@ export default async function Home() {
                                     className="animate-process-glow rounded-xl bg-white/8 p-6"
                                     style={{ animationDelay: `${index}s` }}
                                 >
-                                    <p className="text-sm font-bold text-primary">{step.no}</p>
+                                    <p className="text-base font-bold text-primary">{step.no}</p>
                                     <h3 className="mt-3 text-lg font-bold text-white pc:text-xl">{step.title}</h3>
-                                    <p className="mt-3 text-sm leading-relaxed text-white/60">{step.desc}</p>
+                                    <p className="mt-3 text-base leading-relaxed text-white/60">{step.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -189,7 +188,7 @@ export default async function Home() {
                         <h2 className="text-2xl font-black text-white pc:text-5xl">
                             지금 바로 상담을 받아보세요
                         </h2>
-                        <p className="mt-3 text-sm text-white/70 pc:text-base">
+                        <p className="mt-3 text-base text-white/70 pc:text-base">
                             복잡한 상담 폼 없이, 전화나 이메일로 빠르게 견적을 안내해 드립니다.
                         </p>
                         <ContactButtons className="mt-8" />

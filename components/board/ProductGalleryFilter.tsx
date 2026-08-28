@@ -61,7 +61,7 @@ export default function ProductGalleryFilter({ products, initialCategory = null 
           <select
             value={activeCategory ?? ""}
             onChange={(e) => setActiveCategory(e.target.value || null)}
-            className="w-full cursor-pointer appearance-none rounded-lg border border-black/10 bg-white py-2.5 pl-4 pr-9 text-sm font-medium text-body outline-none focus:border-point"
+            className="w-full cursor-pointer appearance-none rounded-lg border border-black/10 bg-white py-2.5 pl-4 pr-9 text-base font-medium text-body outline-none focus:border-point"
           >
             <option value="">전체 카테고리</option>
             {PRODUCT_GAME_CATEGORIES.map((category) => (
@@ -80,7 +80,7 @@ export default function ProductGalleryFilter({ products, initialCategory = null 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="제품명 검색"
-            className="w-full rounded-lg border border-black/10 bg-white py-2.5 pl-9 pr-3 text-sm text-body outline-none focus:border-point"
+            className="w-full rounded-lg border border-black/10 bg-white py-2.5 pl-9 pr-3 text-base text-body outline-none focus:border-point"
           />
         </div>
       </div>

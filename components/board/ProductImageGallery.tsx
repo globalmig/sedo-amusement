@@ -35,7 +35,7 @@ export default function ProductImageGallery({ mainImageUrl, detailImages, alt }:
             />
           </>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-base-dark/40">
+          <div className="flex h-full w-full items-center justify-center text-base text-base-dark/40">
             이미지 준비중
           </div>
         )}

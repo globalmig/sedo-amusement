@@ -47,7 +47,7 @@ export default function Pagination({
       <button
         onClick={handlePrev}
         disabled={currentPage <= 1}
-        className="w-10 h-10 flex items-center justify-center rounded-lg text-base text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-sm"
+        className="w-10 h-10 flex items-center justify-center rounded-lg text-base text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-base"
       >
         ‹
       </button>
@@ -56,7 +56,7 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => handlePageClick(page)}
-          className={`w-10 h-10 flex items-center justify-center rounded-lg text-base font-medium transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-sm ${
+          className={`w-10 h-10 flex items-center justify-center rounded-lg text-base font-medium transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-base ${
             currentPage === page
               ? "bg-primary text-white"
               : "text-body hover:bg-surface"
@@ -69,7 +69,7 @@ export default function Pagination({
       <button
         onClick={handleNext}
         disabled={currentPage >= pageCount}
-        className="w-10 h-10 flex items-center justify-center rounded-lg text-base text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-sm"
+        className="w-10 h-10 flex items-center justify-center rounded-lg text-base text-body hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer pc:w-8 pc:h-8 pc:text-base"
       >
         ›
       </button>

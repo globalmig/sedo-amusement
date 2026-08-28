@@ -45,7 +45,7 @@ export default function BusinessPage() {
             <article>
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     {/* 사업 영역 */}
-                    <p className="text-sm font-bold tracking-widest text-primary">BUSINESS</p>
+                    <p className="text-base font-bold tracking-widest text-primary">BUSINESS</p>
                     <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">사업 영역</h2>
 
                     <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 pc:grid-cols-4">
@@ -55,13 +55,13 @@ export default function BusinessPage() {
                                 className="group card flex min-h-56 flex-col justify-between gap-8 p-6 transition-colors pc:p-8"
                             >
                                 <div>
-                                    <span className="text-sm font-black text-primary transition-colors pc:text-lg">
+                                    <span className="text-base font-black text-primary transition-colors pc:text-lg">
                                         0{index + 1}
                                     </span>
                                     <h3 className="mt-3 text-lg font-bold text-title transition-colors pc:text-[1.3rem]">
                                         {area.title}
                                     </h3>
-                                    <p className="mt-2 text-sm leading-6 text-body transition-colors pc:mt-3 pc:text-[1rem]">
+                                    <p className="mt-2 text-base leading-6 text-body transition-colors pc:mt-3 pc:text-[1rem]">
                                         {area.description}
                                     </p>
                                 </div>

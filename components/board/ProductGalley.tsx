@@ -16,7 +16,7 @@ export default function ProductGalley({ products }: ProductGalleyProps) {
 
   if (products.length === 0) {
     return (
-      <div className="py-16 text-center text-sm text-muted">
+      <div className="py-16 text-center text-base text-muted">
         등록된 제품이 없습니다.
       </div>
     );

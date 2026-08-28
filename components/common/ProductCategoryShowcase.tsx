@@ -42,10 +42,10 @@ export default function ProductCategoryShowcase() {
             <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                 <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
                     <div>
-                        <p className="text-sm font-bold tracking-widest text-primary">DISCOVER OUR LINEUP</p>
+                        <p className="text-base font-bold tracking-widest text-primary">DISCOVER OUR LINEUP</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">원하시는 다양한 제품을 확인해보세요.</h2>
                     </div>
-                    <Link href="/products/all" className="text-sm font-semibold text-primary hover:underline">
+                    <Link href="/products/all" className="text-base font-semibold text-primary hover:underline">
                         전체 제품 보기 &gt;
                     </Link>
                 </div>
@@ -54,10 +54,7 @@ export default function ProductCategoryShowcase() {
                     {CATEGORY_SHOWCASE.map((category, index) => {
                         const isImageTop = index % 2 === 0;
 
-                        // 텍스트 콘텐츠 위치는 기존과 동일 (이미지와 맞닿는 위치, 겹치지 않음)
                         const textPosition = isImageTop ? "top-56" : "top-0";
-                        // 배경 박스는 imageBlock 쪽으로 57px만큼 더 들어가 -167px 겹치고,
-                        // 반대쪽 끝은 텍스트 콘텐츠의 기존 끝 위치에 맞춰 늘어난 만큼 높이가 커짐
                         const boxPosition = isImageTop ? "top-[57px] h-[447px]" : "bottom-[57px] h-[487px]";
                         const boxShape = isImageTop ? "rounded-t-4xl rounded-b-[140px]" : "rounded-t-[140px] rounded-b-4xl";
 
@@ -65,10 +62,10 @@ export default function ProductCategoryShowcase() {
                             <div
                                 className={`absolute inset-x-0 z-10 flex w-70 h-70 shrink-0 flex-col items-center gap-2 px-6 pt-8 pb-12 text-center ${textPosition}`}
                             >
-                                <p className="text-lg font-bold text-title transition-colors duration-300 group-hover:text-white">
+                                <h3 className="text-lg pc:text-xl font-bold text-title transition-colors duration-300 group-hover:text-white">
                                     {category.name}
-                                </p>
-                                <p className="whitespace-pre-line text-sm leading-5 text-body transition-colors duration-300 group-hover:text-white/90">
+                                </h3>
+                                <p className="whitespace-pre-line text-base leading-5 text-body transition-colors duration-300 group-hover:text-white/90">
                                     {category.description}
                                 </p>
                                 <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white transition-colors duration-300 group-hover:bg-white group-hover:text-primary">
@@ -118,7 +115,7 @@ export default function ProductCategoryShowcase() {
                                         <ArrowIcon className="h-4 w-4" />
                                     </span>
                                 </div>
-                                <p className="whitespace-pre-line text-sm leading-5 text-body transition-colors duration-300 group-hover:text-white/90">
+                                <p className="whitespace-pre-line text-base leading-5 text-body transition-colors duration-300 group-hover:text-white/90">
                                     {category.description}
                                 </p>
                             </div>
@@ -127,7 +124,7 @@ export default function ProductCategoryShowcase() {
 
                     <Link
                         href="/products"
-                        className="mx-auto inline-flex items-center justify-center rounded-full border border-black/20 px-6 py-3 text-sm font-semibold text-body transition-colors hover:bg-surface"
+                        className="mx-auto inline-flex items-center justify-center rounded-full border border-black/20 px-6 py-3 text-base font-semibold text-body transition-colors hover:bg-surface"
                     >
                         전체 카테고리 보기
                     </Link>

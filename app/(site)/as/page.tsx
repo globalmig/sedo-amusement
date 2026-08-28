@@ -88,9 +88,9 @@ export default function AsPage() {
                 {/* 자가 점검 가이드 */}
                 <section id="self-check" className="scroll-mt-20 bg-surface">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-sm font-bold tracking-widest text-primary">SELF-CHECK GUIDE</p>
+                        <p className="text-base font-bold tracking-widest text-primary">SELF-CHECK GUIDE</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">자가 점검 가이드</h2>
-                        <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
+                        <p className="mt-3 max-w-xl text-base leading-6 text-body pc:text-base">
                             A/S 요청 전, 아래 항목을 먼저 확인해보세요. 간단한 점검만으로 바로
                             해결되는 경우가 많습니다.
                         </p>
@@ -106,7 +106,7 @@ export default function AsPage() {
                                                     height={42}
                                                     className="w-4 h-auto pc:w-5" />
                                             </div>
-                                            <h3 className="text-sm font-bold text-title pc:text-[1.3rem]">
+                                            <h3 className="text-base font-bold text-title pc:text-[1.3rem]">
                                                 <span className="text-primary">0{index + 1}. </span>
                                                 {item.title}
                                             </h3>
@@ -132,11 +132,11 @@ export default function AsPage() {
                 {/* A/S 프로세스 */}
                 <section className="bg-white">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-sm font-bold tracking-widest text-primary">PROCESS</p>
+                        <p className="text-base font-bold tracking-widest text-primary">PROCESS</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">
                             그래도 해결되지 않으셨다면
                         </h2>
-                        <p className="mt-3 max-w-xl text-sm leading-6 text-body pc:text-base">
+                        <p className="mt-3 max-w-xl text-base leading-6 text-body pc:text-base">
                             아래 4단계 절차를 통해 빠르고 정확하게 A/S를 접수해 드립니다.
                         </p>
 
@@ -146,7 +146,7 @@ export default function AsPage() {
                                     <div>
                                         <span className="text-2xl font-black text-primary pc:text-3xl">{item.step}</span>
                                         <h3 className="mt-3 text-base font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
-                                        <p className="mt-2 text-sm leading-6 text-body pc:text-[1rem]">{item.description}</p>
+                                        <p className="mt-2 text-base leading-6 text-body pc:text-[1rem]">{item.description}</p>
                                     </div>
                                     <Image
                                         src={item.icon}

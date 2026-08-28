@@ -1,13 +1,12 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { useCreate } from "@/hooks/useCreate";
-import { useUpdate } from "@/hooks/useUpdate";
 import { USER_CATEGORY, PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { STORAGE_BUCKET } from "@/lib/storage";
 import Toast from "../common/Toast";
 import Link from "next/link";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
 
 const PRODUCT_TYPES = USER_CATEGORY.products.categories ?? [];
 
@@ -71,7 +70,7 @@ function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
                 type="button"
                 onClick={onRemove}
                 aria-label="이미지 삭제"
-                className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white cursor-pointer"
+                className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-base text-white cursor-pointer"
             >
                 ✕
             </button>
@@ -119,17 +118,37 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         setIsSuccess(false);
     };
 
-    const { create, loading: createLoading } = useCreate("/api/product", {
+    const createMutation = useMutation({
+        mutationFn: async (payload: Record<string, any>) => {
+            const response = await fetch("/api/product", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "등록에 실패했습니다.");
+            return result;
+        },
         onSuccess: () => { setIsSuccess(true); setVaild("제품이 등록되었습니다."); },
-        onError: (message) => setVaild(message),
+        onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
     });
 
-    const { update, loading: updateLoading } = useUpdate("/api/product", {
+    const updateMutation = useMutation({
+        mutationFn: async ({ id, payload }: { id: number; payload: Record<string, any> }) => {
+            const response = await fetch(`/api/product/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "수정에 실패했습니다.");
+            return result;
+        },
         onSuccess: () => { setIsSuccess(true); setVaild("제품이 수정되었습니다."); },
-        onError: (message) => setVaild(message),
+        onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
     });
 
-    const loading = isEditMode ? updateLoading : createLoading;
+    const loading = isEditMode ? updateMutation.isPending : createMutation.isPending;
 
     const onChangeForm = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -223,16 +242,16 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             };
 
             if (isEditMode) {
-                await update(editId, payload);
+                await updateMutation.mutateAsync({ id: editId!, payload }).catch(() => {});
             } else {
-                await create(payload);
+                await createMutation.mutateAsync(payload).catch(() => {});
             }
         } catch (err) {
             setVaild(err instanceof Error ? err.message : "이미지 업로드에 실패했습니다.");
         } finally {
             setUploading(false);
         }
-    }, [form, mainImage, existingMainImageUrl, newDetailImages, existingDetailImages, create, update, loading, uploading, isEditMode, editId, uploadImage]);
+    }, [form, mainImage, existingMainImageUrl, newDetailImages, existingDetailImages, createMutation, updateMutation, loading, uploading, isEditMode, editId, uploadImage]);
 
     return (
         <>
@@ -279,7 +298,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                         <label htmlFor="product_type" className="form-label">
                             분류 <span className="text-red-400">*</span>
                         </label>
-                        <p className="text-[0.9rem] text-muted">사용자 페이지의 신제품/히트상품/추천상품 분류에 사용됩니다.</p>
+                        <p className="text-base text-muted">사용자 페이지의 신제품/히트상품/추천상품 분류에 사용됩니다.</p>
                         <div className="relative">
                             <select
                                 id="product_type"
@@ -300,7 +319,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                         <label htmlFor="spec" className="form-label">
                             규격 <span className="text-red-400">*</span>
                         </label>
-                        <p className="text-[0.9rem] text-muted">예) 900 x 900 x 2050 mm, 220V, 180kg 와 같이 제품의 규격을 입력해주세요.</p>
+                        <p className="text-base text-muted">예) 900 x 900 x 2050 mm, 220V, 180kg 와 같이 제품의 규격을 입력해주세요.</p>
                         <textarea
                             id="spec"
                             name="spec"
@@ -314,7 +333,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
 
                     <div className="flex flex-col gap-1.5">
                         <label htmlFor="features" className="form-label">특징</label>
-                        <p className="text-[0.9rem] text-muted">특징 입력은 필수가 아닙니다. 공란일 시, 제품 상세 정보란에 공란으로 표시됩니다.</p>
+                        <p className="text-base text-muted">특징 입력은 필수가 아닙니다. 공란일 시, 제품 상세 정보란에 공란으로 표시됩니다.</p>
                         <textarea
                             id="features"
                             name="features"
@@ -328,7 +347,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
 
                     <div className="flex flex-col gap-1.5">
                         <label htmlFor="price" className="form-label">가격</label>
-                        <p className="text-[0.9rem] text-muted">가격 미입력 시, &apos;가격 문의&apos;로 표시됩니다.</p>
+                        <p className="text-base text-muted">가격 미입력 시, &apos;가격 문의&apos;로 표시됩니다.</p>
                         <input
                             type="number"
                             id="price"
@@ -344,7 +363,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                         <label className="form-label">
                             대표이미지 <span className="text-red-400">*</span>
                         </label>
-                        <p className="text-[0.9rem] text-muted mb-4">
+                        <p className="text-base text-muted mb-4">
                             제품의 대표 이미지를 선택해주세요. <br />
                             이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.
                         </p>
@@ -352,11 +371,11 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             <input type="file" id="main_image" accept="image/*" className="hidden" onChange={onChangeMainImage} />
                             <label
                                 htmlFor="main_image"
-                                className="px-4 py-2.5 pc:py-2 bg-surface hover:bg-gray-200 text-body text-sm font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
+                                className="px-4 py-2.5 pc:py-2 bg-surface hover:bg-gray-200 text-body text-base font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
                             >
                                 파일 선택
                             </label>
-                            <span className="min-w-0 flex-1 truncate text-sm text-muted">
+                            <span className="min-w-0 flex-1 truncate text-base text-muted">
                                 {mainImage?.name ?? (existingMainImageUrl ? "기존 이미지 사용 중" : "선택된 파일 없음")}
                             </span>
                         </div>
@@ -373,7 +392,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
 
                     <div className="flex flex-col gap-1.5">
                         <label className="form-label">상세이미지 (여러 장 등록 가능)</label>
-                        <p className="text-[0.9rem] text-muted mb-4">
+                        <p className="text-base text-muted mb-4">
                             제품의 상세 이미지를 선택해주세요. 상세 이미지 등록은 필수가 아닙니다.<br />
                             이미지를 등록하지 않을 경우, 제품 상세 정보란에 이미지를 표시하지 않습니다.<br />
                             이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.
@@ -382,11 +401,11 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             <input type="file" id="detail_images" accept="image/*" multiple className="hidden" onChange={onChangeDetailImages} />
                             <label
                                 htmlFor="detail_images"
-                                className="px-4 py-2.5 pc:py-2 bg-surface hover:bg-gray-200 text-body text-sm font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
+                                className="px-4 py-2.5 pc:py-2 bg-surface hover:bg-gray-200 text-body text-base font-medium rounded-lg cursor-pointer transition-colors shrink-0 border border-gray-300"
                             >
                                 파일 추가
                             </label>
-                            <span className="text-sm text-muted">
+                            <span className="text-base text-muted">
                                 {existingDetailImages.length + newDetailImages.length}장 등록됨
                             </span>
                         </div>
@@ -400,7 +419,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                                             type="button"
                                             onClick={() => removeExistingDetailImage(url)}
                                             aria-label="이미지 삭제"
-                                            className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-xs text-white cursor-pointer"
+                                            className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-base text-white cursor-pointer"
                                         >
                                             ✕
                                         </button>

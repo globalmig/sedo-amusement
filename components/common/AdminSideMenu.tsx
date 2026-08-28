@@ -41,7 +41,7 @@ export default function AdminSideMenu({ open = false, onClose }: AdminSideMenuPr
                                                     <Link
                                                         href={`/admin/${sub.url}`}
                                                         onClick={onClose}
-                                                        className={`flex items-center px-5 py-3 text-sm transition-colors ${
+                                                        className={`flex items-center px-5 py-3 text-base transition-colors ${
                                                             isActive
                                                                 ? "bg-primary font-semibold text-white"
                                                                 : "text-white hover:text-primary font-bold"

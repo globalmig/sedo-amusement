@@ -27,7 +27,7 @@ export default function PrevNextNavbar2({
                     href={prevItem.href}
                     className="group flex-1 card p-5 hover:border-primary transition-colors"
                 >
-                    <span className="text-sm text-muted">
+                    <span className="text-base text-muted">
                         {prevLabel}
                     </span>
                     <h3 className="font-bold text-title group-hover:text-primary transition-colors mt-2 mb-5 pc:text-xl">
@@ -44,7 +44,7 @@ export default function PrevNextNavbar2({
                 <div
                     className="group flex-1 card p-5"
                 >
-                    <span className="text-sm text-muted">
+                    <span className="text-base text-muted">
                         {prevLabel}
                     </span>
                     <h3 className="font-bold text-title transition-colors mt-2 mb-5 pc:text-xl">
@@ -66,7 +66,7 @@ export default function PrevNextNavbar2({
                     href={nextItem.href}
                     className="group flex-1 card p-5 items-end hover:border-primary transition-colors text-right"
                 >
-                    <span className="text-sm text-muted">
+                    <span className="text-base text-muted">
                         {nextLabel}
                     </span>
                     <h3 className="font-bold w-full text-title group-hover:text-primary transition-colors mt-2 mb-5 pc:text-xl">
@@ -83,7 +83,7 @@ export default function PrevNextNavbar2({
                 : <div
                     className="group flex-1 card p-5 items-end hover:border-primary transition-colors text-right"
                 >
-                    <span className="text-sm text-muted">
+                    <span className="text-base text-muted">
                         {nextLabel}
                     </span>
                     <h3 className="font-bold w-full text-title group-hover:text-primary transition-colors mt-2 mb-5 pc:text-xl">

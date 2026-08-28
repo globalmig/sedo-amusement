@@ -68,7 +68,7 @@ export default function StatCounter({ stats }: { stats: Stat[] }) {
         >
             {stats.map((stat, i) => (
                 <div key={stat.label} className="flex flex-col gap-1">
-                    <p className="text-xs font-bold text-primary mb-2 pc:text-base">{stat.label}</p>
+                    <p className="text-base font-bold text-primary mb-2 pc:text-base">{stat.label}</p>
                     <p className="text-xl font-bold text-title pc:text-[42px]">
                         {formatStat(stat.value, counts[i])}
                     </p>

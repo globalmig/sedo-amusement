@@ -41,18 +41,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           </>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-base-dark/40">
+          <div className="flex h-full w-full items-center justify-center text-base text-base-dark/40">
             이미지 준비중
           </div>
         )}
         {typeBadge ? (
           <span
-            className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-xs font-extrabold tracking-wide text-white shadow-md ${typeBadge.className}`}
+            className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-base font-extrabold tracking-wide text-white shadow-md ${typeBadge.className}`}
           >
             {typeBadge.label}
           </span>
         ) : (
-          <span className="absolute left-3 top-3 rounded-full bg-base-dark/80 px-2.5 py-1 text-xs font-medium text-white">
+          <span className="absolute left-3 top-3 rounded-full bg-base-dark/80 px-2.5 py-1 text-base font-medium text-white">
             {getProductCategoryLabel(product.category)}
           </span>
         )}
@@ -62,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3 className="line-clamp-1 text-base font-semibold text-title transition-colors duration-300 sm:text-lg">
           {product.name}
         </h3>
-        <p className="mt-1 text-sm font-medium text-point transition-colors duration-300">
+        <p className="mt-1 text-base font-medium text-point transition-colors duration-300">
           {formatPrice(product.price)}
         </p>
       </div>

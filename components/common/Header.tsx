@@ -4,11 +4,20 @@ import { COMPANY_INFO } from "@/datas/company";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Header() {
 
-    const [isLogin, setIsLogin] = useState<boolean>(false)
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const { data: authData } = useQuery({
+        queryKey: ["auth"],
+        queryFn: async () => {
+            const res = await fetch("/api/auth");
+            if (!res.ok) throw new Error("인증 상태 확인 실패");
+            return res.json() as Promise<{ isLogin: boolean; isAdmin: boolean }>;
+        },
+    });
+    const isLogin = authData?.isLogin ?? false;
+    const isAdmin = authData?.isAdmin ?? false;
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isOpenSub, setIsOpenSub] = useState<string | null>(null);
@@ -35,22 +44,6 @@ export default function Header() {
     useEffect(() => {
         if (!isOpen) setIsOpenSub(null);
     }, [isOpen]);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch("/api/auth");
-                if (res.ok) {
-                    const data = await res.json();
-                    setIsLogin(data.isLogin);
-                    setIsAdmin(data.isAdmin);
-                }
-            } catch (err) {
-                console.error("인증 상태 확인 실패:", err);
-            }
-        };
-        checkAuth();
-    }, []);
 
     return (
         <>

@@ -17,7 +17,7 @@ export default function ProductInfoTable({ product }: ProductInfoTableProps) {
       <h2 className="border-b border-black/5 px-6 py-4 text-base font-bold text-title">
         제품 상세 정보
       </h2>
-      <table className="w-full text-sm">
+      <table className="w-full text-base">
         <tbody className="divide-y divide-black/5">
           <tr>
             <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 text-left font-medium text-title pc:w-40">
