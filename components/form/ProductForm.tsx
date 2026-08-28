@@ -79,8 +79,11 @@ function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
 }
 
 export default function ProductForm({ editId, initialData }: ProductFormOwnProps = {}) {
+
+    // 등록/수정
     const isEditMode = !!editId;
 
+    // 데이터 관리
     const [form, setForm] = useState({
         name: initialData?.name ?? "",
         category: initialData?.category ?? "",
@@ -89,6 +92,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         features: initialData?.features ?? "",
         price: initialData?.price != null ? String(initialData.price) : "",
     });
+
+    // 이미지 저장
     const [mainImage, setMainImage] = useState<File | null>(null);
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
     const [existingMainImageUrl, setExistingMainImageUrl] = useState<string | null>(
@@ -99,8 +104,9 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     );
     const [newDetailImages, setNewDetailImages] = useState<File[]>([]);
 
+    // toast 관리
     const [vaild, setVaild] = useState<string | null>(null);
-    const [isSuccess, setIsSuccess] = useState(false);
+    // 이미지 업로드 : fetch + supabase Storage 업로드 시, 별도 loading 필요
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
@@ -111,11 +117,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     }, [mainImage]);
 
     const handleCloseToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
-        if (isSuccess) {
-            window.location.href = "/admin";
-        }
         setVaild(value);
-        setIsSuccess(false);
     };
 
     const createMutation = useMutation({
@@ -129,7 +131,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             if (!response.ok) throw new Error(result.error || "등록에 실패했습니다.");
             return result;
         },
-        onSuccess: () => { setIsSuccess(true); setVaild("제품이 등록되었습니다."); },
+        onSuccess: () => { setVaild("제품이 등록되었습니다."); },
         onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
     });
 
@@ -144,7 +146,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             if (!response.ok) throw new Error(result.error || "수정에 실패했습니다.");
             return result;
         },
-        onSuccess: () => { setIsSuccess(true); setVaild("제품이 수정되었습니다."); },
+        onSuccess: () => { setVaild("제품이 수정되었습니다."); },
         onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
     });
 

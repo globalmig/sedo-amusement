@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePagination } from "@/hooks/usePagination";
 import Toast from "../common/Toast";
 import Pagination from "../common/Pagination";
@@ -41,11 +41,17 @@ interface ProductListProps {
 
 // 관리자 제품 리스트: 테이블형 CRUD 인터페이스
 export default function ProductList({ products, onReload }: ProductListProps) {
+  const queryClient = useQueryClient();
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [completedMessage, setCompletedMessage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loadedUrls, setLoadedUrls] = useState<Set<string>>(new Set());
+
+  // productTypeOverride
   // 목록에서 즉시 변경한 분류(신제품/히트상품/추천상품) 값을 서버 응답 전까지 미리 반영
+  // 아직 API에 요청이 도착하지 않았어도 사용자 화면에는 즉시 새값을 보여주기 위한 임시 메모 (화면엔 일단 보여줘.)
+  // -> 실제 데이터 (products 배열) 에는 아직 바뀌지 않은 상태
+  // 관리자 화면에 벗어나면 임시 메모는 사라짐 (빈 객체)
   const [productTypeOverride, setProductTypeOverride] = useState<Record<number, ProductType>>({});
 
   const markLoaded = (url: string) => {
@@ -84,6 +90,13 @@ export default function ProductList({ products, onReload }: ProductListProps) {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "수정에 실패했습니다.");
       return result;
+    },
+    // onSuccess
+    // productTypeOverride 로 화면 부터 바꾸고, 서버 저장에 성공하면 ["products"] 캐시도 낡았다고 표시
+    // -> 이 페이지에 나갔다 다시 들어와도 productTypeOverride가 초기화되는 순간엔
+    // 이미 캐시가 최신상태라 예전값이 잠깐 보이는 문제가 사라짐
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 

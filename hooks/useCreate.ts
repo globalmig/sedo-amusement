@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 
 interface UseCreateOptions {
@@ -15,33 +14,6 @@ export function useCreate<TPayload extends Record<string, any> | FormData = Reco
 
     const optionsRef = useRef(options);
     optionsRef.current = options;
-
-    const mutation = useMutation({
-        mutationFn: async (payload: TPayload) => {
-            const isFormData = payload instanceof FormData;
-
-            const response = await fetch(baseUrl, {
-                method: "POST",
-                headers: isFormData ? undefined : { "Content-Type": "application/json" },
-                body: isFormData ? payload : JSON.stringify(payload),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || "등록에 실패했습니다.");
-            }
-
-            return result;
-        },
-        onSuccess: (data) => {
-            
-        },
-        onError: (err: Error) => {
-            const message = err.message || "서버 내부 오류가 발생했습니다.";
-            options.onError?.(message);
-        }
-    })
 
     const create = useCallback(async (payload: TPayload) => {
         if (loading) return null;
