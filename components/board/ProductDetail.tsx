@@ -2,7 +2,8 @@ import { Product } from "@/types/product";
 import { COMPANY_INFO } from "@/datas/company";
 import { getProductCategoryLabel } from "@/datas/categories";
 import Link from "next/link";
-import ProductImageGallery from "./ProductImageGallery";
+import ProductMainImage from "./ProductMainImage";
+import ProductDetailImages from "./ProductDetailImages";
 import ProductInfoTable from "./ProductInfoTable";
 import ProductShippingInfo from "./ProductShippingInfo";
 
@@ -20,11 +21,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     <div className="space-y-8">
       <div className="flex flex-col gap-8 pc:flex-row">
         <div className="pc:basis-1/2">
-          <ProductImageGallery
-            mainImageUrl={product.main_image_url}
-            detailImages={product.detail_images ?? []}
-            alt={product.name}
-          />
+          <ProductMainImage imageUrl={product.main_image_url} alt={product.name} />
         </div>
 
         <div className="flex flex-col pc:basis-1/2">
@@ -46,6 +43,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </div>
       </div>
+
+      <ProductDetailImages images={product.detail_images ?? []} alt={product.name} />
 
       <ProductInfoTable product={product} />
       <ProductShippingInfo />
