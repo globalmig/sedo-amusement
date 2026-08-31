@@ -22,9 +22,9 @@ export default function CompanyPage() {
             <article>
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     {/* 인사말 */}
-                        <p className="text-base font-bold tracking-widest text-primary">GREETING</p>
+                        <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">GREETING</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">인사말</h2>
-                        <div className="mt-6 space-y-5 text-base leading-7 text-body pc:text-base">
+                        <div className="mt-6 space-y-5 text-base leading-7 text-body pc:text-[20px]">
                             <p>
                                 안녕하십니까, 세도어뮤즈먼트를 찾아주셔서 감사합니다.
                             </p>

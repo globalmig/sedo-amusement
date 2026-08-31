@@ -22,7 +22,7 @@ export default function LocationPage() {
             <article>
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     {/* 오시는 길 */}
-                    <p className="text-base font-bold tracking-widest text-primary">LOCATION</p>
+                    <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">LOCATION</p>
                     <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">오시는 길</h2>
                     <div className="pc:flex pc:justify-between">
                         {/* 지도 */}
@@ -40,25 +40,25 @@ export default function LocationPage() {
                         <div className="mt-8 pc:w-120">
                             <ul>
                                 <li className="flex gap-4 border-b border-black/5 py-4 pc:pb-6">
-                                    <p className="w-20 shrink-0 font-bold text-title">주소</p>
-                                    <p className="text-body">{COMPANY_INFO.address}</p>
+                                    <p className="w-20 shrink-0 font-bold text-title pc:text-[20px]">주소</p>
+                                    <p className="text-body pc:text-[20px]">{COMPANY_INFO.address}</p>
                                 </li>
                                 <li className="flex gap-4 border-b border-black/5 py-4 pc:py-6">
-                                    <p className="w-20 shrink-0 font-bold text-title">전화</p>
-                                    <p className="text-body">
+                                    <p className="w-20 shrink-0 font-bold text-title pc:text-[20px]">전화</p>
+                                    <p className="text-body pc:text-[20px]">
                                         <Link href={COMPANY_INFO.phoneHref} className="hover:text-primary">{COMPANY_INFO.phone}</Link>
                                     </p>
                                 </li>
                                 <li className="flex gap-4 border-b border-black/5 py-4 pc:py-6">
-                                    <p className="w-20 shrink-0 font-bold text-title">이메일</p>
-                                    <p className="text-body">{COMPANY_INFO.email}</p>
+                                    <p className="w-20 shrink-0 font-bold text-title pc:text-[20px]">이메일</p>
+                                    <p className="text-body pc:text-[20px]">{COMPANY_INFO.email}</p>
                                 </li>
                                 <li className="flex gap-4 py-4 pc:py-6">
                                     <p className="w-20 shrink-0 font-bold text-title pc:hidden">운영시간</p>
                                     <p className="text-body pc:hidden">{COMPANY_INFO.bizHours}</p>
                                     <div className="hidden pc:block bg-primary rounded-xl w-full p-5 pb-10">
-                                        <p className="font-bold text-white">운영시간</p>
-                                        <p className="text-white mt-2">{COMPANY_INFO.bizHours}</p>
+                                        <p className="font-bold text-white pc:text-[20px]">운영시간</p>
+                                        <p className="text-white mt-2 pc:text-[20px]">{COMPANY_INFO.bizHours}</p>
                                     </div>
                                 </li>
                             </ul>

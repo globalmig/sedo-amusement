@@ -13,7 +13,7 @@ export default function ContactButtons({
 }: ContactButtonsProps) {
     return (
         <div className={`flex flex-wrap items-center justify-center gap-3 ${className}`}>
-            <Link href={COMPANY_INFO.phoneHref} className="btn-primary px-8 py-3.5 text-base">
+            <Link href={COMPANY_INFO.phoneHref} className="btn-primary rounded-full px-8 py-3.5 text-base pc:text-[20px]">
                 {phoneText}
             </Link>
         </div>

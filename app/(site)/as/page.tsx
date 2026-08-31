@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import CategoryBanner from "@/components/common/CategoryBanner";
-import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
-import { COMPANY_INFO } from "@/datas/company";
 import { FAQ_CATEGORIES, FAQ_ITEMS } from "@/datas/faq";
 import Image from "next/image";
 
@@ -88,9 +86,9 @@ export default function AsPage() {
                 {/* 자가 점검 가이드 */}
                 <section id="self-check" className="scroll-mt-20 bg-surface">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-base font-bold tracking-widest text-primary">SELF-CHECK GUIDE</p>
+                        <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">SELF-CHECK GUIDE</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">자가 점검 가이드</h2>
-                        <p className="mt-3 max-w-xl text-base leading-6 text-body pc:text-base">
+                        <p className="mt-3 max-w-xl text-base leading-6 text-body pc:text-[20px]">
                             A/S 요청 전, 아래 항목을 먼저 확인해보세요. 간단한 점검만으로 바로
                             해결되는 경우가 많습니다.
                         </p>
@@ -111,7 +109,7 @@ export default function AsPage() {
                                                 {item.title}
                                             </h3>
                                         </div>
-                                        <p className="mt-2 leading-5 text-body pc:text-[1rem] pc:leading-6">{item.description}</p>
+                                        <p className="mt-2 leading-5 text-body pc:text-[20px] pc:leading-6">{item.description}</p>
                                     </div>
                                 ))}
                             </div>
@@ -132,28 +130,28 @@ export default function AsPage() {
                 {/* A/S 프로세스 */}
                 <section className="bg-white">
                     <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                        <p className="text-base font-bold tracking-widest text-primary">PROCESS</p>
+                        <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">PROCESS</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">
                             그래도 해결되지 않으셨다면
                         </h2>
-                        <p className="mt-3 max-w-xl text-base leading-6 text-body pc:text-base">
+                        <p className="mt-3 max-w-xl text-base leading-6 text-body pc:text-[20px]">
                             아래 4단계 절차를 통해 빠르고 정확하게 A/S를 접수해 드립니다.
                         </p>
 
                         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 pc:grid-cols-4">
                             {AS_STEPS.map((item) => (
-                                <div key={item.step} className="card flex min-h-56 flex-col justify-between gap-8 p-6 pc:p-8">
+                                <div key={item.step} className="group card flex min-h-56 flex-col justify-between gap-8 p-6 transition-colors pc:p-8">
                                     <div>
-                                        <span className="text-2xl font-black text-primary pc:text-3xl">{item.step}</span>
-                                        <h3 className="mt-3 text-base font-bold text-title pc:text-[1.3rem]">{item.title}</h3>
-                                        <p className="mt-2 text-base leading-6 text-body pc:text-[1rem]">{item.description}</p>
+                                        <span className="text-base font-black text-primary transition-colors pc:text-[20px]">{item.step}</span>
+                                        <h3 className="mt-3 text-lg font-bold text-title transition-colors pc:text-[1.3rem]">{item.title}</h3>
+                                        <p className="mt-2 text-base leading-6 text-body transition-colors pc:mt-3 pc:text-[20px]">{item.description}</p>
                                     </div>
                                     <Image
                                         src={item.icon}
                                         alt=""
                                         width={48}
                                         height={48}
-                                        className="h-10 w-10 self-end pc:h-12 pc:w-12"
+                                        className="h-10 w-10 self-end transition duration-300 pc:h-12 pc:w-12"
                                     />
                                 </div>
                             ))}

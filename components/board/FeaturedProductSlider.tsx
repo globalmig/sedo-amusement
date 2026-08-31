@@ -12,8 +12,6 @@ interface FeaturedProductSliderProps {
   products: Product[];
 }
 
-// react-slick의 variableWidth 모드는 각 슬라이드 간격을 계산할 때
-// children의 inline style.width 값을 직접 읽기 때문에 CSS 클래스만으로는 대체 불가
 function getSlideGapWidth() {
   if (typeof window === "undefined") return 380;
   if (window.innerWidth >= 1024) return 380;
@@ -33,7 +31,7 @@ export default function FeaturedProductSlider({ products }: FeaturedProductSlide
 
   if (products.length === 0) {
     return (
-      <div className="py-16 text-center text-base text-muted">
+      <div className="py-16 text-center text-base text-muted pc:text-[20px]">
         세도어뮤즈먼트의 제품을 확인해보세요. <Link href="/products" className="underline">전체 제품 보기</Link>
       </div>
     );

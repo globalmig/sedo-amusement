@@ -50,7 +50,7 @@ export default function Header() {
             <header className={`fixed top-0 left-0 z-40 w-full border-b duration-500
                 ${isScroll ? "bg-white border-b-gray-200" : "bg-black/85"}`}>
 
-                <div className="flex py-3 items-center justify-between px-[5%] pc:mx-auto pc:max-w-300 pc:px-0">
+                <div className="flex py-3 items-center justify-between px-[5%] pc:mx-auto pc:max-w-300 pc:px-0 pc:py-5">
                     
                         <Link href="/" rel="canonical">
                             <Image 
@@ -93,7 +93,7 @@ export default function Header() {
                                             {hasDropdown ? (
                                                 <li
                                                     onClick={() => !isPc && setIsOpenSub(isTarget ? null : key)}
-                                                    className="flex w-full cursor-pointer items-center justify-between gap-2 font-bold pc:pointer-events-none pc:w-auto pc:font-semibold hover:text-primary">
+                                                    className="flex w-full cursor-pointer items-center justify-between gap-2 font-bold pc:pointer-events-none pc:w-auto pc:font-semibold pc:text-[20px] hover:text-primary">
                                                     {c.title}
                                                     <svg
                                                         viewBox="0 0 24 24"
@@ -110,7 +110,7 @@ export default function Header() {
                                                     <Link
                                                         href={key === "products" ? `/${key}/${c.categories?.[0]?.url ?? ""}` : `/${key}`}
                                                         rel="canonical" onClick={() => setIsOpen(false)}
-                                                        className={`font-bold block cursor-pointer pc:text-base pc:font-semibold pc:hover:text-primary ${isScroll ? "pc:text-title" : "pc:text-white"}`}>
+                                                        className={`font-bold block cursor-pointer pc:text-[20px] pc:font-semibold pc:hover:text-primary ${isScroll ? "pc:text-title" : "pc:text-white"}`}>
                                                         {c.title}
                                                     </Link>
                                                 </li>
@@ -125,7 +125,7 @@ export default function Header() {
                                                         className="hover:bg-surface pc:hover:bg-surface transition-colors border-b border-black/5 pc:border-white/20 last:border-0"
                                                         onClick={() => setIsOpen(false)}>
                                                         <Link href={`/${key}/${sub.url}`} rel="canonical"
-                                                            className="block py-2.5 px-5 text-title pc:text-white pc:hover:text-title">
+                                                            className="block py-2.5 px-5 text-title pc:text-white pc:text-[20px] pc:hover:text-title">
                                                             {sub.name}
                                                         </Link>
                                                     </li>

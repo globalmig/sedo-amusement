@@ -6,7 +6,7 @@ const CATEGORY_SHOWCASE = [
         name: "크레인/경품 게임기",
         url: "crane",
         image: "/images/category-crane.png",
-        description: "높은 가동률과 매장 수익을 책임지는\n필수 인형뽑기·경품기",
+        description: "높은 가동률과 매장 수익을 책임지는 필수 인형뽑기·경품기",
     },
     {
         name: "슈팅 게임",
@@ -42,15 +42,19 @@ export default function ProductCategoryShowcase() {
             <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                 <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
                     <div>
-                        <p className="text-base font-bold tracking-widest text-primary">DISCOVER OUR LINEUP</p>
+                        <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">DISCOVER OUR LINEUP</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">원하시는 다양한 제품을 확인해보세요.</h2>
                     </div>
-                    <Link href="/products/all" className="text-base font-semibold text-primary hover:underline">
-                        전체 제품 보기 &gt;
+                    <Link
+                        href="/products/all"
+                        className="hidden shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-primary/90 pc:inline-flex pc:text-[20px]"
+                    >
+                        전체 제품 보기
+                        <ArrowIcon className="h-4 w-4" />
                     </Link>
                 </div>
 
-                <div className="mt-12 hidden items-start justify-between gap-6 pc:flex">
+                <div className="mt-10 hidden items-start justify-between gap-6 pc:flex">
                     {CATEGORY_SHOWCASE.map((category, index) => {
                         const isImageTop = index % 2 === 0;
 
@@ -60,12 +64,12 @@ export default function ProductCategoryShowcase() {
 
                         const textBlock = (
                             <div
-                                className={`absolute inset-x-0 z-10 flex w-70 h-70 shrink-0 flex-col items-center gap-2 px-6 pt-8 pb-12 text-center ${textPosition}`}
+                                className={`absolute inset-x-0 z-10 flex w-70 h-70 shrink-0 flex-col items-center gap-2 px-6 pt-8 pb-12 text-center pc:px-4 ${textPosition}`}
                             >
-                                <h3 className="text-lg pc:text-xl font-bold text-title transition-colors duration-300 group-hover:text-white">
+                                <h3 className="text-lg pc:text-2xl font-bold text-title transition-colors duration-300 group-hover:text-white">
                                     {category.name}
                                 </h3>
-                                <p className="whitespace-pre-line text-base leading-5 text-body transition-colors duration-300 group-hover:text-white/90">
+                                <p className="whitespace-pre-line text-base text-body transition-colors duration-300 group-hover:text-white/90 pc:text-[20px] mt-2">
                                     {category.description}
                                 </p>
                                 <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white transition-colors duration-300 group-hover:bg-white group-hover:text-primary">
@@ -123,10 +127,11 @@ export default function ProductCategoryShowcase() {
                     ))}
 
                     <Link
-                        href="/products"
-                        className="mx-auto inline-flex items-center justify-center rounded-full border border-black/20 px-6 py-3 text-base font-semibold text-body transition-colors hover:bg-surface"
+                        href="/products/all"
+                        className="mx-auto inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-primary/90"
                     >
-                        전체 카테고리 보기
+                        전체 제품 보기
+                        <ArrowIcon className="h-4 w-4" />
                     </Link>
                 </div>
             </div>

@@ -35,6 +35,14 @@ function ChevronIcon({ className }: { className?: string }) {
     );
 }
 
+function ArrowRightIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
+            <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    );
+}
+
 export default function FaqList({
     items,
     eyebrow = "FAQ",
@@ -73,22 +81,22 @@ export default function FaqList({
             <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                 <div className="flex gap-2 items-end justify-between">
                     <div>
-                        <p className="text-base font-bold tracking-widest text-primary">{eyebrow}</p>
+                        <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">{eyebrow}</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">{title}</h2>
                     </div>
                     {moreHref && (
                         <Link
                             href={moreHref}
-                            className="inline-flex items-center gap-1 text-base font-semibold text-primary hover:underline"
+                            className="hidden shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-primary/90 pc:inline-flex pc:text-[20px]"
                         >
                             {moreLabel}
-                            <ChevronIcon className="h-4 w-4 -rotate-90" />
+                            <ArrowRightIcon className="h-4 w-4" />
                         </Link>
                     )}
                 </div>
 
                 {categories && categories.length > 0 && (
-                    <div className="mt-8 flex flex-wrap gap-2">
+                    <div className="mt-10 flex flex-wrap gap-2">
                         <button
                             type="button"
                             onClick={() => selectCategory(ALL_CATEGORY_KEY)}
@@ -115,7 +123,7 @@ export default function FaqList({
                     </div>
                 )}
 
-                <div className="mt-8 flex flex-col gap-3">
+                <div className="mt-10 flex flex-col gap-3">
                     {pagedItems.map((item, index) => {
                         const isOpen = openIndex === index;
                         return (
@@ -124,9 +132,9 @@ export default function FaqList({
                                     type="button"
                                     onClick={() => setOpenIndex(isOpen ? null : index)}
                                     aria-expanded={isOpen}
-                                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left pc:py-7"
                                 >
-                                    <span className="flex gap-3 text-base font-bold text-title">
+                                    <span className="flex gap-3 text-base font-bold text-title pc:text-[20px]">
                                         <span className="text-primary">Q</span>
                                         {item.q}
                                     </span>
@@ -139,7 +147,7 @@ export default function FaqList({
                                     className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                                 >
                                     <div className="overflow-hidden">
-                                        <p className="flex gap-3 px-6 pb-5 text-base leading-6 text-body">
+                                        <p className="flex gap-3 px-6 pb-5 text-base leading-6 text-body pc:text-[20px]">
                                             <span className="font-bold text-muted">A</span>
                                             {item.a}
                                         </p>
@@ -157,6 +165,18 @@ export default function FaqList({
                         itemsPerPage={ITEMS_PER_PAGE}
                         onPageChange={changePage}
                     />
+                )}
+
+                {moreHref && (
+                    <div className="mt-10 flex justify-center pc:hidden">
+                        <Link
+                            href={moreHref}
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-primary/90"
+                        >
+                            {moreLabel}
+                            <ArrowRightIcon className="h-4 w-4" />
+                        </Link>
+                    </div>
                 )}
             </div>
         </section>

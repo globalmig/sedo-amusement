@@ -33,7 +33,7 @@ export default function CategoryBanner({
             <div className="mx-auto max-w-300 px-[5%] py-10 pc:px-0 pc:py-14">
                 <h1 className="text-2xl font-black text-white pc:text-3xl">{title}</h1>
                 {description && (
-                    <p className="mt-3 max-w-xl text-base leading-6 text-white/70 pc:text-base">
+                    <p className="mt-3 max-w-xl text-base leading-6 text-white/70">
                         {description}
                     </p>
                 )}

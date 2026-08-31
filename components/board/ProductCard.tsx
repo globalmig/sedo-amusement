@@ -14,7 +14,7 @@ function formatPrice(price: number | null) {
 interface ProductCardProps {
   product: Product;
 }
-
+ 
 export default function ProductCard({ product }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const mainImageUrl = product.main_image_url;
@@ -25,23 +25,22 @@ export default function ProductCard({ product }: ProductCardProps) {
       href={`/products/${product.product_type ?? "all"}/${product.id}`}
       className="group block overflow-hidden rounded-xl border border-black/5 bg-white shadow-sm transition-shadow duration-300"
     >
-      <div className="relative aspect-4/3 w-full bg-base-light">
+      <div className="relative flex aspect-4/3 w-full items-center justify-center bg-white">
         {mainImageUrl ? (
           <>
             {!imageLoaded && <Skeleton className="absolute inset-0 m-0! p-0!" />}
-            <div className="absolute inset-0 overflow-hidden">
-              <Image
+            <Image
               src={mainImageUrl}
               alt={product.name}
-              fill
+              width={200}
+              height={200}
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-              className={`object-cover transition-transform duration-300 group-hover:scale-105 ${imageLoaded ? "" : "invisible"}`}
+              className={`h-28 w-28 object-contain transition-transform duration-300 group-hover:scale-105 sm:h-36 sm:w-36 pc:h-60 pc:w-60 ${imageLoaded ? "" : "invisible"}`}
               onLoad={() => setImageLoaded(true)}
-            />
-            </div>
+            /> 
           </>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-base text-base-dark/40">
+          <div className="flex h-full w-full items-center justify-center text-base text-base-dark/40 pc:text-[20px]">
             이미지 준비중
           </div>
         )}
@@ -59,7 +58,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <div className="border-t border-black/5 p-4 transition-colors duration-300 group-hover:border-point sm:p-5">
-        <h3 className="line-clamp-1 text-base font-semibold text-title transition-colors duration-300 sm:text-lg">
+        <h3 className="line-clamp-1 text-base font-semibold text-title transition-colors duration-300 sm:text-lg pc:text-[20px]">
           {product.name}
         </h3>
         <p className="mt-1 text-base font-medium text-point transition-colors duration-300">

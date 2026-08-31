@@ -35,25 +35,25 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
             />
           </>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-base text-base-dark/40">
+          <div className="flex h-full w-full items-center justify-center text-base text-base-dark/40 pc:text-[20px]">
             이미지 준비중
           </div>
         )}
         {typeBadge ? (
           <span
-            className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-base font-extrabold tracking-wide text-white shadow-md ${typeBadge.className}`}
+            className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-base font-extrabold tracking-wide text-white shadow-md pc:text-[20px] ${typeBadge.className}`}
           >
             {typeBadge.label}
           </span>
         ) : (
-          <span className="absolute left-3 top-3 rounded-md bg-black/5 px-2.5 py-1 text-base font-medium text-title/70">
+          <span className="absolute left-3 top-3 rounded-md bg-black/5 px-2.5 py-1 text-base font-medium text-title/70 pc:text-[20px]">
             {getProductCategoryLabel(product.category)}
           </span>
         )}
       </div>
 
-      <div className="border-t border-black/5 px-4 py-5">
-        <h4 className="line-clamp-1 text-lg pc:text-xl font-bold text-title">
+      <div className="border-t border-black/5 px-4 py-5 bg-[#222]">
+        <h4 className="line-clamp-1 text-lg pc:text-xl font-bold text-white">
           {product.name}
         </h4>
       </div>

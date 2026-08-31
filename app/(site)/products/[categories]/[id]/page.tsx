@@ -64,12 +64,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           />
     <article>
       <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
-        <Link href={`/products/${categories}`} className="inline-flex items-center gap-1 text-base text-muted hover:text-primary">
+        <Link href={`/products/${categories}`} className="inline-flex items-center gap-1 text-base text-muted hover:text-primary pc:text-base">
           <ArrowLeftIcon className="h-4 w-4" />
-          {category.name} 목록으로
+          {category.name} 목록으로 돌아가기
         </Link>
 
-        <div className="mt-6">
+        <div className="mt-15">
           <ProductDetail product={product} />
         </div>
 

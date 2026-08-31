@@ -56,7 +56,7 @@ export default function ProductGalleryFilter({ products, initialCategory = null 
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-4 pc:mb-8 pc:flex-row pc:items-center pc:justify-between">
+      <div className="mb-6 flex flex-col gap-4 pc:mb-8 pc:flex-row pc:items-center">
         <div className="relative shrink-0 pc:w-56">
           <select
             value={activeCategory ?? ""}
@@ -80,7 +80,7 @@ export default function ProductGalleryFilter({ products, initialCategory = null 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="제품명 검색"
-            className="w-full rounded-lg border border-black/10 bg-white py-2.5 pl-9 pr-3 text-base text-body outline-none focus:border-point"
+            className="w-full rounded-lg border border-black/10 bg-white py-2.5 pl-9 pr-3 text-base font-medium text-body outline-none placeholder:text-body focus:border-point"
           />
         </div>
       </div>
