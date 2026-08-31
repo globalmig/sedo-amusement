@@ -12,12 +12,15 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 <h3 className="text-base font-bold">
                         <Link href="/admin" className="text-title hover:text-primary">ADMIN</Link>
                     </h3>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-3 pc:gap-1">
+                    <Link href="/" className="text-base font-semibold text-primary pc:hidden">
+                        사이트 돌아가기
+                    </Link>
                     <button
                         type="button"
                         onClick={onMenuClick}
                         aria-label="메뉴 열기"
-                        className="-ml-1 flex h-10 items-center justify-center rounded-lg text-title hover:bg-surface pc:hidden"
+                        className="flex h-10 items-center justify-center rounded-lg text-title hover:bg-surface pc:hidden"
                     >
                         <svg
                             viewBox="0 0 24 24"

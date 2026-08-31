@@ -33,7 +33,12 @@ export default async function AdminProductViewPage({ params }: AdminProductViewP
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-title">제품 상세보기</h2>
+            <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-title">제품 상세보기</h2>
+                <Link href="/admin/products" className="btn-primary hidden pc:inline-flex">
+                    뒤로가기
+                </Link>
+            </div>
             <div className="pc:max-w-100">
                 <ProductImageGallery
                     mainImageUrl={product.main_image_url}
@@ -43,10 +48,13 @@ export default async function AdminProductViewPage({ params }: AdminProductViewP
             </div>
             <ProductInfoTable product={product} />
             <div className="flex gap-3">
-                <Link href={`/admin/products/${categories}/${id}`} className="btn-primary">
+                <Link href={`/admin/products/${categories}/${id}`} className="btn-primary pc:text-[20px]">
                     수정하기
                 </Link>
-                <DeleteProductButton productId={product.id} />
+                <Link href="/admin/products" className="btn-ghost bg-muted pc:hidden">
+                    뒤로가기
+                </Link>
+                <DeleteProductButton productId={product.id} className="pc:text-[20px]" />
             </div>
             <PrevNextNavbar
                 prevItem={prev ? { href: `/admin/products/${categories}/${prev.id}/view`, title: prev.name } : null}

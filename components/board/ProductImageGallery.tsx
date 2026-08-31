@@ -21,7 +21,7 @@ export default function ProductImageGallery({ mainImageUrl, detailImages, alt }:
 
   return (
     <div>
-      <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-base-light">
+      <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-base-light">
         {selected ? (
           <>
             {!loadedUrls.has(selected) && <Skeleton className="absolute inset-0 m-0! p-0!" />}
@@ -30,7 +30,7 @@ export default function ProductImageGallery({ mainImageUrl, detailImages, alt }:
               alt={alt}
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className={`object-cover ${loadedUrls.has(selected) ? "" : "invisible"}`}
+              className={`object-contain ${loadedUrls.has(selected) ? "" : "invisible"}`}
               onLoad={() => markLoaded(selected)}
             />
           </>
@@ -60,7 +60,7 @@ export default function ProductImageGallery({ mainImageUrl, detailImages, alt }:
                 alt={`${alt} 썸네일 ${index + 1}`}
                 fill
                 sizes="80px"
-                className={`object-cover ${loadedUrls.has(url) ? "" : "invisible"}`}
+                className={`object-contain ${loadedUrls.has(url) ? "" : "invisible"}`}
                 onLoad={() => markLoaded(url)}
               />
             </button>

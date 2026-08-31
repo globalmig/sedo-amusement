@@ -35,7 +35,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               width={200}
               height={200}
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-              className={`h-28 w-28 object-contain transition-transform duration-300 group-hover:scale-105 sm:h-36 sm:w-36 pc:h-60 pc:w-60 ${imageLoaded ? "" : "invisible"}`}
+              className={`h-36 w-auto object-contain transition-transform duration-300 group-hover:scale-105 pc:h-58 ${imageLoaded ? "" : "invisible"}`}
               onLoad={() => setImageLoaded(true)}
             /> 
           </>

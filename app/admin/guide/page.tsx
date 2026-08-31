@@ -7,7 +7,7 @@ export default function AdminGuidePage() {
             <div>
                 <h2 className="text-3xl font-black text-title">관리자 페이지 사용 가이드</h2>
                 <p className="mt-3 text-base leading-7 text-body">
-                    제품을 등록하고, 수정하고, 삭제하는 방법을 화면 캡처와 함께 순서대로 안내해 드립니다.
+                    제품을 등록하고, 수정하고, 삭제하는 방법을 단계별로 안내해 드립니다.
                     <br />
                     아래에서 원하시는 항목을 눌러주세요.
                 </p>

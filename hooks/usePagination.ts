@@ -15,10 +15,13 @@ export function usePagination<T>( //<T>: 어떤 형태의 배열
   const { initialPage = 1, resetOnDataChange = true, onPageChange: onChange } = options;
   const [currentPage, setCurrentPage] = useState(initialPage);
 
-  // 검색어나 카테고리 변경 등으로 data 배열이 새로 들어왔을 때 첫페이지로 되돌림
+  // 검색어나 카테고리 변경 등으로 데이터 "개수"가 달라졌을 때만 첫페이지로 되돌림
+  // (data는 참조라서 같은 필터 조건이어도 refetch/부분 업데이트 시 매번 새 배열이 되므로
+  //  totalCount로만 판단해야 분류 수정 등으로 페이지가 임의로 리셋되지 않음)
   useEffect(() => {
     if (resetOnDataChange) setCurrentPage(initialPage);
-  }, [data, initialPage, resetOnDataChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.length, initialPage, resetOnDataChange]);
 
   const totalCount = data.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / dataPerPage));

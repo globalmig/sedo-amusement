@@ -7,9 +7,14 @@ import Toast from "../common/Toast";
 interface DeleteProductButtonProps {
     productId: number;
     redirectTo?: string;
+    className?: string;
 }
 
-export default function DeleteProductButton({ productId, redirectTo = "/admin/products" }: DeleteProductButtonProps) {
+export default function DeleteProductButton({
+    productId,
+    redirectTo = "/admin/products",
+    className = "",
+}: DeleteProductButtonProps) {
     const router = useRouter();
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -37,7 +42,7 @@ export default function DeleteProductButton({ productId, redirectTo = "/admin/pr
                 type="button"
                 onClick={() => setConfirmOpen(true)}
                 disabled={loading}
-                className="btn-ghost"
+                className={`btn-ghost ${className}`}
             >
                 {loading ? "삭제 중..." : "삭제"}
             </button>

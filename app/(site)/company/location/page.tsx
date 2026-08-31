@@ -46,7 +46,7 @@ export default function LocationPage() {
                                 <li className="flex gap-4 border-b border-black/5 py-4 pc:py-6">
                                     <p className="w-20 shrink-0 font-bold text-title pc:text-[20px]">전화</p>
                                     <p className="text-body pc:text-[20px]">
-                                        <Link href={COMPANY_INFO.phoneHref} className="hover:text-primary">{COMPANY_INFO.phone}</Link>
+                                        <Link href={COMPANY_INFO.phoneHref} className="hover:text-primary pc:text-[20px]">{COMPANY_INFO.phone}</Link>
                                     </p>
                                 </li>
                                 <li className="flex gap-4 border-b border-black/5 py-4 pc:py-6">

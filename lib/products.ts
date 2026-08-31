@@ -59,15 +59,15 @@ export async function getProductsByType(productType: string): Promise<Product[]>
     return data ?? [];
 }
 
-// 홈페이지 대표 제품 슬라이더용: 추천상품 중 무작위로 limit개 조회
-export async function getRandomRecommendedProducts(limit: number): Promise<Product[]> {
+// 홈페이지 대표 제품 슬라이더용: 히트상품 중 무작위로 limit개 조회
+export async function getRandomHitProducts(limit: number): Promise<Product[]> {
     const { data, error } = await supabaseAdmin
         .from("products")
         .select("*")
-        .eq("product_type", "recommend" as ProductType);
+        .eq("product_type", "hit" as ProductType);
 
     if (error) {
-        console.error("추천 제품 조회 실패:", error.message);
+        console.error("히트 제품 조회 실패:", error.message);
         return [];
     }
 

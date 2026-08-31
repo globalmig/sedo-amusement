@@ -7,7 +7,7 @@ import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
 import StatCounter from "@/components/common/StatCounter";
 import { FAQ_ITEMS } from "@/datas/faq";
-import { getRandomRecommendedProducts } from "@/lib/products";
+import { getRandomHitProducts } from "@/lib/products";
 
 type IconProps = { className?: string };
 
@@ -78,7 +78,7 @@ const PROCESS_STEPS = [
 ];
 
 export default async function Home() {
-    const previewProducts = await getRandomRecommendedProducts(10);
+    const previewProducts = await getRandomHitProducts(10);
 
     return (
         <>

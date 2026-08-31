@@ -21,8 +21,8 @@ export default function AdminSideMenu({ open = false, onClose }: AdminSideMenuPr
                 />
             )}
             <aside
-                className={`fixed left-0 top-14 z-50 h-[calc(100vh-3.5rem)] w-64 max-w-[80%] shrink-0 overflow-y-auto bg-black/80 transition-transform duration-200 pc:static pc:z-auto pc:h-auto pc:min-h-screen pc:w-56 pc:max-w-none pc:translate-x-0 ${
-                    open ? "translate-x-0" : "-translate-x-full"
+                className={`fixed right-0 top-14 z-50 h-[calc(100vh-3.5rem)] w-64 max-w-[80%] shrink-0 overflow-y-auto bg-black/80 transition-transform duration-200 pc:static pc:z-auto pc:h-auto pc:min-h-screen pc:w-56 pc:max-w-none pc:translate-x-0 ${
+                    open ? "translate-x-0" : "translate-x-full"
                 }`}
             >
                 <nav className="py-4">

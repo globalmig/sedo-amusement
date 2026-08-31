@@ -16,11 +16,11 @@ interface PrevNextNavbarProps {
 export default function PrevNextNavbar({
     prevItem,
     nextItem,
-    prevLabel = "이전 글",
-    nextLabel = "다음 글",
+    prevLabel = "이전 제품",
+    nextLabel = "다음 제품",
 }: PrevNextNavbarProps) {
     return (
-        <div className="mt-10 border-t border-gray-200">
+        <div className="mt-20 border-t border-gray-200">
             {/* 이전 */}
             <div className="border-b border-gray-200">
                 {prevItem ? (
@@ -28,13 +28,13 @@ export default function PrevNextNavbar({
                         href={prevItem.href}
                         className="flex items-center gap-6 px-2 py-4 hover:bg-surface transition-colors"
                     >
-                        <span className="w-20 shrink-0 text-base font-bold text-primary">{prevLabel}</span>
-                        <span className="text-base text-body truncate">{prevItem.title}</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary pc:text-[20px]">{prevLabel}</span>
+                        <span className="text-base text-body truncate pc:text-[20px]">{prevItem.title}</span>
                     </Link>
                 ) : (
                     <div className="flex items-center gap-6 px-2 py-4">
-                        <span className="w-20 shrink-0 text-base font-bold text-primary">{prevLabel}</span>
-                        <span className="text-base text-muted">이전 글이 없습니다.</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary pc:text-[20px]">{prevLabel}</span>
+                        <span className="text-base text-muted pc:text-[20px]">이전 제품이 없습니다.</span>
                     </div>
                 )}
             </div>
@@ -45,13 +45,13 @@ export default function PrevNextNavbar({
                         href={nextItem.href}
                         className="flex items-center gap-6 px-2 py-4 hover:bg-surface transition-colors"
                     >
-                        <span className="w-20 shrink-0 text-base font-bold text-primary">{nextLabel}</span>
-                        <span className="text-base text-body truncate">{nextItem.title}</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary pc:text-[20px]">{nextLabel}</span>
+                        <span className="text-base text-body truncate pc:text-[20px]">{nextItem.title}</span>
                     </Link>
                 ) : (
                     <div className="flex items-center gap-6 px-2 py-4">
-                        <span className="w-20 shrink-0 text-base font-bold text-primary">{nextLabel}</span>
-                        <span className="text-base text-muted">다음 글이 없습니다.</span>
+                        <span className="w-20 shrink-0 text-base font-bold text-primary pc:text-[20px]">{nextLabel}</span>
+                        <span className="text-base text-muted pc:text-[20px]">다음 제품이 없습니다.</span>
                     </div>
                 )}
             </div>

@@ -24,21 +24,21 @@ export default function CompanyPage() {
                     {/* 인사말 */}
                         <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">GREETING</p>
                         <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">인사말</h2>
-                        <div className="mt-6 space-y-5 text-base leading-7 text-body pc:text-[20px]">
-                            <p>
+                        <div className="mt-6 space-y-5 text-base leading-7 text-body pc:text-[20px] pc:mt-10">
+                            <p className="pc:text-[20px]">
                                 안녕하십니까, 세도어뮤즈먼트를 찾아주셔서 감사합니다.
                             </p>
-                            <p>
-                                저희는 20년간 오직 전자오락기 유통 한 분야에 집중하며,<br/>오락실과
-                                키즈카페를 운영하시는 고객님들이<br/>믿고 거래할 수 있는 파트너가
-                                되기 위해 노력해 왔습니다.<br/>정품 게임기의 안정적인 공급은 물론,
+                            <p className="pc:text-[20px]">
+                                저희는 20년간 오직 전자오락기 유통 한 분야에 집중하며,<br className="hidden pc:block"/>오락실과
+                                키즈카페를 운영하시는 고객님들이<br className="hidden pc:block"/>믿고 거래할 수 있는 파트너가
+                                되기 위해 노력해 왔습니다.<br className="hidden pc:block"/>정품 게임기의 안정적인 공급은 물론,
                                 설치 이후의 사후관리까지 책임지는 것이 저희의 원칙입니다.
                             </p>
-                            <p>
+                            <p className="pc:text-[20px]">
                                 앞으로도 신뢰를 최우선 가치로 삼아, 고객님의 안정적인 매장
                                 운영을 함께 만들어가겠습니다.<br/>감사합니다.
                             </p>
-                            <p className="pt-10 font-bold text-title">세도어뮤즈먼트 대표 드림</p>
+                            <p className="pt-10 font-bold text-title pc:text-[20px]">세도어뮤즈먼트 대표 드림</p>
                         </div>
                 </div>
             </article>

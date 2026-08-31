@@ -44,7 +44,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
       </div>
 
-      <ProductDetailImages images={product.detail_images ?? []} alt={product.name} />
+      <div>
+        <h2 className="card px-6 py-4 pc:py-6 text-base font-bold text-title pc:text-2xl">
+          제품 상세 이미지
+        </h2>
+        <ProductDetailImages images={product.detail_images ?? []} alt={product.name} />
+      </div>
 
       <ProductInfoTable product={product} />
       <ProductShippingInfo />

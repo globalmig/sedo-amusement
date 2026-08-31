@@ -25,10 +25,19 @@ export default async function AdminGuideSectionPage({ params }: GuideSectionPage
                 <p className="mt-2 text-base text-body">{data.description}</p>
             </div>
 
-            <div className="space-y-5">
-                {data.steps.map((step) => (
-                    <GuideStep key={step.image} {...step} />
+            <div className="card overflow-hidden">
+                {data.steps.map((step, index) => (
+                    <GuideStep key={index} {...step} />
                 ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+                <Link href="/admin/products" className="btn-primary">
+                    제품관리로 이동
+                </Link>
+                <Link href="/admin/guide" className="btn-ghost">
+                    가이드 목록으로
+                </Link>
             </div>
         </div>
     );

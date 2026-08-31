@@ -24,9 +24,12 @@ export default function ProductGalley({ products }: ProductGalleyProps) {
 
   return (
     <>
-      <div className="flex flex-wrap justify-between gap-y-4 sm:gap-4 pc:gap-6 pc:justify-start">
+      <div className="sm:flex sm:flex-wrap sm:justify-between sm:gap-4 pc:gap-6 pc:justify-start">
         {visibleItems.map((product) => (
-          <div key={product.id} className="w-[48%] sm:basis-1/3 pc:basis-[calc(25%-1.125rem)]">
+          <div
+            key={product.id}
+            className="mb-4 last:mb-0 sm:mb-0 sm:w-[48%] pc:w-auto pc:basis-[calc(25%-1.125rem)]"
+          >
             <ProductCard product={product} />
           </div>
         ))}
