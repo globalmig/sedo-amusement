@@ -18,7 +18,7 @@ export default function Footer() {
                             />
                         </div>
                         <p className="mt-3 max-w-sm text-base leading-6">
-                            20년 전통의 전자오락기 유통 전문기업. 오락실 · 키즈카페 창업부터
+                            35년 전통의 전자오락기 유통 전문기업. 오락실 · 키즈카페 창업부터
                             사후관리까지 책임지는 파트너입니다.
                         </p>
                     </div>
@@ -31,11 +31,19 @@ export default function Footer() {
                     </ul>
                 </div>
 
-                <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-6 text-base text-white/40 pc:flex-row pc:items-center pc:justify-between">
+                <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-base text-white/40 pc:flex-row pc:items-center pc:justify-between">
                     <p>© {new Date().getFullYear()} {COMPANY_INFO.name}. All rights reserved.</p>
-                    <Link href="/admin" className="hover:text-white/70 transition-colors text-base">
-                        관리자 로그인
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <Link href="/terms" className="hover:text-white/70 transition-colors text-base">
+                            이용약관
+                        </Link>
+                        <Link href="/privacy" className="hover:text-white/70 transition-colors text-base">
+                            개인정보처리방침
+                        </Link>
+                        <Link href="/admin" className="hover:text-white/70 transition-colors text-base">
+                            관리자 로그인
+                        </Link>
+                    </div>
                 </div>
             </div>
         </footer>

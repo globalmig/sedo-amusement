@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePagination } from "@/hooks/usePagination";
 import Toast from "../common/Toast";
@@ -37,10 +38,40 @@ function ChevronDownIcon({ className }: { className?: string }) {
 interface ProductListProps {
   products: Product[];
   onReload: () => void;
+  activeCategory: string | null;
+  activeProductType: string | null;
+  searchTerm: string;
 }
 
 // 관리자 제품 리스트: 테이블형 CRUD 인터페이스
-export default function ProductList({ products, onReload }: ProductListProps) {
+export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm }: ProductListProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 현재 페이지 번호도 URL 쿼리스트링(page)에 저장한다.
+  // usePagination의 currentPage를 컴포넌트 state로만 관리하면, 상세페이지로 이동했다가
+  // 뒤로가기로 돌아왔을 때 이 컴포넌트가 새로 마운트되며 항상 1페이지로 되돌아간다.
+  const initialPage = Number(searchParams.get("page")) || 1;
+
+  // 목록에서 적용 중인 필터+페이지를 상세페이지의 이전/다음 탐색 기준, "뒤로가기" 복원용으로 그대로 전달하기 위한 쿼리스트링
+  const buildViewHref = (product: Product) => {
+    const params = new URLSearchParams();
+    if (activeCategory) params.set("filterCategory", activeCategory);
+    if (activeProductType) params.set("filterType", activeProductType);
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (initialPage > 1) params.set("page", String(initialPage));
+    const qs = params.toString();
+    return `/admin/products/${product.category}/${product.id}/view${qs ? `?${qs}` : ""}`;
+  };
+
+  const handlePageChange = useCallback((page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page > 1) params.set("page", String(page));
+    else params.delete("page");
+    const qs = params.toString();
+    router.replace(qs ? `/admin/products?${qs}` : "/admin/products", { scroll: false });
+  }, [router, searchParams]);
+
   const queryClient = useQueryClient();
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [completedMessage, setCompletedMessage] = useState<string | null>(null);
@@ -58,7 +89,10 @@ export default function ProductList({ products, onReload }: ProductListProps) {
     setLoadedUrls((prev) => (prev.has(url) ? prev : new Set(prev).add(url)));
   };
 
-  const { currentPage, currentItems, totalCount, onPageChange } = usePagination(products, ITEMS_PER_PAGE);
+  const { currentPage, currentItems, totalCount, onPageChange } = usePagination(products, ITEMS_PER_PAGE, {
+    initialPage,
+    onPageChange: handlePageChange,
+  });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -163,7 +197,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
 
               <div className="min-w-0 flex-1">
                 <Link
-                  href={`/admin/products/${product.category}/${product.id}/view`}
+                  href={buildViewHref(product)}
                 >
                   <p className="font-medium text-title">{product.name}</p>
                   <p className="mt-1 text-base text-body">
@@ -233,7 +267,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
                   </td>
                   <td className="px-5 py-3.5 font-medium text-title">
                     <Link
-                      href={`/admin/products/${product.category}/${product.id}/view`}
+                      href={buildViewHref(product)}
                       className="text-body hover:text-primary hover:underline"
                     >
                       {product.name}
@@ -280,7 +314,7 @@ export default function ProductList({ products, onReload }: ProductListProps) {
         </table>
       </div>
 
-      <Pagination totalCount={totalCount} itemsPerPage={ITEMS_PER_PAGE} onPageChange={onPageChange} />
+      <Pagination totalCount={totalCount} itemsPerPage={ITEMS_PER_PAGE} onPageChange={onPageChange} initialPage={currentPage} />
 
       <Toast
         vaild={pendingId !== null ? "이 제품을 삭제하시겠습니까?" : null}

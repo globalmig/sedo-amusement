@@ -16,6 +16,9 @@ export const USER_CATEGORY: { [key: string]: { title: string; categories?: { nam
             { name: "추천상품", url: "recommend" },
         ],
     },
+    consulting: {
+        title: "창업 컨설팅",
+    },
     as: {
         title: "A/S 및 사후관리 안내",
     },

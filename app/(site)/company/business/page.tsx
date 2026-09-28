@@ -6,7 +6,8 @@ import { USER_CATEGORY } from "@/datas/categories";
 export const metadata: Metadata = {
     title: "사업 영역",
     description:
-        "전자오락기 유통, 설치·시공, A/S·유지보수, 상시 재고 공급까지 세도어뮤즈먼트가 제공하는 사업 영역을 소개합니다.",
+        "전자오락기 유통, 설치·시공, A/S·유지보수, 창업 컨설팅까지 세도어뮤즈먼트가 제공하는 사업 영역을 소개합니다.",
+    keywords: ["전자오락기 유통", "게임기 설치 시공", "게임기 A/S 유지보수", "오락실 창업 컨설팅", "세도어뮤즈먼트 사업영역"],
 };
 
 const BUSINESS_AREAS = [
@@ -26,9 +27,9 @@ const BUSINESS_AREAS = [
         icon: "/icons/business-3.png",
     },
     {
-        title: "상시 재고 · 신속 공급",
-        description: "다양한 기종을 상시 재고로 보유하여 주문 즉시 빠르게 공급합니다.",
-        icon: "/icons/business-4.png",
+        title: "창업 컨설팅",
+        description: "입지 분석부터 기종 구성, 예산 설계까지 창업 전 과정을 상담해드립니다.",
+        icon: "/icons/business-4-consulting.svg",
     },
 ];
 
@@ -70,6 +71,7 @@ export default function BusinessPage() {
                                     alt=""
                                     width={48}
                                     height={48}
+                                    unoptimized={area.icon.endsWith(".svg")}
                                     className="h-10 w-10 self-end transition duration-300 pc:h-12 pc:w-12"
                                 />
                             </div>

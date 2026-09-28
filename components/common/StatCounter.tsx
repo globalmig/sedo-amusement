@@ -64,12 +64,12 @@ export default function StatCounter({ stats }: { stats: Stat[] }) {
     return (
         <div
             ref={containerRef}
-            className="pt-8 pc:flex pc:w-50 pc:flex-none pc:flex-col pc:gap-12.5 pc:border-0 pc:pt-0"
+            className="mt-8 pc:flex pc:w-50 pc:flex-none pc:flex-col pc:gap-12.5 pc:border-0 pc:pt-0"
         >
             {stats.map((stat, i) => (
-                <div key={stat.label} className="flex flex-col gap-1">
+                <div key={stat.label} className="pc:flex pc:flex-col pc:gap-1 mb-10 pc:mb-0">
                     <p className="text-base font-bold text-primary mb-2 pc:text-[20px]">{stat.label}</p>
-                    <p className="text-xl font-black text-title pc:text-[42px]">
+                    <p className="mt-2 text-3xl font-black text-title pc:text-[42px]">
                         {formatStat(stat.value, counts[i])}
                     </p>
                 </div>

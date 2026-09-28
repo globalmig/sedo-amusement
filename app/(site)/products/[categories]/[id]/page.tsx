@@ -9,6 +9,7 @@ import CategoryBanner from "@/components/common/CategoryBanner";
 
 interface ProductDetailPageProps {
   params: Promise<{ categories: string; id: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }
 
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
@@ -25,6 +26,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
   return {
     title: product.name,
     description,
+    keywords: [product.name, categoryLabel, "전자오락기", "게임기 유통", "세도어뮤즈먼트"],
   };
 }
 
@@ -38,8 +40,9 @@ function ArrowLeftIcon({ className }: IconProps) {
     );
 }
 
-export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
+export default async function ProductDetailPage({ params, searchParams }: ProductDetailPageProps) {
   const { categories, id } = await params;
+  const { category: gameCategoryFilter, q } = await searchParams;
   const category = USER_CATEGORY.products.categories?.find((c) => c.url === categories);
   const product = await getProductById(Number(id));
 
@@ -54,6 +57,14 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       ? sameCategoryProducts[currentIndex + 1]
       : null;
 
+  // 목록에서 적용 중이던 게임 카테고리/검색어 필터를 쿼리스트링으로 그대로 이어받아,
+  // "돌아가기"와 이전/다음 이동에서도 필터가 유지되도록 한다.
+  const filterQuery = new URLSearchParams();
+  if (gameCategoryFilter) filterQuery.set("category", gameCategoryFilter);
+  if (q) filterQuery.set("q", q);
+  const qs = filterQuery.toString();
+  const withFilterQuery = (href: string) => `${href}${qs ? `?${qs}` : ""}`;
+
   return (
     <>
      <CategoryBanner
@@ -64,7 +75,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           />
     <article>
       <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
-        <Link href={`/products/${categories}`} className="inline-flex items-center gap-1 text-base text-muted hover:text-primary pc:text-base">
+        <Link href={withFilterQuery(`/products/${categories}`)} className="inline-flex items-center gap-1 text-base text-muted hover:text-primary pc:text-base">
           <ArrowLeftIcon className="h-4 w-4" />
           {category.name} 목록으로 돌아가기
         </Link>
@@ -75,8 +86,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
         <div className="mt-20">
           <PrevNextNavbar2
-            prevItem={prev ? { href: `/products/${categories}/${prev.id}`, title: prev.name } : null}
-            nextItem={next ? { href: `/products/${categories}/${next.id}`, title: next.name } : null}
+            prevItem={prev ? { href: withFilterQuery(`/products/${categories}/${prev.id}`), title: prev.name } : null}
+            nextItem={next ? { href: withFilterQuery(`/products/${categories}/${next.id}`), title: next.name } : null}
             prevLabel="이전 제품"
             nextLabel="다음 제품"
           />

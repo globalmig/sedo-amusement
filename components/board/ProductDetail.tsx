@@ -36,7 +36,26 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </p>
           )}
 
-          <div className="mt-auto pt-6">
+          <div className="bg-white mt-10 overflow-hidden border-y border-black/10">
+            <table className="w-full text-base pc:text-[20px]">
+              <tbody className="divide-y divide-black/5">
+                <tr>
+                  <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 pc:py-6 text-left font-medium text-title pc:w-40">
+                    규격 (사이즈)
+                  </th>
+                  <td className="whitespace-pre-line px-6 py-4 pc:py-6 text-body">{product.spec || "-"}</td>
+                </tr>
+                <tr>
+                  <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 pc:py-6 text-left font-medium text-title pc:w-40">
+                    등급분류번호
+                  </th>
+                  <td className="px-6 py-4 pc:py-6 text-body">{product.rating_number || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-5 pt-6 pc:mt-8">
             <Link href={COMPANY_INFO.phoneHref} className="btn-primary pc:text-[20px] pc:px-8 rounded-full">
               제품 문의하기
             </Link>
@@ -45,7 +64,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       <div>
-        <h2 className="card px-6 py-4 pc:py-6 text-base font-bold text-title pc:text-2xl">
+        <h2 className="card px-6 py-4 pc:py-6 text-base font-bold text-title mt-20 pc:text-2xl">
           제품 상세 이미지
         </h2>
         <ProductDetailImages images={product.detail_images ?? []} alt={product.name} />

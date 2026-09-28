@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { USER_CATEGORY, PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { STORAGE_BUCKET } from "@/lib/storage";
@@ -7,6 +8,8 @@ import Toast from "../common/Toast";
 import Link from "next/link";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
+
+const UPDATE_SUCCESS_MESSAGE = "제품이 수정되었습니다.";
 
 const PRODUCT_TYPES = USER_CATEGORY.products.categories ?? [];
 
@@ -29,6 +32,7 @@ export interface ProductFormValues {
     name: string;
     category: string;
     product_type: string;
+    rating_number: string;
     spec: string;
     features: string;
     price: string;
@@ -40,6 +44,7 @@ interface ProductFormInitialData {
     name?: string;
     category?: string | null;
     product_type?: string | null;
+    rating_number?: string | null;
     spec?: string | null;
     features?: string | null;
     price?: number | null;
@@ -52,19 +57,73 @@ interface ProductFormOwnProps {
     initialData?: ProductFormInitialData;
 }
 
-function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+type DetailImageItem =
+    | { id: string; kind: "existing"; url: string }
+    | { id: string; kind: "new"; file: File };
+
+let detailImageIdSeq = 0;
+function createDetailImageId() {
+    detailImageIdSeq += 1;
+    return `detail-${Date.now()}-${detailImageIdSeq}`;
+}
+
+function DetailImageThumb({
+    item,
+    index,
+    onRemove,
+    onDragStart,
+    onDragOver,
+    onDrop,
+    onDragEnd,
+    isDragging,
+}: {
+    item: DetailImageItem;
+    index: number;
+    onRemove: () => void;
+    onDragStart: (index: number) => void;
+    onDragOver: (index: number) => void;
+    onDrop: (index: number) => void;
+    onDragEnd: () => void;
+    isDragging: boolean;
+}) {
+    const [previewUrl, setPreviewUrl] = useState<string | null>(item.kind === "existing" ? item.url : null);
 
     useEffect(() => {
+        if (item.kind !== "new") return;
         const reader = new FileReader();
         reader.onload = () => setPreviewUrl(reader.result as string);
-        reader.readAsDataURL(file);
-    }, [file]);
+        reader.readAsDataURL(item.file);
+    }, [item]);
 
     return (
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-black/10">
+        <div
+            draggable
+            onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", String(index));
+                onDragStart(index);
+            }}
+            onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                onDragOver(index);
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
+                onDrop(index);
+            }}
+            onDragEnd={onDragEnd}
+            className={`relative h-20 w-20 shrink-0 cursor-grab overflow-hidden rounded-lg border border-black/10 transition-opacity active:cursor-grabbing ${isDragging ? "opacity-40" : ""}`}
+        >
             {previewUrl && (
-                <Image src={previewUrl} alt={file.name} fill sizes="80px" className="object-cover" />
+                <Image
+                    src={previewUrl}
+                    alt="상세이미지"
+                    fill
+                    sizes="80px"
+                    draggable={false}
+                    className="pointer-events-none object-cover"
+                />
             )}
             <button
                 type="button"
@@ -79,6 +138,7 @@ function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
 }
 
 export default function ProductForm({ editId, initialData }: ProductFormOwnProps = {}) {
+    const router = useRouter();
 
     // 등록/수정
     const isEditMode = !!editId;
@@ -88,6 +148,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         name: initialData?.name ?? "",
         category: initialData?.category ?? "",
         product_type: initialData?.product_type ?? "all",
+        rating_number: initialData?.rating_number ?? "",
         spec: initialData?.spec ?? "",
         features: initialData?.features ?? "",
         price: initialData?.price != null ? String(initialData.price) : "",
@@ -99,10 +160,10 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     const [existingMainImageUrl, setExistingMainImageUrl] = useState<string | null>(
         initialData?.main_image_url ?? null
     );
-    const [existingDetailImages, setExistingDetailImages] = useState<string[]>(
-        initialData?.detail_images ?? []
+    const [detailImages, setDetailImages] = useState<DetailImageItem[]>(
+        (initialData?.detail_images ?? []).map((url) => ({ id: createDetailImageId(), kind: "existing", url }))
     );
-    const [newDetailImages, setNewDetailImages] = useState<File[]>([]);
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
     // toast 관리
     const [vaild, setVaild] = useState<string | null>(null);
@@ -117,6 +178,10 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     }, [mainImage]);
 
     const handleCloseToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
+        if (value === null && vaild === UPDATE_SUCCESS_MESSAGE) {
+            router.push("/admin/products");
+            router.refresh();
+        }
         setVaild(value);
     };
 
@@ -146,7 +211,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             if (!response.ok) throw new Error(result.error || "수정에 실패했습니다.");
             return result;
         },
-        onSuccess: () => { setVaild("제품이 수정되었습니다."); },
+        onSuccess: () => { setVaild(UPDATE_SUCCESS_MESSAGE); },
         onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
     });
 
@@ -170,16 +235,47 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
 
     const onChangeDetailImages = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files ?? []);
-        if (files.length > 0) setNewDetailImages((prev) => [...prev, ...files]);
+        if (files.length > 0) {
+            setDetailImages((prev) => [
+                ...prev,
+                ...files.map((file): DetailImageItem => ({ id: createDetailImageId(), kind: "new", file })),
+            ]);
+        }
         e.target.value = "";
     }, []);
 
-    const removeExistingDetailImage = useCallback((url: string) => {
-        setExistingDetailImages((prev) => prev.filter((item) => item !== url));
+    const removeDetailImage = useCallback((id: string) => {
+        setDetailImages((prev) => prev.filter((item) => item.id !== id));
     }, []);
 
-    const removeNewDetailImage = useCallback((index: number) => {
-        setNewDetailImages((prev) => prev.filter((_, i) => i !== index));
+    const reorderDetailImages = useCallback((from: number, to: number) => {
+        if (from === to) return;
+        setDetailImages((prev) => {
+            const next = [...prev];
+            const [moved] = next.splice(from, 1);
+            next.splice(to, 0, moved);
+            return next;
+        });
+    }, []);
+
+    const onDetailImageDragStart = useCallback((index: number) => {
+        setDraggingIndex(index);
+    }, []);
+
+    const onDetailImageDragOver = useCallback((index: number) => {
+        setDraggingIndex((current) => {
+            if (current === null || current === index) return current;
+            reorderDetailImages(current, index);
+            return index;
+        });
+    }, [reorderDetailImages]);
+
+    const onDetailImageDrop = useCallback((_index: number) => {
+        setDraggingIndex(null);
+    }, []);
+
+    const onDetailImageDragEnd = useCallback(() => {
+        setDraggingIndex(null);
     }, []);
 
     const uploadImage = useCallback(async (file: File, folder: "main" | "detail") => {
@@ -211,6 +307,10 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             setVaild("카테고리를 선택해주세요.");
             return;
         }
+        if (!form.rating_number.trim()) {
+            setVaild("등급분류번호를 입력해주세요.");
+            return;
+        }
         if (!form.spec.trim()) {
             setVaild("규격을 입력해주세요.");
             return;
@@ -228,19 +328,20 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         
         try {
             const mainImageUrl = mainImage ? await uploadImage(mainImage, "main") : existingMainImageUrl!;
-            const newDetailImageUrls = await Promise.all(
-                newDetailImages.map((file) => uploadImage(file, "detail"))
+            const detailImageUrls = await Promise.all(
+                detailImages.map((item) => (item.kind === "existing" ? item.url : uploadImage(item.file, "detail")))
             );
 
             const payload = {
                 name: form.name,
                 category: form.category,
                 product_type: form.product_type,
+                rating_number: form.rating_number,
                 spec: form.spec,
                 features: form.features,
                 price: form.price,
                 main_image_url: mainImageUrl,
-                detail_images: [...existingDetailImages, ...newDetailImageUrls],
+                detail_images: detailImageUrls,
             };
 
             if (isEditMode) {
@@ -253,7 +354,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         } finally {
             setUploading(false);
         }
-    }, [form, mainImage, existingMainImageUrl, newDetailImages, existingDetailImages, createMutation, updateMutation, loading, uploading, isEditMode, editId, uploadImage]);
+    }, [form, mainImage, existingMainImageUrl, detailImages, createMutation, updateMutation, loading, uploading, isEditMode, editId, uploadImage]);
 
     return (
         <>
@@ -315,6 +416,21 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             </select>
                             <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                         </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="rating_number" className="form-label">
+                            등급분류번호 <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="rating_number"
+                            name="rating_number"
+                            placeholder="등급분류번호를 입력해주세요."
+                            value={form.rating_number}
+                            onChange={onChangeForm}
+                            className="form-input"
+                        />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
@@ -397,7 +513,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                         <p className="text-base text-muted mb-4">
                             제품의 상세 이미지를 선택해주세요. 상세 이미지 등록은 필수가 아닙니다.<br />
                             이미지를 등록하지 않을 경우, 제품 상세 정보란에 이미지를 표시하지 않습니다.<br />
-                            이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.
+                            이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.<br />
+                            썸네일을 드래그하면 순서를 바꿀 수 있으며, 등록된 순서대로 상세 페이지에 표시됩니다.
                         </p>
                         <div className="flex items-center gap-3">
                             <input type="file" id="detail_images" accept="image/*" multiple className="hidden" onChange={onChangeDetailImages} />
@@ -408,27 +525,24 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                                 파일 추가
                             </label>
                             <span className="text-base text-muted">
-                                {existingDetailImages.length + newDetailImages.length}장 등록됨
+                                {detailImages.length}장 등록됨
                             </span>
                         </div>
 
-                        {(existingDetailImages.length > 0 || newDetailImages.length > 0) && (
+                        {detailImages.length > 0 && (
                             <div className="mt-1 flex flex-wrap gap-3">
-                                {existingDetailImages.map((url) => (
-                                    <div key={url} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-black/10">
-                                        <Image src={url} alt="상세이미지" fill sizes="80px" className="object-cover" />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeExistingDetailImage(url)}
-                                            aria-label="이미지 삭제"
-                                            className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-base text-white cursor-pointer"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                                {newDetailImages.map((file, index) => (
-                                    <FilePreview key={`${file.name}-${index}`} file={file} onRemove={() => removeNewDetailImage(index)} />
+                                {detailImages.map((item, index) => (
+                                    <DetailImageThumb
+                                        key={item.id}
+                                        item={item}
+                                        index={index}
+                                        onRemove={() => removeDetailImage(item.id)}
+                                        onDragStart={onDetailImageDragStart}
+                                        onDragOver={onDetailImageDragOver}
+                                        onDrop={onDetailImageDrop}
+                                        onDragEnd={onDetailImageDragEnd}
+                                        isDragging={draggingIndex === index}
+                                    />
                                 ))}
                             </div>
                         )}

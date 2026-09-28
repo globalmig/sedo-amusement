@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
 import { PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
 import ProductGalley from "./ProductGalley";
@@ -7,6 +8,7 @@ import ProductGalley from "./ProductGalley";
 interface ProductGalleryFilterProps {
   products: Product[];
   initialCategory?: string | null;
+  categories?: string;
 }
 
 function SearchIcon({ className }: { className?: string }) {
@@ -40,9 +42,34 @@ function ChevronDownIcon({ className }: { className?: string }) {
   );
 }
 
-export default function ProductGalleryFilter({ products, initialCategory = null }: ProductGalleryFilterProps) {
-  const [activeCategory, setActiveCategory] = useState<string | null>(initialCategory);
-  const [searchTerm, setSearchTerm] = useState("");
+export default function ProductGalleryFilter(props: ProductGalleryFilterProps) {
+  return (
+    <Suspense>
+      <ProductGalleryFilterInner {...props} />
+    </Suspense>
+  );
+}
+
+function ProductGalleryFilterInner({ products, initialCategory = null, categories = "all" }: ProductGalleryFilterProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // 게임 카테고리(크레인/슈팅 등)와 검색어 필터를 컴포넌트 state가 아닌
+  // URL 쿼리스트링에 저장한다. state로만 관리하면 상세페이지로 이동했다가
+  // 뒤로가기로 돌아왔을 때 이 컴포넌트가 새로 마운트되며 필터가 초기화된다.
+  const activeCategory = searchParams.get("category") ?? initialCategory;
+  const searchTerm = searchParams.get("q") ?? "";
+
+  const updateQuery = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [router, pathname, searchParams]);
 
   const filteredProducts = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase();
@@ -54,13 +81,22 @@ export default function ProductGalleryFilter({ products, initialCategory = null 
     });
   }, [products, activeCategory, searchTerm]);
 
+  // 상세페이지로 이동할 때도 현재 필터를 쿼리스트링으로 함께 넘겨서,
+  // 상세페이지의 "돌아가기" 링크가 같은 필터로 목록을 복원할 수 있게 한다.
+  const filterQuery = useMemo(() => {
+    const params = new URLSearchParams();
+    if (activeCategory) params.set("category", activeCategory);
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    return params.toString();
+  }, [activeCategory, searchTerm]);
+
   return (
     <div>
       <div className="mb-6 flex flex-col gap-4 pc:mb-8 pc:flex-row pc:items-center">
         <div className="relative shrink-0 pc:w-56">
           <select
             value={activeCategory ?? ""}
-            onChange={(e) => setActiveCategory(e.target.value || null)}
+            onChange={(e) => updateQuery({ category: e.target.value || null })}
             className="w-full cursor-pointer appearance-none rounded-lg border border-black/10 bg-white py-2.5 pl-4 pr-9 text-base font-medium text-body outline-none focus:border-point"
           >
             <option value="">전체 카테고리</option>
@@ -78,14 +114,14 @@ export default function ProductGalleryFilter({ products, initialCategory = null 
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => updateQuery({ q: e.target.value || null })}
             placeholder="제품명 검색"
             className="w-full rounded-lg border border-black/10 bg-white py-2.5 pl-9 pr-3 text-base font-medium text-body outline-none placeholder:text-body focus:border-point"
           />
         </div>
       </div>
 
-      <ProductGalley products={filteredProducts} />
+      <ProductGalley products={filteredProducts} categories={categories} filterQuery={filterQuery} />
     </div>
   );
 }

@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: ProductListPageProps): Promis
   return {
     title: displayTitle,
     description: `세도어뮤즈먼트가 정품으로 공급하는 ${category.name} 라인업을 확인하세요.`,
+    keywords: [category.name, "전자오락기", "게임기 유통", "오락실 게임기", "세도어뮤즈먼트"],
   };
 }
 
@@ -53,7 +54,7 @@ export default async function ProductListPage({ params }: ProductListPageProps) 
       />
       <article>
         <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
-          <ProductGalleryFilter products={products} />
+          <ProductGalleryFilter products={products} categories={categories} />
         </div>
       </article>
     </>

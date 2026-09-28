@@ -58,9 +58,9 @@ export default function ProductCategoryShowcase() {
                     {CATEGORY_SHOWCASE.map((category, index) => {
                         const isImageTop = index % 2 === 0;
 
-                        const textPosition = isImageTop ? "top-56" : "top-0";
+                        const textPosition = isImageTop ? "top-[244px]" : "top-[52px]";
                         const boxPosition = isImageTop ? "top-[57px] h-[447px]" : "bottom-[57px] h-[487px]";
-                        const boxShape = isImageTop ? "rounded-t-4xl rounded-b-[140px]" : "rounded-t-[140px] rounded-b-4xl";
+                        const boxShape = isImageTop ? "pc:rounded-t-4xl pc:rounded-b-[140px]" : "pc:rounded-t-[140px] pc:rounded-b-4xl";
 
                         const textBlock = (
                             <div
@@ -79,7 +79,7 @@ export default function ProductCategoryShowcase() {
                         );
 
                         const imageBlock = (
-                            <div className={`absolute inset-x-0 z-10 flex justify-center ${isImageTop ? "top-0" : "bottom-0"}`}>
+                            <div className={`absolute inset-x-0 z-10 flex justify-center ${isImageTop ? "top-5" : "-bottom-5"}`}>
                                 <div className="relative h-56 w-36 shrink-0">
                                     <Image src={category.image} alt={category.name} fill sizes="160px" className="object-contain" />
                                 </div>
@@ -87,13 +87,15 @@ export default function ProductCategoryShowcase() {
                         );
 
                         return (
-                            <Link key={category.url} href={`/products/${category.url}`} className="group shrink-0">
+                            <Link
+                                key={category.url}
+                                href={`/products/${category.url}`}
+                            >
                                 <div className="relative h-136 w-70">
                                     <div>
                                         {imageBlock}
                                         {textBlock}
                                     </div>
-                                    {/* 배경 박스: imageBlock과 -167px 겹치도록 배치 */}
                                     <div
                                         className={`absolute inset-x-0 w-70 bg-surface transition-colors duration-300 group-hover:bg-primary ${boxPosition} ${boxShape}`}
                                     />
@@ -105,12 +107,25 @@ export default function ProductCategoryShowcase() {
 
                 {/* Mobile: 이미지 상단 + 하단 블롭 카드 리스트 */}
                 <div className="mt-10 flex flex-col gap-12 pc:hidden">
-                    {CATEGORY_SHOWCASE.map((category) => (
-                        <Link key={category.url} href={`/products?category=${category.url}`} className="group flex flex-col">
-                            <div className="relative z-10 h-52 w-42 shrink-0">
+                    {CATEGORY_SHOWCASE.map((category, index) => {
+                        const isRight = index % 2 === 1;
+
+                        const box = (
+                            <div
+                                className={`absolute inset-x-0 top-46 h-67 bg-surface transition-colors duration-300 group-hover:bg-primary ${isRight ? "rounded-r-[40px] rounded-l-[200px]" : "rounded-l-[40px] rounded-r-[200px]"}`}
+                            />
+                        );
+
+                        const imageBlock = (
+                            <div className={`absolute top-5 z-10 h-52 w-42 ${isRight ? "right-0" : "left-0"}`}>
                                 <Image src={category.image} alt={category.name} fill sizes="200px" className="object-contain" />
                             </div>
-                            <div className="-mt-6 flex flex-col gap-2 rounded-[140px] rounded-tl-[30px] bg-surface px-7 pt-8 pb-12 transition-colors duration-300 group-hover:bg-primary">
+                        );
+
+                        const textBlock = (
+                            <div
+                                className={`absolute inset-x-0 top-51 z-10 flex h-67 flex-col gap-2 px-7 pt-8 pb-12 ${isRight ? "items-end text-right" : ""}`}
+                            >
                                 <div className="flex items-center gap-3">
                                     <p className="text-lg font-bold text-title transition-colors duration-300 group-hover:text-white">
                                         {category.name}
@@ -123,8 +138,20 @@ export default function ProductCategoryShowcase() {
                                     {category.description}
                                 </p>
                             </div>
-                        </Link>
-                    ))}
+                        );
+
+                        return (
+                            <Link
+                                key={category.url}
+                                href={`/products?category=${category.url}`}
+                                className="group relative block h-113 w-full"
+                            >
+                                {box}
+                                {imageBlock}
+                                {textBlock}
+                            </Link>
+                        );
+                    })}
 
                     <Link
                         href="/products/all"

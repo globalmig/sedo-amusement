@@ -13,16 +13,18 @@ function formatPrice(price: number | null) {
 
 interface ProductCardProps {
   product: Product;
+  categories?: string;
+  filterQuery?: string;
 }
- 
-export default function ProductCard({ product }: ProductCardProps) {
+
+export default function ProductCard({ product, categories = "all", filterQuery = "" }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const mainImageUrl = product.main_image_url;
   const typeBadge = getProductTypeBadge(product.product_type);
 
   return (
     <Link
-      href={`/products/${product.product_type ?? "all"}/${product.id}`}
+      href={`/products/${categories}/${product.id}${filterQuery ? `?${filterQuery}` : ""}`}
       className="group block overflow-hidden rounded-xl border border-black/5 bg-white shadow-sm transition-shadow duration-300"
     >
       <div className="relative flex aspect-4/3 w-full items-center justify-center bg-white">
@@ -35,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               width={200}
               height={200}
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-              className={`h-36 w-auto object-contain transition-transform duration-300 group-hover:scale-105 pc:h-58 ${imageLoaded ? "" : "invisible"}`}
+              className={`h-50 w-auto object-contain transition-transform duration-300 group-hover:scale-105 pc:h-58 ${imageLoaded ? "" : "invisible"}`}
               onLoad={() => setImageLoaded(true)}
             /> 
           </>

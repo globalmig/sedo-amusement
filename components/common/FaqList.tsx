@@ -25,7 +25,7 @@ interface FaqListProps {
 }
 
 const ALL_CATEGORY_KEY = "all";
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 5;
 
 function ChevronIcon({ className }: { className?: string }) {
     return (

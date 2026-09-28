@@ -9,22 +9,22 @@ import { COMPANY_INFO } from "@/datas/company";
 
 const SLIDES = [
     {
-        image: "/images/arcade-zone-wide.png",
+        image: "/images/banner1.png",
         eyebrow: "SEDO AMUSEMENT",
-        heading: "20년 전통의\n전자오락기 유통 전문기업",
+        heading: "35년 전통의\n전자오락기 유통 전문기업",
         description: "오락실·키즈카페를 위한 검증된 게임기를 세도어뮤즈먼트가 책임집니다.",
     },
     {
-        image: "/images/arcade-racing.jpg",
-        eyebrow: "PRODUCT LINE-UP",
-        heading: "정품 게임기,\n합리적인 창업 비용",
-        description: "크레인부터 리듬, 레이싱까지 합리적인 견적과 빠른 설치를 제공합니다.",
-    },
-    {
-        image: "/images/arcade-slot-close.png",
+        image: "/images/banner2.png",
         eyebrow: "A/S & SUPPORT",
         heading: "전국 어디서나\n신속한 사후관리",
         description: "설치 이후에도 끝까지 책임지는 세도어뮤즈먼트의 A/S 시스템",
+    },
+    {
+        image: "/images/20260821_155230.jpg",
+        eyebrow: "PRODUCT LINE-UP",
+        heading: "정품 게임기,\n합리적인 창업 비용",
+        description: "크레인부터 리듬, 레이싱까지 합리적인 견적과 빠른 설치를 제공합니다.",
     },
 ] as const;
 
@@ -97,10 +97,10 @@ export default function Slide() {
 
     return (
         <main className="relative w-full">
-            <div className="relative h-133 w-full overflow-hidden pc:h-175">
+            <div className="relative h-133 w-full overflow-hidden pc:h-195">
                 <Slider ref={sliderRef} {...settings}>
                     {SLIDES.map((slide, index) => (
-                        <div key={slide.heading} className="relative h-133 w-full pc:h-175">
+                        <div key={slide.heading} className="relative h-133 w-full pc:h-195">
                             <Image
                                 src={slide.image}
                                 alt=""
@@ -140,8 +140,8 @@ export default function Slide() {
                     ))}
                 </Slider>
 
-                <div className="absolute inset-x-0 bottom-0 z-20 px-[5%] pb-6 pc:px-0 pc:pb-10">
-                    <div className="mx-auto flex max-w-300 items-center justify-between gap-6">
+                <div className="hidden pc:block absolute inset-x-0 bottom-8 pc:bottom-20 z-20 px-[5%] pb-6 pc:px-0 pc:pb-10">
+                    <div className="mx-auto flex max-w-300 items-center gap-6">
                         <div className="flex flex-col gap-2">
                             <p className="text-base font-bold tracking-widest text-white pc:text-[20px]">
                                 {String(currentSlide + 1).padStart(2, "0")}/{String(SLIDES.length).padStart(2, "0")}
@@ -187,11 +187,11 @@ export default function Slide() {
                 </div>
             </div>
             <div className="bg-primary">
-                <div className="mx-auto flex max-w-300 flex-col gap-3 px-[5%] py-5 pc:flex-row pc:items-center pc:justify-between pc:gap-6 pc:px-0 pc:py-6">
+                <div className="mx-auto flex max-w-300 flex-col gap-3 px-[5%] py-5 pc:flex-row pc:items-center pc:justify-between pc:gap-6 pc:px-0 pc:py-7">
                     {/* 모바일: 전화번호 대신 간단한 안내 문구만 노출 */}
                     <div className="pc:hidden">
-                        <p className="text-base font-bold text-white">궁금한 점이 있으시다면?</p>
-                        <Link href="/as" className="mt-1 inline-flex items-center gap-1.5 text-base font-semibold text-white">
+                        <h4 className="text-[20px] font-bold text-white">궁금한 점이 있으시다면?</h4>
+                        <Link href="/as" className="mt-1 inline-flex items-center gap-1.5 text-base font-semibold text-white underline">
                             빠른 해결 가이드 바로가기
                             <ArrowRightIcon className="h-3.5 w-3.5" />
                         </Link>
@@ -199,8 +199,8 @@ export default function Slide() {
 
                     <div className="hidden pc:block">
                         <div className="flex items-center gap-3">
-                            <PhoneIcon className="h-5 w-5 text-white" />
-                            <p className="text-xl font-bold text-white">031-824-5851</p>
+                            <PhoneIcon className="h-8 w-8 text-white" />
+                            <p className="text-[34px] font-bold text-white">031-824-5851</p>
                         </div>
                         <p className="mt-1 text-base text-white/90 pc:text-[20px]">구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.</p>
                     </div>

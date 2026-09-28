@@ -5,6 +5,7 @@ export interface Product {
   name: string;
   category: string | null;
   product_type: ProductType | null;
+  rating_number: string | null;
   spec: string | null;
   features: string | null;
   price: number | null;

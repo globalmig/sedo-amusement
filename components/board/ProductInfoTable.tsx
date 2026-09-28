@@ -33,7 +33,13 @@ export default function ProductInfoTable({ product }: ProductInfoTableProps) {
           </tr>
           <tr>
             <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 pc:py-6 text-left font-medium text-title pc:w-40">
-              규격
+              등급분류번호
+            </th>
+            <td className="px-6 py-4 pc:py-6 text-body">{product.rating_number || "-"}</td>
+          </tr>
+          <tr>
+            <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 pc:py-6 text-left font-medium text-title pc:w-40">
+              규격 (사이즈)
             </th>
             <td className="whitespace-pre-line px-6 py-4 pc:py-6 text-body">{product.spec || "-"}</td>
           </tr>

@@ -5,6 +5,7 @@ interface IPaginationProps {
   itemsPerPage: number;
   pagesPerGroup?: number;
   onPageChange: (page: number) => void;
+  initialPage?: number; // 시작 페이지 번호(외부에서 페이지를 복원할 때 사용, 기본값: 1)
 }
 
 export default function Pagination({
@@ -12,11 +13,14 @@ export default function Pagination({
   itemsPerPage, // 페이지 당 데이터 수
   pagesPerGroup = 5, // 페이지 그룹
   onPageChange, // 페이지 변경
+  initialPage = 1,
 }: IPaginationProps) {
 
   const pageCount = Math.ceil(totalCount / itemsPerPage); // 페이지 수
-  const [currentPage, setCurrentPage] = useState(1);
-  const [groupStart, setGroupStart] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [groupStart, setGroupStart] = useState(
+    Math.floor((initialPage - 1) / pagesPerGroup) * pagesPerGroup + 1
+  );
 
   const pages = Array.from(
     { length: pagesPerGroup },

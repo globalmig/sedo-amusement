@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     title: "A/S 및 사후관리 안내",
     description:
         "전국 출장 A/S와 정품 파츠 교체, 정기 점검까지 책임지는 세도어뮤즈먼트의 사후관리 서비스를 안내합니다. 자가 점검 가이드와 A/S 접수 절차를 확인해보세요.",
+    keywords: ["게임기 A/S", "전자오락기 수리", "오락실 A/S", "출장 수리", "정품 파츠 교체", "게임기 정기점검", "세도어뮤즈먼트 A/S"],
 };
 
 const SELF_CHECK_ITEMS = [
@@ -113,13 +114,13 @@ export default function AsPage() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="hidden pc:block">
+                            <div className="hidden pc:flex pc:items-end">
                                 <Image
                                     src="/images/self-guide.png"
                                     alt="자가 점검 가이드"
                                     width={505}
                                     height={497}
-                                    className="w-120 h-auto"
+                                    className="w-120 h-auto pl-10"
                                 />
                             </div>
                         </div>

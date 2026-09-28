@@ -7,6 +7,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
     title: "오시는 길",
     description: `세도어뮤즈먼트 사무실 위치와 연락처를 안내합니다. 주소: ${COMPANY_INFO.address} · 전화: ${COMPANY_INFO.phone}`,
+    keywords: ["세도어뮤즈먼트 오시는 길", "세도어뮤즈먼트 주소", "세도어뮤즈먼트 연락처", "의정부 전자오락기 유통"],
 };
 
 export default function LocationPage() {

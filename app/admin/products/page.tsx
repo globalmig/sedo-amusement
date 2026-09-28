@@ -1,10 +1,12 @@
 "use client"
 import ProductList from "@/components/board/ProductList";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
 import { PRODUCT_GAME_CATEGORIES, USER_CATEGORY } from "@/datas/categories";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { filterAdminProducts } from "@/lib/adminProductFilter";
 
 const PRODUCT_CATEGORIES = PRODUCT_GAME_CATEGORIES;
 const PRODUCT_TYPE_OPTIONS = USER_CATEGORY.products.categories ?? [];
@@ -25,10 +27,24 @@ function ChevronDownIcon({ className }: { className?: string }) {
 }
 
 export default function AdminProductListPage() {
-    const [activeCategory, setActiveCategory] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [activeProductType, setActiveProductType] = useState<string | null>(null);
+    return (
+        <Suspense>
+            <AdminProductListPageInner />
+        </Suspense>
+    );
+}
+
+function AdminProductListPageInner() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const queryClient = useQueryClient();
+
+    // 필터(카테고리/분류/검색어)는 컴포넌트 state가 아닌 URL 쿼리스트링에 저장한다.
+    // state로만 관리하면 상세페이지로 이동했다가 뒤로가기로 돌아왔을 때
+    // 이 페이지가 새로 마운트되면서 필터가 초기화되어 버린다.
+    const activeCategory = searchParams.get("filterCategory");
+    const activeProductType = searchParams.get("filterType");
+    const searchTerm = searchParams.get("q") ?? "";
 
     // 제품 불러오기
     const { data: products = [], isLoading: loading } = useQuery({
@@ -43,25 +59,34 @@ export default function AdminProductListPage() {
         },
     });
 
-    const onChangeSearchTerm = useCallback((e: any) => {
-        setSearchTerm(e.target.value);
-    }, []);
+    const updateQuery = useCallback((updates: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+            else params.delete(key);
+        });
+        // 필터가 바뀌면 목록 구성이 달라지므로 페이지네이션은 1페이지로 되돌린다.
+        params.delete("page");
+        const qs = params.toString();
+        router.replace(qs ? `/admin/products?${qs}` : "/admin/products", { scroll: false });
+    }, [router, searchParams]);
+
+    const onChangeSearchTerm = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        updateQuery({ q: e.target.value || null });
+    }, [updateQuery]);
 
     const onChangeProductTypeFilter = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        setActiveProductType(e.target.value || null);
-    }, []);
+        updateQuery({ filterType: e.target.value || null });
+    }, [updateQuery]);
 
-    const filteredProducts = useMemo(() => {
-        const keyword = searchTerm.trim().toLowerCase();
+    const onSelectCategory = useCallback((category: string | null) => {
+        updateQuery({ filterCategory: category });
+    }, [updateQuery]);
 
-        return products.filter((product) => {
-            const matchesCategory = activeCategory ? product.category === activeCategory : true;
-            const matchesProductType = activeProductType ? product.product_type === activeProductType : true;
-            const matchesKeyword = keyword ? product.name.toLowerCase().includes(keyword) : true;
-            return matchesCategory && matchesProductType && matchesKeyword;
-        });
-
-    }, [products, activeCategory, activeProductType, searchTerm]);
+    const filteredProducts = useMemo(
+        () => filterAdminProducts(products, { category: activeCategory, productType: activeProductType, keyword: searchTerm }),
+        [products, activeCategory, activeProductType, searchTerm]
+    );
 
     return (
         <div className="space-y-6">
@@ -127,7 +152,7 @@ export default function AdminProductListPage() {
                 <nav className="flex gap-1 px-2 whitespace-nowrap">
                     <button
                         type="button"
-                        onClick={() => setActiveCategory(null)}
+                        onClick={() => onSelectCategory(null)}
                         className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-base font-medium transition-colors ${activeCategory === null
                             ? "border-primary font-semibold text-primary"
                             : "border-transparent text-muted hover:text-title"
@@ -139,7 +164,7 @@ export default function AdminProductListPage() {
                         <button
                             key={category.url}
                             type="button"
-                            onClick={() => setActiveCategory(category.url)}
+                            onClick={() => onSelectCategory(category.url)}
                             className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-base font-medium transition-colors ${activeCategory === category.url
                                 ? "border-primary font-semibold text-primary"
                                 : "border-transparent text-muted hover:text-title"
@@ -157,6 +182,9 @@ export default function AdminProductListPage() {
                 <ProductList
                     products={filteredProducts}
                     onReload={() => queryClient.invalidateQueries({ queryKey: ["products"] })}
+                    activeCategory={activeCategory}
+                    activeProductType={activeProductType}
+                    searchTerm={searchTerm}
                 />
             )}
         </div>

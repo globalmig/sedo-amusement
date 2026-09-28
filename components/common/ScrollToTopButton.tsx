@@ -28,11 +28,11 @@ export default function ScrollToTopButton() {
             type="button"
             onClick={scrollToTop}
             aria-label="맨 위로 이동"
-            className={`fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-card transition-all duration-300 hover:bg-primary/90 pc:bottom-8 pc:right-8 pc:h-14 pc:w-14 ${
+            className={`fixed bottom-20 right-5 z-40 flex h-15 w-15 items-center justify-center rounded-full bg-primary text-white shadow-card transition-all duration-300 hover:bg-primary/90 pc:bottom-30 pc:right-8 pc:h-14 pc:w-14 ${
                 isVisible ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0 translate-y-3"
             }`}
         >
-            <ArrowUpIcon className="h-5 w-5 pc:h-6 pc:w-6" />
+            <ArrowUpIcon className="h-7 w-7 pc:h-6 pc:w-6" />
         </button>
     );
 }

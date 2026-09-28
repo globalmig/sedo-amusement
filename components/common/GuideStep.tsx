@@ -1,6 +1,5 @@
 import type { GuideStep as GuideStepData } from "@/datas/adminGuide";
 
-// [버튼명] -> primary 강조, **중요 문구** -> bold 강조, 나머지는 기본 굵기로 렌더링
 function renderEmphasizedText(text: string) {
     const parts = text.split(/(\[[^\]]+\]|\*\*[^*]+\*\*)/g).filter(Boolean);
 

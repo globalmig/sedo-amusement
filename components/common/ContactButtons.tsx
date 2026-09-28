@@ -12,7 +12,7 @@ export default function ContactButtons({
     phoneText = "전화 상담하기",
 }: ContactButtonsProps) {
     return (
-        <div className={`flex flex-wrap items-center justify-center gap-3 ${className}`}>
+        <div className={className}>
             <Link href={COMPANY_INFO.phoneHref} className="btn-primary rounded-full px-8 py-3.5 text-base pc:text-[20px]">
                 {phoneText}
             </Link>

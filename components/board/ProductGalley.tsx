@@ -8,10 +8,12 @@ const ITEMS_PER_PAGE = 12;
 
 interface ProductGalleyProps {
   products: Product[];
+  categories?: string;
+  filterQuery?: string;
 }
 
 // 사용자 제품 리스트: ProductCard 그리드형 렌더링(무한 스크롤)
-export default function ProductGalley({ products }: ProductGalleyProps) {
+export default function ProductGalley({ products, categories = "all", filterQuery = "" }: ProductGalleyProps) {
   const { visibleItems, hasMore, observerTarget } = useInfiniteScroll(products, ITEMS_PER_PAGE);
 
   if (products.length === 0) {
@@ -30,7 +32,7 @@ export default function ProductGalley({ products }: ProductGalleyProps) {
             key={product.id}
             className="mb-4 last:mb-0 sm:mb-0 sm:w-[48%] pc:w-auto pc:basis-[calc(25%-1.125rem)]"
           >
-            <ProductCard product={product} />
+            <ProductCard product={product} categories={categories} filterQuery={filterQuery} />
           </div>
         ))}
       </div>

@@ -80,6 +80,22 @@ export async function getRandomHitProducts(limit: number): Promise<Product[]> {
     return products.slice(0, limit);
 }
 
+// 관리자 목록 조회: 필터 없이 최신 등록순 전체 조회 (/api/product GET과 동일한 정렬 기준)
+// 관리자 목록 페이지의 필터링 결과 및 상세페이지 이전/다음 탐색 기준과 순서를 맞추기 위해 사용
+export async function getAdminProducts(): Promise<Product[]> {
+    const { data, error } = await supabaseAdmin
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("관리자 제품 목록 조회 실패:", error.message);
+        return [];
+    }
+
+    return data ?? [];
+}
+
 export async function getProductById(id: number): Promise<Product | null> {
     const { data, error } = await supabaseAdmin
         .from("products")

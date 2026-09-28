@@ -22,7 +22,7 @@ export default function ProductMainImage({ imageUrl, alt }: ProductMainImageProp
             alt={alt}
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className={`object-cover ${loaded ? "" : "invisible"}`}
+            className={`object-contain ${loaded ? "" : "invisible"}`}
             onLoad={() => setLoaded(true)}
           />
         </>
