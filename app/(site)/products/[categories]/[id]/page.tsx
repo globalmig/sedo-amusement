@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
 
   if (!product) return {};
 
-  const categoryLabel = getProductTypeLabel(categories);
+  const categoryLabel = getProductTypeLabel(categories) ?? "제품";
   const description =
     product.features?.replace(/\s+/g, " ").trim().slice(0, 120) ??
     `세도어뮤즈먼트가 정품으로 공급하는 ${categoryLabel} 기종, ${product.name}을(를) 확인하세요.`;
