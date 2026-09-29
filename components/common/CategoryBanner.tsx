@@ -47,8 +47,11 @@ export default function CategoryBanner({
                             <button
                                 type="button"
                                 onClick={() => setIsOpen((prev) => !prev)}
+                                aria-haspopup="true"
+                                aria-expanded={isOpen}
+                                aria-controls="category-banner-submenu"
                                 className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2.5 text-base font-medium text-white"
-                            > 
+                            >
                                 {activeTabLabel ?? "카테고리 선택"}
                                 <svg
                                     viewBox="0 0 24 24"
@@ -63,7 +66,7 @@ export default function CategoryBanner({
                             </button>
 
                             {isOpen && (
-                                <ul className="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-lg border border-white/10 bg-primary shadow-card">
+                                <ul id="category-banner-submenu" className="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-lg border border-white/10 bg-primary shadow-card">
                                     {tabs.map((tab) => {
                                         const isActive = activeUrl === tab.url;
                                         return (
@@ -71,6 +74,7 @@ export default function CategoryBanner({
                                                 <Link
                                                     href={`${basePath}/${tab.url}`}
                                                     onClick={() => setIsOpen(false)}
+                                                    aria-current={isActive ? "page" : undefined}
                                                     className={`block px-4 py-3 text-base font-medium transition-colors ${
                                                         isActive ? "bg-white/10 text-white" : "text-white/90 hover:bg-white/10"
                                                     }`}
@@ -93,6 +97,7 @@ export default function CategoryBanner({
                                         <li key={tab.url}>
                                             <Link
                                                 href={`${basePath}/${tab.url}`}
+                                                aria-current={isActive ? "page" : undefined}
                                                 className={`inline-block border-b-2 px-4 py-3.5 text-base font-medium transition-colors ${
                                                     isActive
                                                         ? "border-primary text-white"

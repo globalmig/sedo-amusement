@@ -3,6 +3,7 @@ import { USER_CATEGORY } from "@/datas/categories";
 import { COMPANY_INFO } from "@/datas/company";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -19,6 +20,7 @@ export default function Header() {
     const isLogin = authData?.isLogin ?? false;
     const isAdmin = authData?.isAdmin ?? false;
 
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isOpenSub, setIsOpenSub] = useState<string | null>(null);
     const [isScroll, setIsScroll] = useState<boolean>(false);
@@ -52,7 +54,7 @@ export default function Header() {
 
                 <div className="flex py-3 items-center justify-between px-[5%] pc:mx-auto pc:max-w-300 pc:px-0 pc:py-5">
                     
-                        <Link href="/" rel="canonical">
+                        <Link href="/">
                             <Image 
                             src="/icons/logo_white.png"
                             alt="세도어뮤즈먼트 로고" 
@@ -61,7 +63,12 @@ export default function Header() {
                             className={`w-15 h-auto pc:w-25 ${isScroll ? "invert" : "invert-0"}`}/>
                         </Link>
 
-                    <nav className={`fixed top-0 h-dvh w-[80%] max-w-xs bg-white py-5 z-50 duration-500 overflow-y-auto
+                    <nav
+                        aria-label="주 메뉴"
+                        // 모바일 화면에서 닫혀 화면 밖에 가려져 있을 땐 Tab/스크린리더에서도 완전히 제외
+                        // (데스크탑에선 항상 펼쳐진 상태로 보이므로 inert를 걸지 않음)
+                        inert={!isPc && !isOpen}
+                        className={`fixed top-0 h-dvh w-[80%] max-w-xs bg-white py-5 z-50 duration-500 overflow-y-auto
                         pc:static pc:h-auto pc:w-auto pc:max-w-none pc:bg-transparent pc:p-0 pc:overflow-visible
                         ${isOpen ? "right-0" : "-right-full"}`}>
 
@@ -80,20 +87,35 @@ export default function Header() {
                                 const isTarget = isOpenSub === key;
                                 // 제품소개는 하위 카테고리를 드롭다운으로 펼치지 않고 신제품 페이지로 바로 이동
                                 const hasDropdown = !!c.categories && key !== "products";
+                                const groupHref = key === "products" ? `/${key}/${c.categories?.[0]?.url ?? ""}` : `/${key}`;
                                 return (
                                     <li key={key}
                                         className="pc:relative pc:flex pc:items-stretch"
                                         onMouseEnter={() => isPc && setIsOpenSub(key)}
-                                        onMouseLeave={() => isPc && setIsOpenSub(null)}>
+                                        onMouseLeave={() => isPc && setIsOpenSub(null)}
+                                        // 마우스 호버뿐 아니라 Tab으로 이 항목 안쪽에 포커스가 들어오고 나갈 때도
+                                        // 같은 방식으로 서브메뉴를 열고 닫음 (키보드 사용자를 위한 대응)
+                                        onFocus={() => isPc && setIsOpenSub(key)}
+                                        onBlur={(e) => {
+                                            if (isPc && !e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                                                setIsOpenSub(null);
+                                            }
+                                        }}>
                                         {/* 메인 카테고리 */}
-                                        <ul className={`py-3.75 px-5 pc:flex pc:items-center pc:py-0 pc:px-6.25 transition-colors
+                                        <div className={`py-3.75 px-5 pc:flex pc:items-center pc:py-0 pc:px-6.25 transition-colors
                                             ${isTarget ? "bg-primary text-white pc:bg-transparent pc:text-primary" : "text-title"}
                                             ${!isTarget && (isScroll ? "pc:text-title" : "pc:text-white")}`}>
 
                                             {hasDropdown ? (
-                                                <li
-                                                    onClick={() => !isPc && setIsOpenSub(isTarget ? null : key)}
-                                                    className="flex w-full cursor-pointer items-center justify-between gap-2 font-bold pc:pointer-events-none pc:w-auto pc:font-semibold pc:text-[20px] hover:text-primary">
+                                                // 데스크탑에서도 클릭·포커스가 가능한 실제 버튼으로 만들어
+                                                // 마우스 호버 없이 키보드만으로도 서브메뉴를 열 수 있게 함
+                                                <button
+                                                    type="button"
+                                                    aria-haspopup="true"
+                                                    aria-expanded={isTarget}
+                                                    aria-controls={`submenu-${key}`}
+                                                    onClick={() => setIsOpenSub(isTarget ? null : key)}
+                                                    className="flex w-full cursor-pointer items-center justify-between gap-2 border-0 bg-transparent p-0 text-left font-bold pc:w-auto pc:cursor-default pc:font-semibold pc:text-[20px] hover:text-primary focus-visible:text-primary">
                                                     {c.title}
                                                     <svg
                                                         viewBox="0 0 24 24"
@@ -104,32 +126,37 @@ export default function Header() {
                                                         className={`h-4 w-4 shrink-0 transition-transform duration-300 pc:hidden ${isTarget ? "rotate-180" : ""}`}>
                                                         <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                                                     </svg>
-                                                </li>
+                                                </button>
                                             ) : (
-                                                <li>
-                                                    <Link
-                                                        href={key === "products" ? `/${key}/${c.categories?.[0]?.url ?? ""}` : `/${key}`}
-                                                        rel="canonical" onClick={() => setIsOpen(false)}
-                                                        className={`font-bold block cursor-pointer pc:text-[20px] pc:font-semibold pc:hover:text-primary ${isScroll ? "pc:text-title" : "pc:text-white"}`}>
-                                                        {c.title}
-                                                    </Link>
-                                                </li>
+                                                <Link
+                                                    href={groupHref}
+                                                    onClick={() => setIsOpen(false)}
+                                                    aria-current={pathname?.startsWith(groupHref) ? "page" : undefined}
+                                                    className={`font-bold block cursor-pointer pc:text-[20px] pc:font-semibold pc:hover:text-primary ${isScroll ? "pc:text-title" : "pc:text-white"}`}>
+                                                    {c.title}
+                                                </Link>
                                             )}
-                                        </ul>
+                                        </div>
                                         {/* 서브 카테고리 */}
                                         {hasDropdown && (
-                                            <ul className={`overflow-hidden transition-all duration-500 ease-in-out pc:absolute pc:top-full pc:mt-2 pc:left-0 pc:w-62.5 pc:rounded-lg  pc:bg-primary pc:shadow-card
+                                            <ul
+                                                id={`submenu-${key}`}
+                                                className={`overflow-hidden transition-all duration-500 ease-in-out pc:absolute pc:top-full pc:mt-2 pc:left-0 pc:w-62.5 pc:rounded-lg  pc:bg-primary pc:shadow-card
                                                 ${isTarget ? "max-h-125 opacity-100 translate-y-0 visible mb-2 pc:mb-0" : "max-h-0 opacity-0 -translate-y-2 invisible mb-0"}`}>
-                                                {c.categories?.map((sub) => (
-                                                    <li key={sub.url}
-                                                        className="hover:bg-surface pc:hover:bg-surface transition-colors border-b border-black/5 pc:border-white/20 last:border-0"
-                                                        onClick={() => setIsOpen(false)}>
-                                                        <Link href={`/${key}/${sub.url}`} rel="canonical"
-                                                            className="block py-2.5 px-5 text-title pc:text-white pc:text-[20px] pc:hover:text-title">
-                                                            {sub.name}
-                                                        </Link>
-                                                    </li>
-                                                ))}
+                                                {c.categories?.map((sub) => {
+                                                    const subHref = `/${key}/${sub.url}`;
+                                                    return (
+                                                        <li key={sub.url}
+                                                            className="hover:bg-surface pc:hover:bg-surface transition-colors border-b border-black/5 pc:border-white/20 last:border-0"
+                                                            onClick={() => setIsOpen(false)}>
+                                                            <Link href={subHref}
+                                                                aria-current={pathname === subHref ? "page" : undefined}
+                                                                className="block py-2.5 px-5 text-title pc:text-white pc:text-[20px] pc:hover:text-title">
+                                                                {sub.name}
+                                                            </Link>
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         )}
                                     </li>

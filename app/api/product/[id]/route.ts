@@ -115,14 +115,15 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             .single();
 
         if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
+            console.error("제품 수정 실패:", error.message);
+            return NextResponse.json({ error: "제품 수정에 실패했습니다." }, { status: 500 });
         }
 
         return NextResponse.json({ data });
 
     } catch (err) {
-        const message = err instanceof Error ? err.message : "서버 내부 오류가 발생했습니다.";
-        return NextResponse.json({ error: message }, { status: 500 });
+        console.error("제품 수정 처리 중 오류:", err);
+        return NextResponse.json({ error: "서버 내부 오류가 발생했습니다." }, { status: 500 });
     }
 }
 
@@ -149,7 +150,8 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     const { error } = await supabaseAdmin.from("products").delete().eq("id", id);
 
     if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error("제품 삭제 실패:", error.message);
+        return NextResponse.json({ error: "제품 삭제에 실패했습니다." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

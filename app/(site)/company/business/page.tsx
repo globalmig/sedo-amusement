@@ -68,7 +68,7 @@ export default function BusinessPage() {
                                 </div>
                                 <Image
                                     src={area.icon}
-                                    alt=""
+                                    alt={area.title}
                                     width={48}
                                     height={48}
                                     unoptimized={area.icon.endsWith(".svg")}

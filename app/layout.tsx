@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import { SITE_URL } from "@/datas/site";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
@@ -10,6 +11,8 @@ const notoSansKr = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
+  // OG 이미지 등 상대 경로를 전체 URL로 바꿀 때 기준이 되는 도메인 (datas/site.ts에서 관리)
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "세도어뮤즈먼트 | 전자오락기 유통 전문기업",
     template: "%s | 세도어뮤즈먼트",
@@ -20,11 +23,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "세도어뮤즈먼트 | 전자오락기 유통 전문기업",
     description: "오락실, 키즈카페를 위한 전자오락기 정품 유통과 전국 A/S를 책임지는 세도어뮤즈먼트입니다.",
-    url: "https://www.",
+    url: "/",
     siteName: "세도어뮤즈먼트",
     images: [
       {
-        url: "https://www./images/og_image.png",
+        url: "/images/og_image.png",
         width: 1200,
         height: 630,
         alt: "세도어뮤즈먼트",

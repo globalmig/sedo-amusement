@@ -83,6 +83,8 @@ export default async function Home() {
 
     return (
         <>
+            {/* 슬라이드 제목(h2)들이 계속 바뀌므로, 화면에는 보이지 않지만 페이지를 대표하는 h1을 별도로 둠 */}
+            <h1 className="sr-only">세도어뮤즈먼트 | 전자오락기 유통 전문기업</h1>
             <Slide />
             {/* Product Preview */}
             <section className="bg-white">
@@ -170,10 +172,43 @@ export default async function Home() {
             {/* 주요 컨설팅 분야 */}
             <section className="border-b border-b-[#ddd] bg-white">
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
-                    <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">CONSULTING</p>
-                    <h2 className="mt-4 text-2xl font-black pc:text-5xl">성공적인 가족형 놀이 공간의 시작,<br />검증된 전문가와 함께하세요.</h2>
-                    <button className="btn-primary"><Link href="/consulting">자세히 보기</Link></button>
-                    <p className="text-base text-muted">아케이드 게임장, 가족형 유원시설(FEC), 키즈카페 창업은 단순한 공간 구성을 넘어 최신 트렌드 분석, 복잡한 인허가, 그리고 수익성 높은 기기 배치가 성공을 좌우합니다. 오랜 기간 아케이드 산업 현장에서 쌓아온 실무 경험과 '게임저널' 발행 등을 통해 구축한 대한어뮤즈먼트산업협회 등 업계 최고 수준의 탄탄한 네트워크를 바탕으로, 기획 단계부터 그랜드 오픈까지 가장 빠르고 확실한 솔루션을 제공합니다.</p>
+                    <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
+                        <div className="flex flex-col gap-4">
+                            <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">CONSULTING</p>
+                            <h2 className="text-2xl font-black pc:text-5xl">성공적인 가족형 놀이 공간의 시작,<br />검증된 전문가와 함께하세요.</h2>
+                            <p className="max-w-200 text-base leading-relaxed text-muted pc:text-[20px]">아케이드 게임장, 가족형 유원시설(FEC), 키즈카페 창업은 단순한 공간 구성을 넘어 최신 트렌드 분석, 복잡한 인허가, 그리고 수익성 높은 기기 배치가 성공을 좌우합니다. 오랜 기간 아케이드 산업 현장에서 쌓아온 실무 경험과 '게임저널' 발행 등을 통해 구축한 대한어뮤즈먼트산업협회 등 업계 최고 수준의 탄탄한 네트워크를 바탕으로, 기획 단계부터 그랜드 오픈까지 가장 빠르고 확실한 솔루션을 제공합니다.</p>
+                        </div>
+                        <Link
+                            href="/consulting"
+                            className="hidden shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-primary/90 pc:inline-flex pc:text-[20px]"
+                        >
+                            창업 컨설팅 자세히 보기
+                            <ArrowRightIcon className="h-4 w-4" />
+                        </Link>
+                    </div>
+
+                    {/* 세 장 모두 같은 문구를 반복하면 스크린리더 사용자에게는 의미 없는 소음이 되므로 장식 이미지로 처리(alt="") */}
+                    <div className="mt-10 grid grid-cols-1 gap-4 pc:mt-14 pc:grid-cols-3 pc:gap-6">
+                        <div className="overflow-hidden rounded-xl">
+                            <Image src="/images/consulting-1.png" alt="" width={1672} height={940} className="h-full w-full object-cover" />
+                        </div>
+                        <div className="overflow-hidden rounded-xl">
+                            <Image src="/images/consulting-2.png" alt="" width={1672} height={940} className="h-full w-full object-cover" />
+                        </div>
+                        <div className="overflow-hidden rounded-xl">
+                            <Image src="/images/consulting-3.png" alt="" width={1672} height={940} className="h-full w-full object-cover" />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center pt-10 pc:hidden">
+                        <Link
+                            href="/consulting"
+                            className="btn-primary gap-2 rounded-full px-8 py-3"
+                        >
+                            자세히 보기
+                            <ArrowRightIcon className="h-4 w-4" />
+                        </Link>
+                    </div>
                 </div>
             </section>
 

@@ -87,6 +87,7 @@ export default function ConsultingPage() {
             />
             <article>
                 {/* 주요 컨설팅 제공 분야 */}
+                <section>
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">CONSULTING</p>
                     <h2 className="mt-4 text-2xl font-black text-title pc:text-5xl">주요 컨설팅 제공 분야</h2>
@@ -112,9 +113,9 @@ export default function ConsultingPage() {
                         ))}
                     </div>
                 </div>
-            </article>
+                </section>
 
-            <article className="bg-title">
+                <section className="bg-title">
                 <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-24">
                     <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">PROCESS</p>
                     <h2 className="mt-4 text-2xl font-black text-white pc:text-5xl">컨설팅 진행 절차</h2>
@@ -132,22 +133,22 @@ export default function ConsultingPage() {
                         ))}
                     </div>
                 </div>
-            </article>
+                </section>
 
-            {/* FAQ */}
-            {CONSULTING_FAQ_ITEMS.length > 0 && (
-                <FaqList
-                    items={CONSULTING_FAQ_ITEMS}
-                    eyebrow="FAQ"
-                    title="창업 컨설팅 자주 묻는 질문"
-                    moreHref="/as"
-                    moreLabel="전체 FAQ 보기"
-                />
-            )}
+                {/* FAQ */}
+                {CONSULTING_FAQ_ITEMS.length > 0 && (
+                    <FaqList
+                        items={CONSULTING_FAQ_ITEMS}
+                        eyebrow="FAQ"
+                        title="창업 컨설팅 자주 묻는 질문"
+                        moreHref="/as"
+                        moreLabel="전체 FAQ 보기"
+                    />
+                )}
 
-            {/* CTA */}
-            <article className="bg-title">
-                <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-20 flex justify-between">
+                {/* CTA */}
+                <section className="bg-title">
+                <div className="mx-auto max-w-300 px-[5%] py-16 pc:px-0 pc:py-20 flex flex-col gap-10 pc:flex-row pc:items-start pc:justify-between">
                     <div>
                         <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">INQUIRY</p>
                         <h2 className="mt-4 text-2xl font-black text-white pc:text-5xl">
@@ -157,8 +158,11 @@ export default function ConsultingPage() {
                             복잡한 상담 폼 없이, 전화로 빠르게 창업 컨설팅 일정을 안내해 드립니다.
                         </p>
                     </div>
-                    <StartupConsultForm />
+                    <div className="w-full pc:w-125 pc:shrink-0">
+                        <StartupConsultForm />
+                    </div>
                 </div>
+                </section>
             </article>
         </>
     );

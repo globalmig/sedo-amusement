@@ -10,18 +10,21 @@ import { COMPANY_INFO } from "@/datas/company";
 const SLIDES = [
     {
         image: "/images/banner1.png",
+        mobileImage: "/images/banner1_mo.png",
         eyebrow: "SEDO AMUSEMENT",
         heading: "35년 전통의\n전자오락기 유통 전문기업",
         description: "오락실·키즈카페를 위한 검증된 게임기를 세도어뮤즈먼트가 책임집니다.",
     },
     {
         image: "/images/banner2.png",
+        mobileImage: "/images/banner2_mo.png",
         eyebrow: "A/S & SUPPORT",
         heading: "전국 어디서나\n신속한 사후관리",
         description: "설치 이후에도 끝까지 책임지는 세도어뮤즈먼트의 A/S 시스템",
     },
     {
-        image: "/images/20260821_155230.jpg",
+        image: "/images/banner3.png",
+        mobileImage: "/images/banner3_mo.png",
         eyebrow: "PRODUCT LINE-UP",
         heading: "정품 게임기,\n합리적인 창업 비용",
         description: "크레인부터 리듬, 레이싱까지 합리적인 견적과 빠른 설치를 제공합니다.",
@@ -96,30 +99,44 @@ export default function Slide() {
     };
 
     return (
-        <main className="relative w-full">
-            <div className="relative h-133 w-full overflow-hidden pc:h-195">
+        // 페이지의 유일한 <main>은 (site)/layout.tsx에서 감싸므로 여기서는 일반 div를 사용
+        <div className="relative w-full">
+            <div className="relative h-200 w-full overflow-hidden pc:h-195">
                 <Slider ref={sliderRef} {...settings}>
                     {SLIDES.map((slide, index) => (
-                        <div key={slide.heading} className="relative h-133 w-full pc:h-195">
+                        <div key={slide.heading} className="relative h-200 w-full pc:h-195">
+                            {/* 배경 사진 — 같은 내용을 아래 h2/p가 텍스트로 이미 전달하므로 장식 이미지로 처리(alt="") */}
                             <Image
                                 src={slide.image}
                                 alt=""
                                 fill
                                 priority={index === 0}
                                 sizes="100vw"
-                                className="object-cover"
+                                className="hidden object-cover pc:block"
                             />
-                            <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-black/70 to-transparent pc:h-40" />
-                            <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/50 to-black/10" />
+                            <Image
+                                src={slide.mobileImage}
+                                alt=""
+                                fill
+                                priority={index === 0}
+                                sizes="100vw"
+                                className="object-cover pc:hidden"
+                            />
+                            {index === 2 && (
+                                <>
+                                    <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-black/70 to-transparent pc:h-40" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/50 to-black/10" />
+                                </>
+                            )}
 
                             <div className="relative z-10 flex h-full items-center">
                                 <div className="slide-content w-full max-w-300 whitespace-normal px-[5%] pc:mx-auto pc:px-0">
                                     <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">
                                         {slide.eyebrow}
                                     </p>
-                                    <h1 className="mt-4 whitespace-pre-line text-3xl font-black leading-tight text-white pc:text-5xl">
+                                    <h2 className="mt-4 whitespace-pre-line text-3xl font-black leading-tight text-white pc:text-5xl">
                                         {slide.heading}
-                                    </h1>
+                                    </h2>
                                     <p className="mt-5 max-w-140 whitespace-normal text-base leading-6 text-white/80 pc:text-[20px]">
                                         {slide.description}
                                     </p>
@@ -188,9 +205,8 @@ export default function Slide() {
             </div>
             <div className="bg-primary">
                 <div className="mx-auto flex max-w-300 flex-col gap-3 px-[5%] py-5 pc:flex-row pc:items-center pc:justify-between pc:gap-6 pc:px-0 pc:py-7">
-                    {/* 모바일: 전화번호 대신 간단한 안내 문구만 노출 */}
                     <div className="pc:hidden">
-                        <h4 className="text-[20px] font-bold text-white">궁금한 점이 있으시다면?</h4>
+                        <p className="text-[20px] font-bold text-white">궁금한 점이 있으시다면?</p>
                         <Link href="/as" className="mt-1 inline-flex items-center gap-1.5 text-base font-semibold text-white underline">
                             빠른 해결 가이드 바로가기
                             <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -213,6 +229,6 @@ export default function Slide() {
                     </Link>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

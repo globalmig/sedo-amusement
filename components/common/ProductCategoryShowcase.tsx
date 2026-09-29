@@ -89,7 +89,8 @@ export default function ProductCategoryShowcase() {
                         return (
                             <Link
                                 key={category.url}
-                                href={`/products/${category.url}`}
+                                href={`/products/all?category=${category.url}`}
+                                className="group"
                             >
                                 <div className="relative h-136 w-70">
                                     <div>
@@ -124,7 +125,7 @@ export default function ProductCategoryShowcase() {
 
                         const textBlock = (
                             <div
-                                className={`absolute inset-x-0 top-51 z-10 flex h-67 flex-col gap-2 px-7 pt-8 pb-12 ${isRight ? "items-end text-right" : ""}`}
+                                className={`absolute inset-x-0 top-51 z-10 flex h-55 flex-col gap-2 px-7 pt-8 pb-12 ${isRight ? "items-end text-right" : ""}`}
                             >
                                 <div className="flex items-center gap-3">
                                     <p className="text-lg font-bold text-title transition-colors duration-300 group-hover:text-white">

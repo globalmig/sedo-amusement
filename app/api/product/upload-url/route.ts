@@ -29,9 +29,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "이미지 파일(jpg, png, webp, gif)만 업로드할 수 있습니다." }, { status: 400 });
     }
 
-    // if (typeof fileSize !== "number" || fileSize <= 0 || fileSize > MAX_IMAGE_SIZE) {
-    //     return NextResponse.json({ error: "이미지 파일은 5MB 이하만 업로드할 수 있습니다." }, { status: 400 });
-    // }
+    if (typeof fileSize !== "number" || fileSize <= 0 || fileSize > MAX_IMAGE_SIZE) {
+        return NextResponse.json({ error: "이미지 파일은 5MB 이하만 업로드할 수 있습니다." }, { status: 400 });
+    }
 
     const path = buildStoragePath(fileName, folder);
     const { data, error } = await supabaseAdmin.storage.from(STORAGE_BUCKET).createSignedUploadUrl(path);

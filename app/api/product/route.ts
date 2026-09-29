@@ -19,7 +19,8 @@ export async function GET(request: Request) {
     const { data, error } = await query;
 
     if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error("제품 목록 조회 실패:", error.message);
+        return NextResponse.json({ error: "제품 목록을 불러오지 못했습니다." }, { status: 500 });
     }
 
     return NextResponse.json({ data });
@@ -92,13 +93,14 @@ export async function POST(request: Request) {
             .single();
 
         if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
+            console.error("제품 등록 실패:", error.message);
+            return NextResponse.json({ error: "제품 등록에 실패했습니다." }, { status: 500 });
         }
 
         return NextResponse.json({ data }, { status: 201 });
 
     } catch (err) {
-        const message = err instanceof Error ? err.message : "서버 내부 오류가 발생했습니다.";
-        return NextResponse.json({ error: message }, { status: 500 });
+        console.error("제품 등록 처리 중 오류:", err);
+        return NextResponse.json({ error: "서버 내부 오류가 발생했습니다." }, { status: 500 });
     }
 }

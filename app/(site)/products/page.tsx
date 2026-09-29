@@ -20,6 +20,8 @@ export default async function ProductListPage({ searchParams }: ProductListPageP
   return (
     <article>
       <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
+        {/* 이 페이지엔 CategoryBanner(제목 배너)가 없어 h1이 비어 있었으므로 화면에는 보이지 않는 제목을 추가 */}
+        <h1 className="sr-only">전체 제품</h1>
         <ProductGalleryFilter products={products} initialCategory={category ?? null} />
       </div>
     </article>

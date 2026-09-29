@@ -72,6 +72,7 @@ export default function StartupConsultForm() {
                             type="text"
                             id="name"
                             name="name"
+                            required
                             placeholder="성함/직급을 입력해주세요."
                             value={form.name}
                             onChange={onChangeForm}
@@ -87,6 +88,7 @@ export default function StartupConsultForm() {
                             type="tel"
                             id="phone"
                             name="phone"
+                            required
                             placeholder="연락 가능한 전화번호를 입력해주세요."
                             value={form.phone}
                             onChange={onChangeForm}
@@ -94,10 +96,12 @@ export default function StartupConsultForm() {
                         />
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                        <span className="form-label">
+                    {/* 체크박스 여러 개가 하나의 질문("관심 창업 분야")에 속한다는 것을
+                        스크린리더가 안내할 수 있도록 fieldset/legend로 묶음 */}
+                    <fieldset className="flex flex-col gap-1.5 border-0 p-0 m-0">
+                        <legend className="form-label px-0">
                             관심 창업 분야 <span className="text-red-400">*</span>
-                        </span>
+                        </legend>
                         <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
                             {INTEREST_OPTIONS.map((option) => (
                                 <label key={option} className="flex items-center gap-2 text-base text-body cursor-pointer">
@@ -111,7 +115,7 @@ export default function StartupConsultForm() {
                                 </label>
                             ))}
                         </div>
-                    </div>
+                    </fieldset>
 
                     <div className="flex flex-col gap-1.5">
                         <label htmlFor="region" className="form-label">오픈 예정 지역</label>

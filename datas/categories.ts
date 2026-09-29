@@ -33,7 +33,7 @@ export const PRODUCT_GAME_CATEGORIES: { name: string; url: string }[] = [
     { name: "캐주얼게임", url: "casual" },
     { name: "스포츠게임", url: "sports" },
     { name: "비디오게임", url: "video" },
-    { name: "라이드 어트렉션", url: "attraction" },
+    { name: "라이드 어트랙션", url: "attraction" },
     { name: "시설게임", url: "facility" },
     { name: "교환기", url: "exchange" },
 ];

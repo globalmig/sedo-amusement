@@ -94,7 +94,10 @@ function ProductGalleryFilterInner({ products, initialCategory = null, categorie
     <div>
       <div className="mb-6 flex flex-col gap-4 pc:mb-8 pc:flex-row pc:items-center">
         <div className="relative shrink-0 pc:w-56">
+          {/* placeholder만으로는 스크린리더가 이 입력의 용도를 알 수 없어, 화면엔 보이지 않는 라벨을 연결함 */}
+          <label htmlFor="product-category-filter" className="sr-only">카테고리 선택</label>
           <select
+            id="product-category-filter"
             value={activeCategory ?? ""}
             onChange={(e) => updateQuery({ category: e.target.value || null })}
             className="w-full cursor-pointer appearance-none rounded-lg border border-black/10 bg-white py-2.5 pl-4 pr-9 text-base font-medium text-body outline-none focus:border-point"
@@ -110,8 +113,10 @@ function ProductGalleryFilterInner({ products, initialCategory = null, categorie
         </div>
 
         <div className="relative shrink-0 pc:w-64">
+          <label htmlFor="product-search" className="sr-only">제품명 검색</label>
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
+            id="product-search"
             type="text"
             value={searchTerm}
             onChange={(e) => updateQuery({ q: e.target.value || null })}

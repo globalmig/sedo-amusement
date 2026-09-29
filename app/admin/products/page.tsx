@@ -39,9 +39,6 @@ function AdminProductListPageInner() {
     const searchParams = useSearchParams();
     const queryClient = useQueryClient();
 
-    // 필터(카테고리/분류/검색어)는 컴포넌트 state가 아닌 URL 쿼리스트링에 저장한다.
-    // state로만 관리하면 상세페이지로 이동했다가 뒤로가기로 돌아왔을 때
-    // 이 페이지가 새로 마운트되면서 필터가 초기화되어 버린다.
     const activeCategory = searchParams.get("filterCategory");
     const activeProductType = searchParams.get("filterType");
     const searchTerm = searchParams.get("q") ?? "";
@@ -129,23 +126,20 @@ function AdminProductListPageInner() {
                             </select>
                             <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                         </div>
-                        <button className="btn-primary w-[48%] text-center pc:hidden">
-                            <Link
-                                href={`/admin/new${activeCategory ? `?category=${activeCategory}` : ""}`}
-                            >
-                                제품 등록
-                            </Link>
-                        </button>
+                        <Link
+                            href={`/admin/new${activeCategory ? `?category=${activeCategory}` : ""}`}
+                            className="btn-primary w-[48%] text-center pc:hidden"
+                        >
+                            제품 등록
+                        </Link>
                     </div>
                 </div>
-                <button className="hidden btn-primary w-full text-center pc:block pc:w-auto">
-                    <Link
+                <Link
                     href={`/admin/new${activeCategory ? `?category=${activeCategory}` : ""}`}
-                    
+                    className="hidden btn-primary w-full text-center pc:block pc:w-auto"
                 >
                     제품 등록
                 </Link>
-                </button>
             </div>
 
             <div className="card overflow-x-auto">

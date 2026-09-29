@@ -20,7 +20,13 @@ export function getPublicImageUrl(path: string) {
 
 // 클라이언트가 보낸 이미지 URL이 실제로 우리 버킷 소속인지 검증 (임의 외부 URL 주입 방지)
 export function isOwnStorageUrl(url: unknown): url is string {
-    return typeof url === "string" && url.startsWith(supabaseUrl) && url.includes(STORAGE_URL_MARKER);
+    if (typeof url !== "string" || !url.includes(STORAGE_URL_MARKER)) return false;
+
+    try {
+        return new URL(url).origin === new URL(supabaseUrl).origin;
+    } catch {
+        return false;
+    }
 }
 
 export async function deleteProductImage(publicUrl: string) {

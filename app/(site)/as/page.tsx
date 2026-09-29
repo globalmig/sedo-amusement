@@ -41,39 +41,6 @@ const AS_STEPS = [
     { step: "04", title: "완료 확인", description: "정상 작동을 확인한 뒤 A/S 내역을 안내해 드립니다.", icon: "/icons/process-4.png" },
 ];
 
-const PROMISES = [
-    {
-        title: "정품 파츠 사용",
-        description: "모든 수리는 제조사 정품 부품만을 사용하여 진행하며, 비정품 사용으로 인한 재고장을 원천 차단합니다.",
-    },
-    {
-        title: "수리 보증 제도",
-        description: "출장 수리 완료 후 30일 이내 동일 증상이 재발하면 추가 비용 없이 다시 점검해 드립니다.",
-    },
-    {
-        title: "정기 점검 프로그램",
-        description: "고장이 발생하기 전에 미리 막는 것이 원칙입니다. 정기 방문점검으로 매장 가동률을 지켜드립니다.",
-    },
-];
-
-const FIELD_CASES = [
-    {
-        title: "출장 수리 현장",
-        description: "매장 방문 후 1시간 이내 1차 진단을 완료합니다.",
-        image: "/images/as-visit-repair.png",
-    },
-    {
-        title: "부품 교체 전/후",
-        description: "정품 부품 교체로 재고장 위험을 최소화합니다.",
-        image: "/images/as-parts-replacement.jpg",
-    },
-    {
-        title: "정기 점검 현장",
-        description: "월 1회 정기 점검으로 사전에 이상 유무를 확인합니다.",
-        image: "/images/as-regular-checkup.jpg",
-    },
-];
-
 export default function AsPage() {
     return (
         <>
@@ -149,7 +116,7 @@ export default function AsPage() {
                                     </div>
                                     <Image
                                         src={item.icon}
-                                        alt=""
+                                        alt={item.title}
                                         width={48}
                                         height={48}
                                         className="h-10 w-10 self-end transition duration-300 pc:h-12 pc:w-12"
