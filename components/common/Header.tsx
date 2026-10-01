@@ -5,20 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 export default function Header() {
-
-    const { data: authData } = useQuery({
-        queryKey: ["auth"],
-        queryFn: async () => {
-            const res = await fetch("/api/auth");
-            if (!res.ok) throw new Error("인증 상태 확인 실패");
-            return res.json() as Promise<{ isLogin: boolean; isAdmin: boolean }>;
-        },
-    });
-    const isLogin = authData?.isLogin ?? false;
-    const isAdmin = authData?.isAdmin ?? false;
 
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -42,7 +30,6 @@ export default function Header() {
         return () => mediaQuery.removeEventListener("change", handleChange);
     }, []);
 
-    // 모바일 드로어를 닫을 때 아코디언 펼침 상태도 함께 초기화
     useEffect(() => {
         if (!isOpen) setIsOpenSub(null);
     }, [isOpen]);
@@ -65,8 +52,6 @@ export default function Header() {
 
                     <nav
                         aria-label="주 메뉴"
-                        // 모바일 화면에서 닫혀 화면 밖에 가려져 있을 땐 Tab/스크린리더에서도 완전히 제외
-                        // (데스크탑에선 항상 펼쳐진 상태로 보이므로 inert를 걸지 않음)
                         inert={!isPc && !isOpen}
                         className={`fixed top-0 h-dvh w-[80%] max-w-xs bg-white py-5 z-50 duration-500 overflow-y-auto
                         pc:static pc:h-auto pc:w-auto pc:max-w-none pc:bg-transparent pc:p-0 pc:overflow-visible
@@ -85,7 +70,6 @@ export default function Header() {
                         <ul className="pc:flex pc:h-full pc:items-stretch pc:justify-end">
                             {Object.entries(USER_CATEGORY).map(([key, c]) => {
                                 const isTarget = isOpenSub === key;
-                                // 제품소개는 하위 카테고리를 드롭다운으로 펼치지 않고 신제품 페이지로 바로 이동
                                 const hasDropdown = !!c.categories && key !== "products";
                                 const groupHref = key === "products" ? `/${key}/${c.categories?.[0]?.url ?? ""}` : `/${key}`;
                                 return (
@@ -93,8 +77,6 @@ export default function Header() {
                                         className="pc:relative pc:flex pc:items-stretch"
                                         onMouseEnter={() => isPc && setIsOpenSub(key)}
                                         onMouseLeave={() => isPc && setIsOpenSub(null)}
-                                        // 마우스 호버뿐 아니라 Tab으로 이 항목 안쪽에 포커스가 들어오고 나갈 때도
-                                        // 같은 방식으로 서브메뉴를 열고 닫음 (키보드 사용자를 위한 대응)
                                         onFocus={() => isPc && setIsOpenSub(key)}
                                         onBlur={(e) => {
                                             if (isPc && !e.currentTarget.contains(e.relatedTarget as Node | null)) {
@@ -107,8 +89,6 @@ export default function Header() {
                                             ${!isTarget && (isScroll ? "pc:text-title" : "pc:text-white")}`}>
 
                                             {hasDropdown ? (
-                                                // 데스크탑에서도 클릭·포커스가 가능한 실제 버튼으로 만들어
-                                                // 마우스 호버 없이 키보드만으로도 서브메뉴를 열 수 있게 함
                                                 <button
                                                     type="button"
                                                     aria-haspopup="true"

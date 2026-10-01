@@ -99,29 +99,31 @@ export default function Slide() {
     };
 
     return (
-        // 페이지의 유일한 <main>은 (site)/layout.tsx에서 감싸므로 여기서는 일반 div를 사용
         <div className="relative w-full">
             <div className="relative h-200 w-full overflow-hidden pc:h-195">
                 <Slider ref={sliderRef} {...settings}>
                     {SLIDES.map((slide, index) => (
                         <div key={slide.heading} className="relative h-200 w-full pc:h-195">
-                            {/* 배경 사진 — 같은 내용을 아래 h2/p가 텍스트로 이미 전달하므로 장식 이미지로 처리(alt="") */}
-                            <Image
-                                src={slide.image}
-                                alt=""
-                                fill
-                                priority={index === 0}
-                                sizes="100vw"
-                                className="hidden object-cover pc:block"
-                            />
-                            <Image
-                                src={slide.mobileImage}
-                                alt=""
-                                fill
-                                priority={index === 0}
-                                sizes="100vw"
-                                className="object-cover pc:hidden"
-                            />
+                            <div className="absolute inset-0 hidden pc:block">
+                                <Image
+                                    src={slide.image}
+                                    alt="메인 배너 이미지"
+                                    fill
+                                    priority={index === 0}
+                                    sizes="100vw"
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div className="absolute inset-0 pc:hidden">
+                                <Image
+                                    src={slide.mobileImage}
+                                    alt="메인 배너 이미지"
+                                    fill
+                                    priority={index === 0}
+                                    sizes="100vw"
+                                    className="object-cover"
+                                />
+                            </div>
                             {index === 2 && (
                                 <>
                                     <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-black/70 to-transparent pc:h-40" />
