@@ -55,10 +55,23 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </table>
           </div>
 
-          <div className="mt-5 pt-6 pc:mt-8">
+          <div className="mt-5 flex flex-wrap gap-3 pt-6 pc:mt-8">
             <Link href={COMPANY_INFO.phoneHref} className="btn-primary pc:text-[20px] pc:px-8 rounded-full">
               제품 문의하기
             </Link>
+            {product.youtube_url && (
+              <a
+                href={product.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost pc:text-[20px] pc:px-8 rounded-full"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="mr-1.5 h-5 w-5">
+                  <path d="M21.6 7.2c-.2-1.2-1.1-2-2.3-2.2C17.6 4.7 12 4.7 12 4.7s-5.6 0-7.3.3C3.5 5.2 2.6 6 2.4 7.2 2.1 8.9 2.1 12 2.1 12s0 3.1.3 4.8c.2 1.2 1.1 2 2.3 2.2 1.7.3 7.3.3 7.3.3s5.6 0 7.3-.3c1.2-.2 2.1-1 2.3-2.2.3-1.7.3-4.8.3-4.8s0-3.1-.3-4.8ZM10 15.3V8.7l5.7 3.3-5.7 3.3Z" />
+                </svg>
+                영상 보기
+              </a>
+            )}
           </div>
         </div>
       </div>

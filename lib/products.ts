@@ -1,32 +1,13 @@
 import { supabaseAdmin } from "./supabaseAdmin";
 import { Product, ProductType } from "@/types/product";
 
-// 제품 노출 우선순위: 신제품 > 히트상품 > 추천상품 > 그 외
-const PRODUCT_TYPE_PRIORITY: Record<string, number> = {
-    new: 0,
-    hit: 1,
-    recommend: 2,
-    all: 3,
-};
-
-function sortByProductTypePriority(products: Product[]): Product[] {
-    return [...products].sort((a, b) => {
-        const priorityDiff =
-            (PRODUCT_TYPE_PRIORITY[a.product_type ?? "all"] ?? 3) -
-            (PRODUCT_TYPE_PRIORITY[b.product_type ?? "all"] ?? 3);
-
-        if (priorityDiff !== 0) return priorityDiff;
-
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
-}
-
 // 공개 사이트에서 사용하는 제품 조회 헬퍼 (products 테이블 기준)
-// 신제품 > 히트상품 > 추천상품 > 그 외 순으로 정렬, 동일 분류 내에서는 최신 등록순
+// 관리자 목록에서 드래그로 정한 노출 순서(display_order)를 그대로 사용, 값이 없는 제품은 뒤로(최신 등록순)
 export async function getProducts(category?: string): Promise<Product[]> {
     let query = supabaseAdmin
         .from("products")
         .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false });
 
     if (category) {
@@ -40,7 +21,7 @@ export async function getProducts(category?: string): Promise<Product[]> {
         return [];
     }
 
-    return sortByProductTypePriority(data ?? []);
+    return data ?? [];
 }
 
 // 제품 분류(신제품/히트상품/추천상품) 기준 조회
@@ -49,6 +30,7 @@ export async function getProductsByType(productType: string): Promise<Product[]>
         .from("products")
         .select("*")
         .eq("product_type", productType as ProductType)
+        .order("display_order", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false });
 
     if (error) {
@@ -80,12 +62,13 @@ export async function getRandomHitProducts(limit: number): Promise<Product[]> {
     return products.slice(0, limit);
 }
 
-// 관리자 목록 조회: 필터 없이 최신 등록순 전체 조회 (/api/product GET과 동일한 정렬 기준)
+// 관리자 목록 조회: 필터 없이 전체 조회, 노출 순서(display_order) 기준 (/api/product GET과 동일한 정렬 기준)
 // 관리자 목록 페이지의 필터링 결과 및 상세페이지 이전/다음 탐색 기준과 순서를 맞추기 위해 사용
 export async function getAdminProducts(): Promise<Product[]> {
     const { data, error } = await supabaseAdmin
         .from("products")
         .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false });
 
     if (error) {

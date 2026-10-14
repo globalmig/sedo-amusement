@@ -6,7 +6,7 @@ export default function FloatingCallButton() {
         <Link
             href={COMPANY_INFO.phoneHref}
             aria-label={`${COMPANY_INFO.phone}로 전화 상담하기`}
-            className="group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-card transition-all duration-300 hover:scale-105 pc:bottom-8 pc:right-8 pc:h-16 pc:w-16 pc:hover:w-auto pc:hover:justify-start pc:hover:px-6"
+            className="group fixed bottom-29 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-card transition-all duration-300 hover:scale-105 pc:bottom-26 pc:right-8 pc:h-16 pc:w-16 pc:hover:w-auto pc:hover:justify-start pc:hover:px-6"
         >
             <svg
                 viewBox="0 0 24 24"

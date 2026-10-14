@@ -64,6 +64,8 @@ export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: { na
         categories: [
             { name: "제품관리", url: "products" },
             { name: "제품 사진 편집", url: "create-image" },
+            { name: "컨설팅 콘텐츠 관리", url: "consulting" },
+            { name: "FAQ 관리", url: "faq" },
             { name: "사용 가이드", url: "guide" },
         ],
     },

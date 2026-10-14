@@ -36,6 +36,8 @@ export interface ProductFormValues {
     spec: string;
     features: string;
     price: string;
+    display_order: string;
+    youtube_url: string;
     main_image: File | null;
     detail_images: File[];
 }
@@ -48,6 +50,8 @@ interface ProductFormInitialData {
     spec?: string | null;
     features?: string | null;
     price?: number | null;
+    display_order?: number | null;
+    youtube_url?: string | null;
     main_image_url?: string | null;
     detail_images?: string[] | null;
 }
@@ -152,6 +156,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         spec: initialData?.spec ?? "",
         features: initialData?.features ?? "",
         price: initialData?.price != null ? String(initialData.price) : "",
+        display_order: initialData?.display_order != null ? String(initialData.display_order) : "",
+        youtube_url: initialData?.youtube_url ?? "",
     });
 
     // 이미지 저장
@@ -319,6 +325,14 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             setVaild("가격은 숫자로 입력해주세요.");
             return;
         }
+        if (form.display_order && (!Number.isInteger(Number(form.display_order)) || Number(form.display_order) < 1)) {
+            setVaild("순서 번호는 1 이상의 숫자로 입력해주세요.");
+            return;
+        }
+        if (form.youtube_url.trim() && !/^https?:\/\/.+/i.test(form.youtube_url.trim())) {
+            setVaild("유튜브 링크는 http(s):// 형식의 URL로 입력해주세요.");
+            return;
+        }
         if (!mainImage && !existingMainImageUrl) {
             setVaild("대표이미지를 등록해주세요.");
             return;
@@ -340,6 +354,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                 spec: form.spec,
                 features: form.features,
                 price: form.price,
+                display_order: form.display_order,
+                youtube_url: form.youtube_url.trim(),
                 main_image_url: mainImageUrl,
                 detail_images: detailImageUrls,
             };
@@ -475,6 +491,42 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             onChange={onChangeForm}
                             className="form-input"
                         />
+                    </div>
+
+                    <div className="flex flex-col gap-5 pc:flex-row">
+                        <div className="flex flex-col gap-1.5 pc:flex-1">
+                            <label htmlFor="display_order" className="form-label">진열 순서</label>
+                            <p className="text-base text-muted">
+                                숫자가 작을수록 목록에서 먼저 표시됩니다. 비워두면 가장 마지막 순서로 등록됩니다. <br />
+                                목록에서 드래그로 순서를 바꾸면 이 번호도 자동으로 변경됩니다.
+                            </p>
+                            <input
+                                type="number"
+                                id="display_order"
+                                name="display_order"
+                                min={1}
+                                placeholder="진열 순서 번호를 입력해주세요."
+                                value={form.display_order}
+                                onChange={onChangeForm}
+                                className="form-input"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 pc:flex-1">
+                            <label htmlFor="youtube_url" className="form-label">유튜브 링크</label>
+                            <p className="text-base text-muted">
+                                입력 시, 제품 상세페이지의 &apos;제품 문의하기&apos; 버튼 옆에 영상보기 버튼이 추가됩니다.
+                            </p>
+                            <input
+                                type="text"
+                                id="youtube_url"
+                                name="youtube_url"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                value={form.youtube_url}
+                                onChange={onChangeForm}
+                                className="form-input"
+                            />
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-1.5 mb-7">

@@ -7,7 +7,7 @@ import ContactButtons from "@/components/common/ContactButtons";
 import FaqList from "@/components/common/FaqList";
 import StatCounter from "@/components/common/StatCounter";
 import StartupConsultForm from "@/components/form/StartupConsultForm";
-import { FAQ_ITEMS } from "@/datas/faq";
+import { getFaqItems } from "@/lib/faq";
 import { getRandomHitProducts } from "@/lib/products";
 
 type IconProps = { className?: string };
@@ -80,6 +80,7 @@ const PROCESS_STEPS = [
 
 export default async function Home() {
     const previewProducts = await getRandomHitProducts(10);
+    const faqItems = await getFaqItems();
 
     return (
         <>
@@ -237,7 +238,11 @@ export default async function Home() {
             </section>
 
             {/* FAQ Preview */}
-            <FaqList items={FAQ_ITEMS.slice(0, 4)} moreHref="/as" moreLabel="더보기" />
+            <FaqList
+                items={faqItems.slice(0, 4).map((item) => ({ category: item.category, q: item.question, a: item.answer }))}
+                moreHref="/as"
+                moreLabel="더보기"
+            />
 
             {/* CTA */}
             <section className="bg-title">

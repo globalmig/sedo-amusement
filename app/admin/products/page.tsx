@@ -85,6 +85,17 @@ function AdminProductListPageInner() {
         [products, activeCategory, activeProductType, searchTerm]
     );
 
+    // 번호 컬럼에 쓸 "실제 사용자페이지 노출 순서" (전체 제품 기준, 필터와 무관하게 고정)
+    const rankMap = useMemo(() => {
+        const map = new Map<number, number>();
+        products.forEach((product, index) => map.set(product.id, index + 1));
+        return map;
+    }, [products]);
+
+    // 필터가 걸려 있으면 "전체 제품" 기준 순서와 화면에 보이는 순서가 달라져 드래그 정렬이 꼬일 수 있으므로,
+    // 필터 없는 전체 목록 상태에서만 드래그로 순서를 바꿀 수 있게 한다.
+    const canReorder = !activeCategory && !activeProductType && !searchTerm.trim();
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-3 pc:flex-row pc:items-center pc:justify-between">
@@ -179,6 +190,8 @@ function AdminProductListPageInner() {
                     activeCategory={activeCategory}
                     activeProductType={activeProductType}
                     searchTerm={searchTerm}
+                    rankMap={rankMap}
+                    canReorder={canReorder}
                 />
             )}
         </div>

@@ -2,6 +2,7 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import ScrollToTopButton from "@/components/common/ScrollToTopButton";
 import Link from "next/link";
+import QuickInquiryForm from "@/components/form/QuickInquiryForm";
 
 export default function SiteLayout({
     children,
@@ -20,6 +21,7 @@ export default function SiteLayout({
             <main id="main-content">{children}</main>
             <Footer />
             <ScrollToTopButton />
+            <QuickInquiryForm />
         </>
     );
 }

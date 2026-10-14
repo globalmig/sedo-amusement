@@ -4,6 +4,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { usePagination } from "@/hooks/usePagination";
 import Toast from "../common/Toast";
 import Pagination from "../common/Pagination";
@@ -35,16 +50,161 @@ function ChevronDownIcon({ className }: { className?: string }) {
   );
 }
 
+function GripIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <circle cx={9} cy={6} r={1.5} />
+      <circle cx={9} cy={12} r={1.5} />
+      <circle cx={9} cy={18} r={1.5} />
+      <circle cx={15} cy={6} r={1.5} />
+      <circle cx={15} cy={12} r={1.5} />
+      <circle cx={15} cy={18} r={1.5} />
+    </svg>
+  );
+}
+
 interface ProductListProps {
   products: Product[];
   onReload: () => void;
   activeCategory: string | null;
   activeProductType: string | null;
   searchTerm: string;
+  // 번호 컬럼에 쓸 "실제 사용자페이지 노출 순서" (필터와 무관하게 전체 제품 기준으로 고정된 순위)
+  rankMap: Map<number, number>;
+  // 전체 목록(필터 없음) 상태에서만 true. 필터가 걸려 있으면 화면 순서와 전체 노출 순서가 달라져 드래그를 막는다.
+  canReorder: boolean;
+}
+
+interface ProductRowProps {
+  product: Product;
+  rowNumber: number | string;
+  mainImageUrl: string | null;
+  loadedUrls: Set<string>;
+  markLoaded: (url: string) => void;
+  currentType: ProductType;
+  onChangeType: (product: Product, next: ProductType) => void;
+  buildViewHref: (product: Product) => string;
+  onDelete: (id: number) => void;
+  loading: boolean;
+  pendingId: number | null;
+  canDrag: boolean;
+}
+
+// PC 테이블의 한 행. 드래그 핸들(useSortable)을 행 단위로 붙이기 위해 별도 컴포넌트로 분리.
+function SortableProductRow({
+  product,
+  rowNumber,
+  mainImageUrl,
+  loadedUrls,
+  markLoaded,
+  currentType,
+  onChangeType,
+  buildViewHref,
+  onDelete,
+  loading,
+  pendingId,
+  canDrag,
+}: ProductRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: product.id,
+    disabled: !canDrag,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className="relative border-b border-black/5 last:border-0 hover:bg-surface/60"
+    >
+      <td className="px-3 py-3.5">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          disabled={!canDrag}
+          className={`flex items-center justify-center rounded p-1 text-muted ${canDrag ? "cursor-grab touch-none hover:text-title active:cursor-grabbing" : "cursor-not-allowed opacity-30"}`}
+          aria-label="드래그로 순서 변경"
+          title={canDrag ? "드래그해서 순서를 바꿀 수 있어요" : "필터를 해제하면 순서를 바꿀 수 있어요"}
+        >
+          <GripIcon className="h-4 w-4" />
+        </button>
+      </td>
+      <td className="px-5 py-3.5 text-muted">{rowNumber}</td>
+      <td className="px-5 py-3.5">
+        {mainImageUrl ? (
+          <div className="relative h-12 w-12 overflow-hidden rounded-lg">
+            {!loadedUrls.has(mainImageUrl) && (
+              <Skeleton className="absolute inset-0 m-0! p-0!" />
+            )}
+            <Image
+              src={mainImageUrl}
+              alt={product.name}
+              fill
+              sizes="48px"
+              className={`object-cover ${loadedUrls.has(mainImageUrl) ? "" : "invisible"}`}
+              onLoad={() => markLoaded(mainImageUrl)}
+            />
+          </div>
+        ) : (
+          <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface text-base text-muted">
+            없음
+          </span>
+        )}
+      </td>
+      <td className="px-5 py-3.5 font-medium text-title">
+        <Link
+          href={buildViewHref(product)}
+          className="text-body hover:text-primary hover:underline"
+        >
+          {product.name}
+        </Link>
+      </td>
+      <td className="px-5 py-3.5 font-medium text-body">{getProductCategoryLabel(product.category)}</td>
+      <td className="px-5 py-3.5 text-body">{formatPrice(product.price)}</td>
+      <td className="px-5 py-3.5 text-center">
+        <div className="relative inline-block">
+          <select
+            value={currentType}
+            onChange={(e) => onChangeType(product, e.target.value as ProductType)}
+            className="appearance-none rounded-lg border border-black/20 bg-white/30 py-1.5 pl-2 pr-8 text-base text-body outline-none focus:border-primary"
+          >
+            {PRODUCT_TYPE_OPTIONS.map((option) => (
+              <option key={option.url} value={option.url}>{option.name}</option>
+            ))}
+          </select>
+          <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+        </div>
+      </td>
+      <td className="px-5 py-3.5 text-right">
+        <div className="flex justify-end gap-3">
+          <Link
+            href={`/admin/products/${product.category}/${product.id}`}
+            className="text-base font-medium text-primary hover:underline"
+          >
+            수정
+          </Link>
+          <button
+            type="button"
+            disabled={loading && pendingId === product.id}
+            onClick={() => onDelete(product.id)}
+            className="text-base font-medium text-muted hover:text-red-500 cursor-pointer disabled:opacity-50"
+          >
+            삭제
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
 }
 
 // 관리자 제품 리스트: 테이블형 CRUD 인터페이스
-export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm }: ProductListProps) {
+export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm, rankMap, canReorder }: ProductListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -150,6 +310,49 @@ export default function ProductList({ products, onReload, activeCategory, active
     }
   };
 
+  // 드래그로 바뀐 순서를 저장. order는 전체 제품(필터 없음) 기준으로 새로 배열된 id 목록.
+  const reorderMutation = useMutation({
+    mutationFn: async (order: number[]) => {
+      const response = await fetch("/api/product/reorder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "순서 변경에 실패했습니다.");
+      return result;
+    },
+    onError: (err: Error) => {
+      setErrorMsg(err.message || "순서 변경에 실패했습니다.");
+      // 저장에 실패했으므로 화면에 미리 반영했던 순서를 서버 상태로 되돌림
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
+  );
+
+  // canReorder일 때는 products가 곧 전체 제품 목록(필터 없음)이므로,
+  // 페이지 안에서의 로컬 인덱스에 페이지 오프셋을 더하면 전체 목록 기준 인덱스가 된다.
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (!canReorder) return;
+
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const pageOffset = (currentPage - 1) * ITEMS_PER_PAGE;
+    const oldLocalIndex = currentItems.findIndex((product) => product.id === active.id);
+    const newLocalIndex = currentItems.findIndex((product) => product.id === over.id);
+    if (oldLocalIndex === -1 || newLocalIndex === -1) return;
+
+    const reordered = arrayMove(products, pageOffset + oldLocalIndex, pageOffset + newLocalIndex);
+
+    // 드래그 결과를 바로 화면에 반영 (서버 응답을 기다리지 않음)
+    queryClient.setQueryData<Product[]>(["products"], reordered);
+    reorderMutation.mutate(reordered.map((product) => product.id));
+  };
+
   const closeCompletedToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
     setCompletedMessage(value);
     if (value === null) {
@@ -169,8 +372,7 @@ export default function ProductList({ products, onReload, activeCategory, active
     <>
       {/* 모바일: 카드형 리스트 */}
       <div className="space-y-3 pc:hidden">
-        {currentItems.map((product, localIndex) => {
-          const rowNumber = totalCount - ((currentPage - 1) * ITEMS_PER_PAGE + localIndex);
+        {currentItems.map((product) => {
           const mainImageUrl = product.main_image_url;
           const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
           return (
@@ -224,94 +426,52 @@ export default function ProductList({ products, onReload, activeCategory, active
 
       {/* PC: 테이블형 리스트 */}
       <div className="hidden card overflow-x-auto pc:block">
-        <table className="w-full min-w-150 text-base">
-          <thead>
-            <tr className="border-b border-black/5 bg-surface text-left text-base font-semibold uppercase tracking-wider text-muted">
-              <th className="px-5 py-3">번호</th>
-              <th className="px-5 py-3">대표이미지</th>
-              <th className="px-5 py-3">제품이름</th>
-              <th className="px-5 py-3">카테고리</th>
-              <th className="px-5 py-3">가격</th>
-              <th className="px-5 py-3 text-center">분류</th>
-              <th className="px-5 py-3 text-right">관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((product, localIndex) => {
-              const rowNumber = totalCount - ((currentPage - 1) * ITEMS_PER_PAGE + localIndex);
-              const mainImageUrl = product.main_image_url;
-              const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
-              return (
-                <tr key={product.id} className="border-b border-black/5 last:border-0 hover:bg-surface/60">
-                  <td className="px-5 py-3.5 text-muted">{rowNumber}</td>
-                  <td className="px-5 py-3.5">
-                    {mainImageUrl ? (
-                      <div className="relative h-12 w-12 overflow-hidden rounded-lg">
-                        {!loadedUrls.has(mainImageUrl) && (
-                          <Skeleton className="absolute inset-0 m-0! p-0!" />
-                        )}
-                        <Image
-                          src={mainImageUrl}
-                          alt={product.name}
-                          fill
-                          sizes="48px"
-                          className={`object-cover ${loadedUrls.has(mainImageUrl) ? "" : "invisible"}`}
-                          onLoad={() => markLoaded(mainImageUrl)}
-                        />
-                      </div>
-                    ) : (
-                      <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface text-base text-muted">
-                        없음
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5 font-medium text-title">
-                    <Link
-                      href={buildViewHref(product)}
-                      className="text-body hover:text-primary hover:underline"
-                    >
-                      {product.name}
-                    </Link>
-                  </td>
-                  <td className="px-5 py-3.5 font-medium text-body">{getProductCategoryLabel(product.category)}</td>
-                  <td className="px-5 py-3.5 text-body">{formatPrice(product.price)}</td>
-                  <td className="px-5 py-3.5 text-center">
-                    <div className="relative inline-block">
-                      <select
-                        value={currentType}
-                        onChange={(e) => changeProductType(product, e.target.value as ProductType)}
-                        className="appearance-none rounded-lg border border-black/20 bg-white/30 py-1.5 pl-2 pr-8 text-base text-body outline-none focus:border-primary"
-                      >
-                        {PRODUCT_TYPE_OPTIONS.map((option) => (
-                          <option key={option.url} value={option.url}>{option.name}</option>
-                        ))}
-                      </select>
-                      <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    <div className="flex justify-end gap-3">
-                      <Link
-                        href={`/admin/products/${product.category}/${product.id}`}
-                        className="text-base font-medium text-primary hover:underline"
-                      >
-                        수정
-                      </Link>
-                      <button
-                        type="button"
-                        disabled={loading && pendingId === product.id}
-                        onClick={() => setPendingId(product.id)}
-                        className="text-base font-medium text-muted hover:text-red-500 cursor-pointer disabled:opacity-50"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {!canReorder && (
+          <p className="border-b border-black/5 px-5 py-2.5 text-base text-muted">
+            카테고리/분류/검색 필터를 해제한 전체 목록 상태에서만 드래그로 순서를 바꿀 수 있어요.
+          </p>
+        )}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <table className="w-full min-w-150 text-base">
+            <thead>
+              <tr className="border-b border-black/5 bg-surface text-left text-base font-semibold uppercase tracking-wider text-muted">
+                <th className="px-3 py-3"></th>
+                <th className="px-5 py-3">번호</th>
+                <th className="px-5 py-3">대표이미지</th>
+                <th className="px-5 py-3">제품이름</th>
+                <th className="px-5 py-3">카테고리</th>
+                <th className="px-5 py-3">가격</th>
+                <th className="px-5 py-3 text-center">분류</th>
+                <th className="px-5 py-3 text-right">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <SortableContext items={currentItems.map((product) => product.id)} strategy={verticalListSortingStrategy}>
+                {currentItems.map((product) => {
+                  const mainImageUrl = product.main_image_url;
+                  const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
+                  return (
+                    <SortableProductRow
+                      key={product.id}
+                      product={product}
+                      rowNumber={rankMap.get(product.id) ?? "-"}
+                      mainImageUrl={mainImageUrl}
+                      loadedUrls={loadedUrls}
+                      markLoaded={markLoaded}
+                      currentType={currentType}
+                      onChangeType={changeProductType}
+                      buildViewHref={buildViewHref}
+                      onDelete={setPendingId}
+                      loading={loading}
+                      pendingId={pendingId}
+                      canDrag={canReorder}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </tbody>
+          </table>
+        </DndContext>
       </div>
 
       <Pagination totalCount={totalCount} itemsPerPage={ITEMS_PER_PAGE} onPageChange={onPageChange} initialPage={currentPage} />

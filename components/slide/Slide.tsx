@@ -100,10 +100,10 @@ export default function Slide() {
 
     return (
         <div className="relative w-full">
-            <div className="relative h-200 w-full overflow-hidden pc:h-195">
+            <div className="relative h-150 w-full overflow-hidden pc:h-200">
                 <Slider ref={sliderRef} {...settings}>
                     {SLIDES.map((slide, index) => (
-                        <div key={slide.heading} className="relative h-200 w-full pc:h-195">
+                        <div key={slide.heading} className="relative h-150 w-full pc:h-200">
                             <div className="absolute inset-0 hidden pc:block">
                                 <Image
                                     src={slide.image}
@@ -131,7 +131,7 @@ export default function Slide() {
                                 </>
                             )}
 
-                            <div className="relative z-10 flex h-full items-center">
+                            <div className="relative z-10 flex top-1/5 pc:items-center">
                                 <div className="slide-content w-full max-w-300 whitespace-normal px-[5%] pc:mx-auto pc:px-0">
                                     <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">
                                         {slide.eyebrow}
@@ -206,7 +206,7 @@ export default function Slide() {
                 </div>
             </div>
             <div className="bg-primary">
-                <div className="mx-auto flex max-w-300 flex-col gap-3 px-[5%] py-5 pc:flex-row pc:items-center pc:justify-between pc:gap-6 pc:px-0 pc:py-7">
+                <div className="mx-auto flex max-w-300 flex-col gap-3 px-[5%] py-5 pc:flex-row pc:items-center pc:justify-between pc:gap-6 pc:px-0 pc:py-5 pc:pb-7">
                     <div className="pc:hidden">
                         <p className="text-[20px] font-bold text-white">궁금한 점이 있으시다면?</p>
                         <Link href="/as" className="mt-1 inline-flex items-center gap-1.5 text-base font-semibold text-white underline">
@@ -217,8 +217,8 @@ export default function Slide() {
 
                     <div className="hidden pc:block">
                         <div className="flex items-center gap-3">
-                            <PhoneIcon className="h-8 w-8 text-white" />
-                            <p className="text-[34px] font-bold text-white">031-824-5851</p>
+                            <PhoneIcon className="h-7 w-7 text-white" />
+                            <p className="text-[32px] font-bold text-white">031-824-5851</p>
                         </div>
                         <p className="mt-1 text-base text-white/90 pc:text-[20px]">구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.</p>
                     </div>

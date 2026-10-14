@@ -11,5 +11,7 @@ export interface Product {
   price: number | null;
   main_image_url: string | null;
   detail_images: string[] | null;
+  youtube_url: string | null;
+  display_order: number | null;
   created_at: string;
 }

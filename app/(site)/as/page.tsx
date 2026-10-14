@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import CategoryBanner from "@/components/common/CategoryBanner";
 import FaqList from "@/components/common/FaqList";
-import { FAQ_CATEGORIES, FAQ_ITEMS } from "@/datas/faq";
+import { FAQ_CATEGORIES } from "@/datas/faq";
+import { getFaqItems } from "@/lib/faq";
 import Image from "next/image";
 
 export const metadata: Metadata = {
@@ -41,7 +42,9 @@ const AS_STEPS = [
     { step: "04", title: "완료 확인", description: "정상 작동을 확인한 뒤 A/S 내역을 안내해 드립니다.", icon: "/icons/process-4.png" },
 ];
 
-export default function AsPage() {
+export default async function AsPage() {
+    const faqItems = await getFaqItems();
+
     return (
         <>
             <CategoryBanner
@@ -128,7 +131,10 @@ export default function AsPage() {
                 </section>
 
                 {/* FAQ */}
-                <FaqList items={FAQ_ITEMS} categories={FAQ_CATEGORIES} />
+                <FaqList
+                    items={faqItems.map((item) => ({ category: item.category, q: item.question, a: item.answer }))}
+                    categories={FAQ_CATEGORIES}
+                />
             </article>
         </>
     );
