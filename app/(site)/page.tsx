@@ -175,8 +175,8 @@ export default async function Home() {
                     <div className="flex flex-col gap-5 pc:flex-row pc:items-end pc:justify-between">
                         <div className="flex flex-col gap-4">
                             <p className="text-base font-bold tracking-widest text-primary pc:text-[20px]">CONSULTING</p>
-                            <h2 className="text-2xl font-black pc:text-5xl">성공적인 가족형 놀이 공간의 시작,<br />검증된 전문가와 함께하세요.</h2>
-                            <p className="max-w-200 text-base leading-relaxed text-muted pc:text-[20px]">아케이드 게임장, 가족형 유원시설(FEC), 키즈카페 창업은 단순한 공간 구성을 넘어 최신 트렌드 분석, 복잡한 인허가, 그리고 수익성 높은 기기 배치가 성공을 좌우합니다. 오랜 기간 아케이드 산업 현장에서 쌓아온 실무 경험과 '게임저널' 발행 등을 통해 구축한 대한어뮤즈먼트산업협회 등 업계 최고 수준의 탄탄한 네트워크를 바탕으로, 기획 단계부터 그랜드 오픈까지 가장 빠르고 확실한 솔루션을 제공합니다.</p>
+                            <h2 className="text-2xl font-black leading-snug text-title pc:text-5xl pc:leading-tight">성공적인 가족형 놀이 공간의 시작,<br />검증된 전문가와 함께하세요.</h2>
+                            <p className="max-w-200 text-base leading-relaxed text-title/80 pc:leading-[1.6] pc:text-[20px]">아케이드 게임장, 가족형 유원시설(FEC), 키즈카페 창업은 단순한 공간 구성을 넘어 최신 트렌드 분석, 복잡한 인허가, 그리고 수익성 높은 기기 배치가 성공을 좌우합니다. 오랜 기간 아케이드 산업 현장에서 쌓아온 실무 경험과 '게임저널' 발행 등을 통해 구축한 대한어뮤즈먼트산업협회 등 업계 최고 수준의 탄탄한 네트워크를 바탕으로, 기획 단계부터 그랜드 오픈까지 가장 빠르고 확실한 솔루션을 제공합니다.</p>
                         </div>
                         <Link
                             href="/consulting"
