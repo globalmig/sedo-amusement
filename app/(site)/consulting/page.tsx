@@ -48,7 +48,7 @@ export default async function ConsultingPage() {
                                         {area.title}
                                     </h3>
                                     <ul className="mt-2 text-base leading-6 text-body transition-colors pc:mt-3 pc:text-[20px]">
-                                        {area.points.map((p, index) => <li key={index} className="mt-4">· {p}</li>)}
+                                        {area.points.map((p, index) => <li key={index} className="mt-4 text-base pc:text-[20px]">· {p}</li>)}
                                     </ul>
                                 </div>
                             </div>

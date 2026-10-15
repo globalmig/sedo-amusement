@@ -25,6 +25,7 @@ import Pagination from "../common/Pagination";
 import Skeleton from "../common/Skeleton";
 import { Product, ProductType } from "@/types/product";
 import { getProductCategoryLabel, USER_CATEGORY } from "@/datas/categories";
+import { ArrowUpIcon, ArrowDownIcon } from "../common/AdminIcons";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -69,15 +70,13 @@ interface ProductListProps {
   activeCategory: string | null;
   activeProductType: string | null;
   searchTerm: string;
-  // 번호 컬럼에 쓸 "실제 사용자페이지 노출 순서" (필터와 무관하게 전체 제품 기준으로 고정된 순위)
-  rankMap: Map<number, number>;
   // 전체 목록(필터 없음) 상태에서만 true. 필터가 걸려 있으면 화면 순서와 전체 노출 순서가 달라져 드래그를 막는다.
   canReorder: boolean;
 }
 
 interface ProductRowProps {
   product: Product;
-  rowNumber: number | string;
+  rowNumber: number;
   mainImageUrl: string | null;
   loadedUrls: Set<string>;
   markLoaded: (url: string) => void;
@@ -88,6 +87,10 @@ interface ProductRowProps {
   loading: boolean;
   pendingId: number | null;
   canDrag: boolean;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
 // PC 테이블의 한 행. 드래그 핸들(useSortable)을 행 단위로 붙이기 위해 별도 컴포넌트로 분리.
@@ -104,6 +107,10 @@ function SortableProductRow({
   loading,
   pendingId,
   canDrag,
+  canMoveUp,
+  canMoveDown,
+  onMoveUp,
+  onMoveDown,
 }: ProductRowProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: product.id,
@@ -135,7 +142,33 @@ function SortableProductRow({
           <GripIcon className="h-4 w-4" />
         </button>
       </td>
-      <td className="px-5 py-3.5 text-muted">{rowNumber}</td>
+      <td className="px-5 py-3.5 text-muted">
+        <div className="flex items-center gap-2">
+          <span>{rowNumber}</span>
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              onClick={onMoveUp}
+              disabled={!canMoveUp}
+              className="rounded border border-black p-1 text-title hover:text-primary disabled:opacity-50"
+              aria-label="위로 이동"
+              title="위로 이동"
+            >
+              <ArrowUpIcon className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={onMoveDown}
+              disabled={!canMoveDown}
+              className="rounded border border-black p-1 text-title hover:text-primary disabled:opacity-50"
+              aria-label="아래로 이동"
+              title="아래로 이동"
+            >
+              <ArrowDownIcon className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+      </td>
       <td className="px-5 py-3.5">
         {mainImageUrl ? (
           <div className="relative h-12 w-12 overflow-hidden rounded-lg">
@@ -204,7 +237,7 @@ function SortableProductRow({
 }
 
 // 관리자 제품 리스트: 테이블형 CRUD 인터페이스
-export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm, rankMap, canReorder }: ProductListProps) {
+export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm, canReorder }: ProductListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -353,6 +386,53 @@ export default function ProductList({ products, onReload, activeCategory, active
     reorderMutation.mutate(reordered.map((product) => product.id));
   };
 
+  // 위/아래 버튼으로 바로 이웃한 두 제품의 순서(display_order)만 맞바꾼다.
+  // products는 필터가 걸려 있어도(검색/카테고리/분류) 화면에 보이는 순서 그대로이므로,
+  // 필터 상태와 무관하게 "지금 보이는 목록에서 이웃한 항목"과 바로 순서를 바꿀 수 있다.
+  const moveMutation = useMutation({
+    mutationFn: async ({ current, neighbor }: { current: Product; neighbor: Product }) => {
+      const responses = await Promise.all([
+        fetch(`/api/product/${current.id}/order`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ display_order: neighbor.display_order }),
+        }),
+        fetch(`/api/product/${neighbor.id}/order`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ display_order: current.display_order }),
+        }),
+      ]);
+      if (responses.some((response) => !response.ok)) throw new Error("순서 변경에 실패했습니다.");
+    },
+    onError: (err: Error) => {
+      setErrorMsg(err.message || "순서 변경에 실패했습니다.");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+
+  const moveProduct = (current: Product, direction: "up" | "down") => {
+    const index = products.findIndex((product) => product.id === current.id);
+    const neighborIndex = direction === "up" ? index - 1 : index + 1;
+    if (index === -1 || neighborIndex < 0 || neighborIndex >= products.length) return;
+    const neighbor = products[neighborIndex];
+    if (current.display_order == null || neighbor.display_order == null) return;
+
+    // 전체 제품 캐시에서 이 두 제품의 순서값만 맞바꿔 화면에 바로 반영 (서버 응답을 기다리지 않음)
+    queryClient.setQueryData<Product[]>(["products"], (old) => {
+      if (!old) return old;
+      return old
+        .map((product) => {
+          if (product.id === current.id) return { ...product, display_order: neighbor.display_order };
+          if (product.id === neighbor.id) return { ...product, display_order: current.display_order };
+          return product;
+        })
+        .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+    });
+
+    moveMutation.mutate({ current, neighbor });
+  };
+
   const closeCompletedToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
     setCompletedMessage(value);
     if (value === null) {
@@ -372,11 +452,33 @@ export default function ProductList({ products, onReload, activeCategory, active
     <>
       {/* 모바일: 카드형 리스트 */}
       <div className="space-y-3 pc:hidden">
-        {currentItems.map((product) => {
+        {currentItems.map((product, localIndex) => {
           const mainImageUrl = product.main_image_url;
           const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
+          const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + localIndex;
           return (
             <div key={product.id} className="card flex gap-3 p-4">
+              <div className="flex shrink-0 flex-col items-center justify-center gap-1 text-muted">
+                <span className="text-base">{globalIndex + 1}</span>
+                <button
+                  type="button"
+                  onClick={() => moveProduct(product, "up")}
+                  disabled={globalIndex === 0}
+                  className="rounded border border-black p-1 text-title hover:text-primary disabled:opacity-50"
+                  aria-label="위로 이동"
+                >
+                  <ArrowUpIcon className="h-3 w-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveProduct(product, "down")}
+                  disabled={globalIndex === products.length - 1}
+                  className="rounded border border-black p-1 text-title hover:text-primary disabled:opacity-50"
+                  aria-label="아래로 이동"
+                >
+                  <ArrowDownIcon className="h-3 w-3" />
+                </button>
+              </div>
               {mainImageUrl ? (
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
                   {!loadedUrls.has(mainImageUrl) && (
@@ -447,14 +549,15 @@ export default function ProductList({ products, onReload, activeCategory, active
             </thead>
             <tbody>
               <SortableContext items={currentItems.map((product) => product.id)} strategy={verticalListSortingStrategy}>
-                {currentItems.map((product) => {
+                {currentItems.map((product, localIndex) => {
                   const mainImageUrl = product.main_image_url;
                   const currentType = productTypeOverride[product.id] ?? product.product_type ?? "all";
+                  const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + localIndex;
                   return (
                     <SortableProductRow
                       key={product.id}
                       product={product}
-                      rowNumber={rankMap.get(product.id) ?? "-"}
+                      rowNumber={globalIndex + 1}
                       mainImageUrl={mainImageUrl}
                       loadedUrls={loadedUrls}
                       markLoaded={markLoaded}
@@ -465,6 +568,10 @@ export default function ProductList({ products, onReload, activeCategory, active
                       loading={loading}
                       pendingId={pendingId}
                       canDrag={canReorder}
+                      canMoveUp={globalIndex > 0}
+                      canMoveDown={globalIndex < products.length - 1}
+                      onMoveUp={() => moveProduct(product, "up")}
+                      onMoveDown={() => moveProduct(product, "down")}
                     />
                   );
                 })}
@@ -477,12 +584,12 @@ export default function ProductList({ products, onReload, activeCategory, active
       <Pagination totalCount={totalCount} itemsPerPage={ITEMS_PER_PAGE} onPageChange={onPageChange} initialPage={currentPage} />
 
       <Toast
-        vaild={pendingId !== null ? "이 제품을 삭제하시겠습니까?" : null}
-        setVaild={() => setPendingId(null)}
+        message={pendingId !== null ? "이 제품을 삭제하시겠습니까?" : null}
+        setMessage={() => setPendingId(null)}
         onConfirm={pendingId !== null ? () => deleteMutation.mutate(pendingId) : undefined}
       />
-      <Toast vaild={completedMessage} setVaild={closeCompletedToast} />
-      <Toast vaild={errorMsg} setVaild={() => setErrorMsg(null)} />
+      <Toast message={completedMessage} setMessage={closeCompletedToast} />
+      <Toast message={errorMsg} setMessage={() => setErrorMsg(null)} />
     </>
   );
 }

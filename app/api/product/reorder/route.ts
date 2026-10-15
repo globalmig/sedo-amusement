@@ -18,18 +18,12 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: "순서 정보가 올바르지 않습니다." }, { status: 400 });
     }
 
-    const results = await Promise.all(
-        ids.map((id, index) =>
-            supabaseAdmin
-                .from("products")
-                .update({ display_order: index + 1 })
-                .eq("id", id)
-        )
-    );
+    // RPC 함수로 한 번의 DB 호출에서 전체 순서를 갱신 (항목당 UPDATE 1번씩 날리지 않음)
+    // supabase/add_reorder_functions.sql 실행 필요
+    const { error } = await supabaseAdmin.rpc("reorder_products", { ids });
 
-    const failed = results.find((result) => result.error);
-    if (failed?.error) {
-        console.error("제품 순서 변경 실패:", failed.error.message);
+    if (error) {
+        console.error("제품 순서 변경 실패:", error.message);
         return NextResponse.json({ error: "제품 순서 변경에 실패했습니다." }, { status: 500 });
     }
 

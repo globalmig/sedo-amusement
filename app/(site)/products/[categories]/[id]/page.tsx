@@ -4,7 +4,7 @@ import Link from "next/link";
 import ProductDetail from "@/components/board/ProductDetail";
 import PrevNextNavbar2 from "@/components/common/PrevNextNavbar2";
 import { USER_CATEGORY, getProductTypeLabel } from "@/datas/categories";
-import { getProductById, getProducts, getProductsByType } from "@/lib/products";
+import { getProductById, getProductNavItems } from "@/lib/products";
 import CategoryBanner from "@/components/common/CategoryBanner";
 
 interface ProductDetailPageProps {
@@ -48,8 +48,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
 
   if (!category || !product) notFound();
 
-  const sameCategoryProducts =
-    categories === "all" ? await getProducts() : await getProductsByType(categories);
+  const sameCategoryProducts = await getProductNavItems(categories);
   const currentIndex = sameCategoryProducts.findIndex((p) => p.id === product.id);
   const prev = currentIndex > 0 ? sameCategoryProducts[currentIndex - 1] : null;
   const next =

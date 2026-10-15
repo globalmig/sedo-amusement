@@ -63,6 +63,7 @@ export default function ProductCard({ product, categories = "all", filterQuery =
         <h3 className="line-clamp-1 text-base font-semibold text-title transition-colors duration-300 sm:text-lg pc:text-[20px]">
           {product.name}
         </h3>
+        <p className="mt-1 text-base text-base-dark">{product.spec}</p>
         <p className="mt-1 text-base font-medium text-point transition-colors duration-300">
           {formatPrice(product.price)}
         </p>

@@ -1,4 +1,6 @@
-export const USER_CATEGORY: { [key: string]: { title: string; categories?: { name: string, url: string }[], banner?: string } } = {
+type CategoryItem = { name: string; url: string; children?: { name: string; url: string }[] };
+
+export const USER_CATEGORY: { [key: string]: { title: string; categories?: CategoryItem[], banner?: string } } = {
     company: {
         title: "회사소개",
         categories: [
@@ -58,13 +60,18 @@ export function getProductTypeBadge(productType: string | null) {
     return PRODUCT_TYPE_BADGE[productType] ?? null;
 }
 
-export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: { name: string, url: string }[], banner?: string } } = {
+export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: CategoryItem[], banner?: string } } = {
     admin: {
         title: "관리자 페이지",
         categories: [
             { name: "제품관리", url: "products" },
             { name: "제품 사진 편집", url: "create-image" },
-            { name: "컨설팅 콘텐츠 관리", url: "consulting" },
+            {
+                name: "컨설팅 콘텐츠 관리", url: "consulting/areas", children: [
+                    { name: "제공 분야 관리", url: "consulting/areas" },
+                    { name: "진행 절차 관리", url: "consulting/steps" },
+                ]
+            },
             { name: "FAQ 관리", url: "faq" },
             { name: "사용 가이드", url: "guide" },
         ],

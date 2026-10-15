@@ -21,7 +21,7 @@ export default function ProductDetailImages({ images, alt }: ProductDetailImages
   return (
     <div className="mx-auto flex w-full flex-col gap-4 pc:max-w-150">
       {images.map((url, index) => (
-        <div key={`${url}-${index}`} className="w-full overflow-hidden rounded-xl bg-base-light">
+        <div key={`${url}-${index}`} className="w-full overflow-hidden rounded-xl ">
           {!loadedUrls.has(url) && <Skeleton className="aspect-4/3 w-full m-0! p-0!" />}
           <Image
             src={url}
