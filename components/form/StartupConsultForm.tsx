@@ -123,7 +123,7 @@ export default function StartupConsultForm() {
                         </div>
                     </fieldset>
 
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1.5 mt-4">
                         <label htmlFor="region" className="form-label font-bold text-xl">오픈 예정 지역</label>
                         <input
                             type="text"
