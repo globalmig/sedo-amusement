@@ -23,7 +23,7 @@ export default function Footer() {
                         </p>
                     </div>
                     <ul>
-                        <li className="text-base">대표번호 : <Link href={COMPANY_INFO.phoneHref} className="hover:text-white">{COMPANY_INFO.phone}</Link></li>
+                        <li className="text-base">대표전화 : <Link href={COMPANY_INFO.telHref} className="hover:text-white">{COMPANY_INFO.tel}</Link> / <Link href={COMPANY_INFO.phoneHref} className="hover:text-white">{COMPANY_INFO.phone}</Link></li>
                         <li className="text-base mt-1">이메일 : {COMPANY_INFO.email}</li>
                         <li className="text-base mt-1">주소 : {COMPANY_INFO.address}</li>
                         <li className="text-base mt-1">사업자등록번호 : {COMPANY_INFO.bizNumber}</li>

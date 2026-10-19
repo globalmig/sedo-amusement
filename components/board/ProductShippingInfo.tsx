@@ -15,7 +15,7 @@ export default function ProductShippingInfo() {
             <br />
             기간적 여유를 가지고 신중한 구매를 부탁드립니다.
             <br />
-            기타 문의사항은 {COMPANY_INFO.phone}로 연락주시길 바랍니다.
+            기타 문의사항은 {COMPANY_INFO.phone} 혹은 {COMPANY_INFO.tel}로 연락주시길 바랍니다.
           </p>
         </div>
         <div className="flex flex-col gap-2 px-6 py-4 pc:flex-row pc:py-8">
@@ -23,7 +23,7 @@ export default function ProductShippingInfo() {
           <p className="leading-7 text-body pc:text-[20px] pc:leading-8">
             배송 도중이나 택배를 받으신 후 주문 취소를 원하실 때는 단순변심이기 때문에 반품 택배비를 부담해주셔야 합니다.
             <br />
-            배송/주문 취소에 대한 문의사항은 {COMPANY_INFO.phone}로 연락주시길 바랍니다.
+            배송/주문 취소에 대한 문의사항은 {COMPANY_INFO.phone} 혹은 {COMPANY_INFO.tel}로 연락주시길 바랍니다.
           </p>
         </div>
       </div>

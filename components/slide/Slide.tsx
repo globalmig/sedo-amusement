@@ -55,6 +55,15 @@ function ChevronLeftIcon({ className }: { className?: string }) {
     );
 }
 
+function MobileIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className} aria-hidden="true">
+            <rect x="7" y="2" width="10" height="20" rx="2.5" />
+            <line x1="11" y1="18" x2="13" y2="18" strokeLinecap="round" />
+        </svg>
+    );
+}
+
 function PauseIcon({ className }: { className?: string }) {
     return (
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
@@ -216,9 +225,16 @@ export default function Slide() {
                     </div>
 
                     <div className="hidden pc:block">
-                        <div className="flex items-center gap-3">
-                            <PhoneIcon className="h-7 w-7 text-white" />
-                            <p className="text-[32px] font-bold text-white">031-824-5851</p>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <PhoneIcon className="h-6 w-6 text-white" />
+                                <p className="text-[28px] font-bold text-white">{COMPANY_INFO.tel}</p>
+                            </div>
+                            <span className="text-2xl text-white/50">/</span>
+                            <div className="flex items-center gap-2">
+                                <MobileIcon className="h-6 w-6 text-white" />
+                                <p className="text-[28px] font-bold text-white">{COMPANY_INFO.phone}</p>
+                            </div>
                         </div>
                         <p className="mt-1 text-base text-white/90 pc:text-[20px]">구매 또는 문의사항이 있으신 분들은 언제든지 문의바랍니다.</p>
                     </div>
