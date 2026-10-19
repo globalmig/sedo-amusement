@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 // 관리자 사용 메뉴얼 스크린샷 전용 디렉터리 (public/이 아니라 로그인 세션 검증 후에만 응답)
 const GUIDE_DIR = path.join(process.cwd(), "private", "admin-guide");
 // 파일명만 허용 — 경로 조작(../) 및 다른 확장자 요청 차단
-const FILENAME_PATTERN = /^[a-z0-9-]+\.jpg$/;
+const FILENAME_PATTERN = /^[a-z0-9-]+\.(jpg|png)$/;
 
 interface RouteParams {
     params: Promise<{ filename: string }>;
@@ -25,9 +25,10 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     try {
         const file = await readFile(path.join(GUIDE_DIR, filename));
+        const contentType = filename.endsWith(".png") ? "image/png" : "image/jpeg";
         return new NextResponse(new Uint8Array(file), {
             headers: {
-                "Content-Type": "image/jpeg",
+                "Content-Type": contentType,
                 // 관리자 세션이 있을 때만 내려주는 이미지 — private으로 CDN/공유 캐시 저장은 막고
                 // 브라우저 자체 캐시만 허용해 페이지 재방문 시 매번 다시 받지 않도록 함
                 "Cache-Control": "private, max-age=86400",

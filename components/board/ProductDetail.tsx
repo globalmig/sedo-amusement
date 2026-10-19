@@ -1,6 +1,5 @@
 import { Product } from "@/types/product";
 import { COMPANY_INFO } from "@/datas/company";
-import { getProductCategoryLabel } from "@/datas/categories";
 import Link from "next/link";
 import ProductMainImage from "./ProductMainImage";
 import ProductDetailImages from "./ProductDetailImages";
@@ -26,7 +25,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
         <div className="flex flex-col pc:basis-1/2">
           <span className="w-fit rounded-full bg-base-dark/80 px-3 py-1 text-base font-medium text-white">
-            {getProductCategoryLabel(product.category)}
+            {product.category_name}
           </span>
           <h2 className="mt-3 text-2xl font-black text-title pc:text-3xl">{product.name}</h2>
           <p className="mt-2 text-xl font-bold text-point">{formatPrice(product.price)}</p>

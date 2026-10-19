@@ -1,16 +1,18 @@
 import { SITE_URL } from "@/datas/site";
 import { COMPANY_INFO } from "@/datas/company";
-import { PRODUCT_GAME_CATEGORIES, USER_CATEGORY } from "@/datas/categories";
+import { USER_CATEGORY } from "@/datas/categories";
+import { getCategories } from "@/lib/categories";
 
 export const dynamic = "force-static";
 
-export function GET() {
+export async function GET() {
     const companyLinks = (USER_CATEGORY.company.categories ?? [])
         .map((c) => `- [${c.name}](${SITE_URL}/company/${c.url}): 회사 ${c.name} 안내`)
         .join("\n");
 
-    const productLinks = PRODUCT_GAME_CATEGORIES
-        .map((c) => `- [${c.name}](${SITE_URL}/products/all?category=${c.url}): ${c.name} 제품 목록`)
+    const gameCategories = await getCategories();
+    const productLinks = gameCategories
+        .map((c) => `- [${c.name}](${SITE_URL}/products/all?category=${c.slug}): ${c.name} 제품 목록`)
         .join("\n");
 
     const body = `# ${COMPANY_INFO.name}

@@ -1,14 +1,15 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { USER_CATEGORY, PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
+import { USER_CATEGORY } from "@/datas/categories";
+import { Category } from "@/types/category";
 import { uploadProductImage } from "@/lib/uploadProductImage";
 import { validateProductForm } from "@/lib/validateProductForm";
 import { DetailImageItem, DetailImageThumb, createDetailImageId } from "./product/DetailImageThumb";
 import Toast from "../common/Toast";
 import Link from "next/link";
 import Image from "next/image";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const CREATE_SUCCESS_MESSAGE = "제품이 등록되었습니다.";
 const UPDATE_SUCCESS_MESSAGE = "제품이 수정되었습니다.";
@@ -63,6 +64,16 @@ interface ProductFormOwnProps {
 
 export default function ProductForm({ editId, initialData }: ProductFormOwnProps = {}) {
     const router = useRouter();
+
+    const { data: categories = [] } = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => {
+            const res = await fetch("/api/category");
+            const { data, error } = await res.json();
+            if (!res.ok || error) console.error("카테고리 목록 조회 실패:", error ?? res.status);
+            return (data ?? []) as Category[];
+        },
+    });
 
     // 등록/수정
     const isEditMode = !!editId;
@@ -267,8 +278,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                                 className="form-input appearance-none pr-9"
                             >
                                 <option value="">카테고리를 선택해주세요</option>
-                                {PRODUCT_GAME_CATEGORIES.map((c) => (
-                                    <option key={c.url} value={c.url}>{c.name}</option>
+                                {categories.map((c) => (
+                                    <option key={c.slug} value={c.slug}>{c.name}</option>
                                 ))}
                             </select>
                             <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />

@@ -24,10 +24,13 @@ import Toast from "../common/Toast";
 import Pagination from "../common/Pagination";
 import Skeleton from "../common/Skeleton";
 import { Product, ProductType } from "@/types/product";
-import { getProductCategoryLabel, USER_CATEGORY } from "@/datas/categories";
+import { USER_CATEGORY } from "@/datas/categories";
 import { ArrowUpIcon, ArrowDownIcon } from "../common/AdminIcons";
 
 const ITEMS_PER_PAGE = 12;
+// 카테고리(크레인/슈팅 등) 필터일 때는 카테고리 안 순서(display_order), 분류(신제품/히트/추천) 필터일 때는 그 분류 안 순서(type_order)를 바꾼다.
+// 둘 다 걸려 있거나 검색 중이면 어느 기준으로 바꿔야 할지 알 수 없어 순서 변경을 막는다 (null).
+export type OrderColumn = "display_order" | "type_order" | null;
 
 const PRODUCT_TYPE_OPTIONS = USER_CATEGORY.products.categories ?? [];
 
@@ -70,8 +73,8 @@ interface ProductListProps {
   activeCategory: string | null;
   activeProductType: string | null;
   searchTerm: string;
-  // 전체 목록(필터 없음) 상태에서만 true. 필터가 걸려 있으면 화면 순서와 전체 노출 순서가 달라져 드래그를 막는다.
-  canReorder: boolean;
+  // 카테고리 필터만/분류 필터만/둘 다 없음 중 하나일 때만 순서를 바꿀 수 있다 (OrderColumn 타입 주석 참고).
+  orderColumn: OrderColumn;
 }
 
 interface ProductRowProps {
@@ -198,7 +201,7 @@ function SortableProductRow({
           {product.name}
         </Link>
       </td>
-      <td className="px-5 py-3.5 font-medium text-body">{getProductCategoryLabel(product.category)}</td>
+      <td className="px-5 py-3.5 font-medium text-body">{product.category_name}</td>
       <td className="px-5 py-3.5 text-body">{formatPrice(product.price)}</td>
       <td className="px-5 py-3.5 text-center">
         <div className="relative inline-block">
@@ -237,7 +240,7 @@ function SortableProductRow({
 }
 
 // 관리자 제품 리스트: 테이블형 CRUD 인터페이스
-export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm, canReorder }: ProductListProps) {
+export default function ProductList({ products, onReload, activeCategory, activeProductType, searchTerm, orderColumn }: ProductListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -343,13 +346,13 @@ export default function ProductList({ products, onReload, activeCategory, active
     }
   };
 
-  // 드래그로 바뀐 순서를 저장. order는 전체 제품(필터 없음) 기준으로 새로 배열된 id 목록.
+  // 드래그로 바뀐 순서를 저장. order는 지금 화면에 보이는(필터가 걸려 있다면 그 필터 기준) 목록 전체의 id 목록.
   const reorderMutation = useMutation({
-    mutationFn: async (order: number[]) => {
+    mutationFn: async ({ order, column }: { order: number[]; column: "display_order" | "type_order" }) => {
       const response = await fetch("/api/product/reorder", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order }),
+        body: JSON.stringify({ order, column }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "순서 변경에 실패했습니다.");
@@ -366,10 +369,11 @@ export default function ProductList({ products, onReload, activeCategory, active
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
   );
 
-  // canReorder일 때는 products가 곧 전체 제품 목록(필터 없음)이므로,
-  // 페이지 안에서의 로컬 인덱스에 페이지 오프셋을 더하면 전체 목록 기준 인덱스가 된다.
+  // products는 지금 화면에 보이는(필터가 걸려 있다면 그 필터 기준) 목록이다. 드래그로 그 안의 순서만 다시 매긴다.
+  // react-query 캐시(["products"]) 자체는 필터 없는 전체 목록이므로, 통째로 교체하지 않고
+  // 이번에 움직인 id들의 orderColumn 값만 patch해서 필터에 없던 나머지 제품이 캐시에서 사라지지 않게 한다.
   const handleDragEnd = (event: DragEndEvent) => {
-    if (!canReorder) return;
+    if (!orderColumn) return;
 
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -379,28 +383,40 @@ export default function ProductList({ products, onReload, activeCategory, active
     const newLocalIndex = currentItems.findIndex((product) => product.id === over.id);
     if (oldLocalIndex === -1 || newLocalIndex === -1) return;
 
-    const reordered = arrayMove(products, pageOffset + oldLocalIndex, pageOffset + newLocalIndex);
+    const reorderedVisible = arrayMove(products, pageOffset + oldLocalIndex, pageOffset + newLocalIndex);
+    const newOrderById = new Map(reorderedVisible.map((product, i) => [product.id, i + 1]));
 
     // 드래그 결과를 바로 화면에 반영 (서버 응답을 기다리지 않음)
-    queryClient.setQueryData<Product[]>(["products"], reordered);
-    reorderMutation.mutate(reordered.map((product) => product.id));
+    queryClient.setQueryData<Product[]>(["products"], (old) => {
+      if (!old) return old;
+      return old
+        .map((product) =>
+          newOrderById.has(product.id) ? { ...product, [orderColumn]: newOrderById.get(product.id)! } : product
+        )
+        .sort((a, b) => (a[orderColumn] ?? 0) - (b[orderColumn] ?? 0));
+    });
+    reorderMutation.mutate({ order: reorderedVisible.map((product) => product.id), column: orderColumn });
   };
 
-  // 위/아래 버튼으로 바로 이웃한 두 제품의 순서(display_order)만 맞바꾼다.
+  // 위/아래 버튼으로 지금 보이는 목록에서 바로 이웃한 두 제품의 순서(orderColumn)만 맞바꾼다.
   // products는 필터가 걸려 있어도(검색/카테고리/분류) 화면에 보이는 순서 그대로이므로,
   // 필터 상태와 무관하게 "지금 보이는 목록에서 이웃한 항목"과 바로 순서를 바꿀 수 있다.
   const moveMutation = useMutation({
-    mutationFn: async ({ current, neighbor }: { current: Product; neighbor: Product }) => {
+    mutationFn: async ({
+      current,
+      neighbor,
+      column,
+    }: { current: Product; neighbor: Product; column: "display_order" | "type_order" }) => {
       const responses = await Promise.all([
         fetch(`/api/product/${current.id}/order`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ display_order: neighbor.display_order }),
+          body: JSON.stringify({ column, value: neighbor[column] }),
         }),
         fetch(`/api/product/${neighbor.id}/order`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ display_order: current.display_order }),
+          body: JSON.stringify({ column, value: current[column] }),
         }),
       ]);
       if (responses.some((response) => !response.ok)) throw new Error("순서 변경에 실패했습니다.");
@@ -412,25 +428,26 @@ export default function ProductList({ products, onReload, activeCategory, active
   });
 
   const moveProduct = (current: Product, direction: "up" | "down") => {
+    if (!orderColumn) return;
     const index = products.findIndex((product) => product.id === current.id);
     const neighborIndex = direction === "up" ? index - 1 : index + 1;
     if (index === -1 || neighborIndex < 0 || neighborIndex >= products.length) return;
     const neighbor = products[neighborIndex];
-    if (current.display_order == null || neighbor.display_order == null) return;
+    if (current[orderColumn] == null || neighbor[orderColumn] == null) return;
 
     // 전체 제품 캐시에서 이 두 제품의 순서값만 맞바꿔 화면에 바로 반영 (서버 응답을 기다리지 않음)
     queryClient.setQueryData<Product[]>(["products"], (old) => {
       if (!old) return old;
       return old
         .map((product) => {
-          if (product.id === current.id) return { ...product, display_order: neighbor.display_order };
-          if (product.id === neighbor.id) return { ...product, display_order: current.display_order };
+          if (product.id === current.id) return { ...product, [orderColumn]: neighbor[orderColumn] };
+          if (product.id === neighbor.id) return { ...product, [orderColumn]: current[orderColumn] };
           return product;
         })
-        .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+        .sort((a, b) => (a[orderColumn] ?? 0) - (b[orderColumn] ?? 0));
     });
 
-    moveMutation.mutate({ current, neighbor });
+    moveMutation.mutate({ current, neighbor, column: orderColumn });
   };
 
   const closeCompletedToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
@@ -463,7 +480,7 @@ export default function ProductList({ products, onReload, activeCategory, active
                 <button
                   type="button"
                   onClick={() => moveProduct(product, "up")}
-                  disabled={globalIndex === 0}
+                  disabled={!orderColumn || globalIndex === 0}
                   className="rounded border border-black p-1 text-title hover:text-primary disabled:opacity-50"
                   aria-label="위로 이동"
                 >
@@ -472,7 +489,7 @@ export default function ProductList({ products, onReload, activeCategory, active
                 <button
                   type="button"
                   onClick={() => moveProduct(product, "down")}
-                  disabled={globalIndex === products.length - 1}
+                  disabled={!orderColumn || globalIndex === products.length - 1}
                   className="rounded border border-black p-1 text-title hover:text-primary disabled:opacity-50"
                   aria-label="아래로 이동"
                 >
@@ -505,7 +522,7 @@ export default function ProductList({ products, onReload, activeCategory, active
                 >
                   <p className="font-medium text-title">{product.name}</p>
                   <p className="mt-1 text-base text-body">
-                    {getProductCategoryLabel(product.category)} · {formatPrice(product.price)}
+                    {product.category_name} · {formatPrice(product.price)}
                   </p>
                 </Link>
                 <div className="relative mt-2 inline-block">
@@ -528,9 +545,10 @@ export default function ProductList({ products, onReload, activeCategory, active
 
       {/* PC: 테이블형 리스트 */}
       <div className="hidden card overflow-x-auto pc:block">
-        {!canReorder && (
+        {!orderColumn && (
           <p className="border-b border-black/5 px-5 py-2.5 text-base text-muted">
-            카테고리/분류/검색 필터를 해제한 전체 목록 상태에서만 드래그로 순서를 바꿀 수 있어요.
+            카테고리와 분류를 동시에 선택했거나 검색 중일 때는 순서를 바꿀 수 없어요. 카테고리별 순서를 바꾸려면 카테고리만,
+            분류(신제품/히트/추천)별 순서를 바꾸려면 분류만 선택해주세요.
           </p>
         )}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -567,9 +585,9 @@ export default function ProductList({ products, onReload, activeCategory, active
                       onDelete={setPendingId}
                       loading={loading}
                       pendingId={pendingId}
-                      canDrag={canReorder}
-                      canMoveUp={globalIndex > 0}
-                      canMoveDown={globalIndex < products.length - 1}
+                      canDrag={orderColumn !== null}
+                      canMoveUp={orderColumn !== null && globalIndex > 0}
+                      canMoveDown={orderColumn !== null && globalIndex < products.length - 1}
                       onMoveUp={() => moveProduct(product, "up")}
                       onMoveDown={() => moveProduct(product, "down")}
                     />

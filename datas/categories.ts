@@ -26,23 +26,8 @@ export const USER_CATEGORY: { [key: string]: { title: string; categories?: Categ
     },
 }
 
-// 게임기 분류(크레인/슈팅/리듬 등) - 제품 등록 시 지정하는 세부 카테고리, 갤러리 필터에 사용
-export const PRODUCT_GAME_CATEGORIES: { name: string; url: string }[] = [
-    { name: "크레인/경품 게임기", url: "crane" },
-    { name: "슈팅게임", url: "shooting" },
-    { name: "리듬게임", url: "rhythm" },
-    { name: "레이싱게임", url: "racing" },
-    { name: "캐주얼게임", url: "casual" },
-    { name: "스포츠게임", url: "sports" },
-    { name: "비디오게임", url: "video" },
-    { name: "라이드 어트랙션", url: "attraction" },
-    { name: "시설게임", url: "facility" },
-    { name: "교환기", url: "exchange" },
-];
-
-export function getProductCategoryLabel(slug: string | null) {
-    return PRODUCT_GAME_CATEGORIES.find((c) => c.url === slug)?.name;
-}
+// 게임기 분류(크레인/슈팅/리듬 등)는 더 이상 여기 하드코딩하지 않음.
+// /admin/categories에서 관리하는 categories 테이블(lib/categories.ts의 getCategories)을 사용할 것.
 
 export function getProductTypeLabel(slug: string | null) {
     return USER_CATEGORY.products.categories?.find((c) => c.url === slug)?.name;
@@ -65,6 +50,7 @@ export const ADMIN_CATEGORY: { [key: string]: { title: string; categories?: Cate
         title: "관리자 페이지",
         categories: [
             { name: "제품관리", url: "products" },
+            { name: "제품 카테고리 관리", url: "categories" },
             { name: "제품 사진 편집", url: "create-image" },
             {
                 name: "컨설팅 콘텐츠 관리", url: "consulting/areas", children: [

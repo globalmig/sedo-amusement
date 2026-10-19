@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { isOwnStorageUrl, verifyOwnImageUrls } from "@/lib/uploadImage";
 import { requireAdmin } from "@/lib/auth";
+import { attachCategoryNames } from "@/lib/categories";
+import { Product } from "@/types/product";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -24,7 +26,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "제품 목록을 불러오지 못했습니다." }, { status: 500 });
     }
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: await attachCategoryNames((data as unknown as Product[]) ?? []) });
 }
 
 export async function POST(request: Request) { 
@@ -70,7 +72,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "가격은 숫자로 입력해주세요." }, { status: 400 });
         }
 
-        // 신규 등록은 항상 맨 뒤 순서로 추가한다. 순서 변경은 목록의 위/아래 버튼으로만 할 수 있다.
+        // 신규 등록은 항상 맨 뒤 순서로 추가한다. 순서 변경은 목록의 위/아래 버튼(또는 드래그)으로만 할 수 있다.
         const { data: lastOrder } = await supabaseAdmin
             .from("products")
             .select("display_order")
@@ -78,6 +80,16 @@ export async function POST(request: Request) {
             .limit(1)
             .maybeSingle();
         const display_order = (lastOrder?.display_order ?? 0) + 1;
+
+        // 분류(신제품/히트/추천) 안에서도 맨 뒤 순서로 추가 (같은 분류 안에서만 비교)
+        const { data: lastTypeOrder } = await supabaseAdmin
+            .from("products")
+            .select("type_order")
+            .eq("product_type", product_type)
+            .order("type_order", { ascending: false, nullsFirst: false })
+            .limit(1)
+            .maybeSingle();
+        const type_order = (lastTypeOrder?.type_order ?? 0) + 1;
 
         if (!isOwnStorageUrl(mainImageUrl)) {
             return NextResponse.json({ error: "대표이미지를 등록해주세요." }, { status: 400 });
@@ -105,6 +117,7 @@ export async function POST(request: Request) {
                 detail_images: detailImageUrls,
                 youtube_url: youtubeUrl || null,
                 display_order,
+                type_order,
             })
             .select()
             .single();

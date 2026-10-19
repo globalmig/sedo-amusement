@@ -66,6 +66,19 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const VALID_PRODUCT_TYPES = ["all", "new", "hit", "recommend"];
         const product_type = VALID_PRODUCT_TYPES.includes(productTypeRaw) ? productTypeRaw : existing.product_type ?? "all";
 
+        // 분류가 바뀌면 이전 분류에서 쓰던 type_order는 더 이상 의미가 없으므로, 새 분류의 맨 뒤 순서로 다시 배정한다.
+        let type_order = existing.type_order;
+        if (product_type !== existing.product_type) {
+            const { data: lastTypeOrder } = await supabaseAdmin
+                .from("products")
+                .select("type_order")
+                .eq("product_type", product_type)
+                .order("type_order", { ascending: false, nullsFirst: false })
+                .limit(1)
+                .maybeSingle();
+            type_order = (lastTypeOrder?.type_order ?? 0) + 1;
+        }
+
         if (!ratingNumber) {
             return NextResponse.json({ error: "등급분류번호를 입력해주세요." }, { status: 400 });
         }
@@ -121,6 +134,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
                 main_image_url: mainImageUrl,
                 detail_images: detailImageUrls,
                 youtube_url: youtubeUrl || null,
+                type_order,
             })
             .eq("id", id)
             .select()
