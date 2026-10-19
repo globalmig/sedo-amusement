@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Skeleton from "../common/Skeleton";
 import { Product } from "@/types/product";
-import { getProductCategoryLabel, getProductTypeBadge } from "@/datas/categories";
+import { getProductTypeBadge } from "@/datas/categories";
 
 interface FeaturedProductCardProps {
   product: Product;
@@ -47,7 +47,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
           </span>
         ) : (
           <span className="absolute left-3 top-3 rounded-md bg-black/5 px-2.5 py-1 text-base font-medium text-title/70 pc:text-[20px]">
-            {getProductCategoryLabel(product.category)}
+            {product.category_name}
           </span>
         )}
       </div>

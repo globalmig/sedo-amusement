@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { deleteProductImage, isOwnStorageUrl } from "@/lib/uploadImage";
+import { deleteProductImage, isOwnStorageUrl, verifyOwnImageUrls } from "@/lib/uploadImage";
 import { Product } from "@/types/product";
 import { requireAdmin } from "@/lib/auth";
-import { reorderForMove } from "@/lib/productOrder";
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -52,7 +51,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const spec = String(body.spec ?? "").trim();
         const features = String(body.features ?? "").trim();
         const priceRaw = body.price != null ? String(body.price).trim() : "";
-        const displayOrderRaw = body.display_order != null ? String(body.display_order).trim() : "";
         const youtubeUrl = String(body.youtube_url ?? "").trim();
         const mainImageUrl = body.main_image_url;
         const detailImageUrls: unknown[] = Array.isArray(body.detail_images) ? body.detail_images : [];
@@ -68,6 +66,19 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const VALID_PRODUCT_TYPES = ["all", "new", "hit", "recommend"];
         const product_type = VALID_PRODUCT_TYPES.includes(productTypeRaw) ? productTypeRaw : existing.product_type ?? "all";
 
+        // 분류가 바뀌면 이전 분류에서 쓰던 type_order는 더 이상 의미가 없으므로, 새 분류의 맨 뒤 순서로 다시 배정한다.
+        let type_order = existing.type_order;
+        if (product_type !== existing.product_type) {
+            const { data: lastTypeOrder } = await supabaseAdmin
+                .from("products")
+                .select("type_order")
+                .eq("product_type", product_type)
+                .order("type_order", { ascending: false, nullsFirst: false })
+                .limit(1)
+                .maybeSingle();
+            type_order = (lastTypeOrder?.type_order ?? 0) + 1;
+        }
+
         if (!ratingNumber) {
             return NextResponse.json({ error: "등급분류번호를 입력해주세요." }, { status: 400 });
         }
@@ -81,29 +92,22 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             return NextResponse.json({ error: "가격은 숫자로 입력해주세요." }, { status: 400 });
         }
 
-        let display_order: number | null = existing.display_order;
-        if (displayOrderRaw) {
-            display_order = Number(displayOrderRaw);
-            if (!Number.isInteger(display_order) || display_order < 1) {
-                return NextResponse.json({ error: "순서 번호는 1 이상의 숫자로 입력해주세요." }, { status: 400 });
-            }
-        }
-
         if (!isOwnStorageUrl(mainImageUrl)) {
             return NextResponse.json({ error: "대표이미지를 등록해주세요." }, { status: 400 });
         }
 
-        if (!detailImageUrls.every(isOwnStorageUrl)) {
+        // 대표이미지가 안 바뀐 경우는 이미 한 번 검증된 기존 이미지이므로 다시 내려받아 확인하지 않는다.
+        const urlsToVerify = [
+            ...(mainImageUrl !== existing.main_image_url ? [mainImageUrl] : []),
+            ...detailImageUrls.filter((url) => !(existing.detail_images ?? []).includes(url as string)),
+        ];
+
+        if (!(await verifyOwnImageUrls(urlsToVerify))) {
             return NextResponse.json({ error: "잘못된 이미지 URL이 포함되어 있습니다." }, { status: 400 });
         }
 
         if (youtubeUrl && !/^https?:\/\/.+/i.test(youtubeUrl)) {
             return NextResponse.json({ error: "유튜브 링크는 http(s):// 형식의 URL로 입력해주세요." }, { status: 400 });
-        }
-
-        // 순서 번호가 바뀐 경우, 이미 그 번호를 쓰고 있던 제품들을 한 칸씩 밀거나 당겨 번호가 겹치지 않도록 한다.
-        if (displayOrderRaw && display_order !== existing.display_order) {
-            await reorderForMove(existing.id, existing.display_order, display_order!);
         }
 
         // 대표이미지가 교체된 경우 기존 이미지를 스토리지에서 삭제
@@ -130,7 +134,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
                 main_image_url: mainImageUrl,
                 detail_images: detailImageUrls,
                 youtube_url: youtubeUrl || null,
-                display_order,
+                type_order,
             })
             .eq("id", id)
             .select()

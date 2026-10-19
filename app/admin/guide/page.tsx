@@ -20,7 +20,11 @@ export default function AdminGuidePage() {
                         href={`/admin/guide/${section.slug}`}
                         className="card flex flex-col items-center gap-3 p-8 text-center transition-shadow hover:shadow-lg"
                     >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-xl font-black text-white">
+                        <span
+                            className={`flex h-12 w-12 items-center justify-center rounded-full text-xl font-black text-white ${
+                                section.slug === "solapi" ? "bg-blue-600" : "bg-primary"
+                            }`}
+                        >
                             {index + 1}
                         </span>
                         <span className="text-xl font-bold text-title">{section.navTitle}</span>

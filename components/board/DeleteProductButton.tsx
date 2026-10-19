@@ -48,11 +48,11 @@ export default function DeleteProductButton({
             </button>
 
             <Toast
-                vaild={confirmOpen ? "이 제품을 삭제하시겠습니까?" : null}
-                setVaild={() => setConfirmOpen(false)}
+                message={confirmOpen ? "이 제품을 삭제하시겠습니까?" : null}
+                setMessage={() => setConfirmOpen(false)}
                 onConfirm={() => deleteMutation.mutate(productId)}
             />
-            <Toast vaild={errorMsg} setVaild={() => setErrorMsg(null)} />
+            <Toast message={errorMsg} setMessage={() => setErrorMsg(null)} />
         </>
     );
 }

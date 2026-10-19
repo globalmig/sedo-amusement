@@ -1,14 +1,17 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { USER_CATEGORY, PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
-import { supabaseClient } from "@/lib/supabaseClient";
-import { STORAGE_BUCKET } from "@/lib/storage";
+import { USER_CATEGORY } from "@/datas/categories";
+import { Category } from "@/types/category";
+import { uploadProductImage } from "@/lib/uploadProductImage";
+import { validateProductForm } from "@/lib/validateProductForm";
+import { DetailImageItem, DetailImageThumb, createDetailImageId } from "./product/DetailImageThumb";
 import Toast from "../common/Toast";
 import Link from "next/link";
 import Image from "next/image";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
+const CREATE_SUCCESS_MESSAGE = "제품이 등록되었습니다.";
 const UPDATE_SUCCESS_MESSAGE = "제품이 수정되었습니다.";
 
 const PRODUCT_TYPES = USER_CATEGORY.products.categories ?? [];
@@ -36,7 +39,6 @@ export interface ProductFormValues {
     spec: string;
     features: string;
     price: string;
-    display_order: string;
     youtube_url: string;
     main_image: File | null;
     detail_images: File[];
@@ -50,7 +52,6 @@ interface ProductFormInitialData {
     spec?: string | null;
     features?: string | null;
     price?: number | null;
-    display_order?: number | null;
     youtube_url?: string | null;
     main_image_url?: string | null;
     detail_images?: string[] | null;
@@ -61,88 +62,18 @@ interface ProductFormOwnProps {
     initialData?: ProductFormInitialData;
 }
 
-type DetailImageItem =
-    | { id: string; kind: "existing"; url: string }
-    | { id: string; kind: "new"; file: File };
-
-let detailImageIdSeq = 0;
-function createDetailImageId() {
-    detailImageIdSeq += 1;
-    return `detail-${Date.now()}-${detailImageIdSeq}`;
-}
-
-function DetailImageThumb({
-    item,
-    index,
-    onRemove,
-    onDragStart,
-    onDragOver,
-    onDrop,
-    onDragEnd,
-    isDragging,
-}: {
-    item: DetailImageItem;
-    index: number;
-    onRemove: () => void;
-    onDragStart: (index: number) => void;
-    onDragOver: (index: number) => void;
-    onDrop: (index: number) => void;
-    onDragEnd: () => void;
-    isDragging: boolean;
-}) {
-    const [previewUrl, setPreviewUrl] = useState<string | null>(item.kind === "existing" ? item.url : null);
-
-    useEffect(() => {
-        if (item.kind !== "new") return;
-        const reader = new FileReader();
-        reader.onload = () => setPreviewUrl(reader.result as string);
-        reader.readAsDataURL(item.file);
-    }, [item]);
-
-    return (
-        <div
-            draggable
-            onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                e.dataTransfer.setData("text/plain", String(index));
-                onDragStart(index);
-            }}
-            onDragOver={(e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = "move";
-                onDragOver(index);
-            }}
-            onDrop={(e) => {
-                e.preventDefault();
-                onDrop(index);
-            }}
-            onDragEnd={onDragEnd}
-            className={`relative h-20 w-20 shrink-0 cursor-grab overflow-hidden rounded-lg border border-black/10 transition-opacity active:cursor-grabbing ${isDragging ? "opacity-40" : ""}`}
-        >
-            {previewUrl && (
-                <Image
-                    src={previewUrl}
-                    alt="상세이미지"
-                    fill
-                    sizes="80px"
-                    draggable={false}
-                    className="pointer-events-none object-cover"
-                />
-            )}
-            <button
-                type="button"
-                onClick={onRemove}
-                aria-label="이미지 삭제"
-                className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-base text-white cursor-pointer"
-            >
-                ✕
-            </button>
-        </div>
-    );
-}
-
 export default function ProductForm({ editId, initialData }: ProductFormOwnProps = {}) {
     const router = useRouter();
+
+    const { data: categories = [] } = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => {
+            const res = await fetch("/api/category");
+            const { data, error } = await res.json();
+            if (!res.ok || error) console.error("카테고리 목록 조회 실패:", error ?? res.status);
+            return (data ?? []) as Category[];
+        },
+    });
 
     // 등록/수정
     const isEditMode = !!editId;
@@ -156,7 +87,6 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         spec: initialData?.spec ?? "",
         features: initialData?.features ?? "",
         price: initialData?.price != null ? String(initialData.price) : "",
-        display_order: initialData?.display_order != null ? String(initialData.display_order) : "",
         youtube_url: initialData?.youtube_url ?? "",
     });
 
@@ -169,10 +99,9 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     const [detailImages, setDetailImages] = useState<DetailImageItem[]>(
         (initialData?.detail_images ?? []).map((url) => ({ id: createDetailImageId(), kind: "existing", url }))
     );
-    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
     // toast 관리
-    const [vaild, setVaild] = useState<string | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
     // 이미지 업로드 : fetch + supabase Storage 업로드 시, 별도 loading 필요
     const [uploading, setUploading] = useState(false);
 
@@ -184,11 +113,12 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
     }, [mainImage]);
 
     const handleCloseToast: React.Dispatch<React.SetStateAction<string | null>> = (value) => {
-        if (value === null && vaild === UPDATE_SUCCESS_MESSAGE) {
-            router.push("/admin/products");
+        if (value === null && (toastMessage === CREATE_SUCCESS_MESSAGE || toastMessage === UPDATE_SUCCESS_MESSAGE)) {
+            const qs = form.category ? `?filterCategory=${form.category}` : "";
+            router.push(`/admin/products${qs}`);
             router.refresh();
         }
-        setVaild(value);
+        setToastMessage(value);
     };
 
     const createMutation = useMutation({
@@ -202,8 +132,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             if (!response.ok) throw new Error(result.error || "등록에 실패했습니다.");
             return result;
         },
-        onSuccess: () => { setVaild("제품이 등록되었습니다."); },
-        onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
+        onSuccess: () => { setToastMessage(CREATE_SUCCESS_MESSAGE); },
+        onError: (err: Error) => setToastMessage(err.message || "서버 내부 오류가 발생했습니다."),
     });
 
     const updateMutation = useMutation({
@@ -217,8 +147,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
             if (!response.ok) throw new Error(result.error || "수정에 실패했습니다.");
             return result;
         },
-        onSuccess: () => { setVaild(UPDATE_SUCCESS_MESSAGE); },
-        onError: (err: Error) => setVaild(err.message || "서버 내부 오류가 발생했습니다."),
+        onSuccess: () => { setToastMessage(UPDATE_SUCCESS_MESSAGE); },
+        onError: (err: Error) => setToastMessage(err.message || "서버 내부 오류가 발생했습니다."),
     });
 
     const loading = isEditMode ? updateMutation.isPending : createMutation.isPending;
@@ -264,86 +194,30 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
         });
     }, []);
 
-    const onDetailImageDragStart = useCallback((index: number) => {
-        setDraggingIndex(index);
-    }, []);
-
-    const onDetailImageDragOver = useCallback((index: number) => {
-        setDraggingIndex((current) => {
-            if (current === null || current === index) return current;
-            reorderDetailImages(current, index);
-            return index;
-        });
+    const moveDetailImageLeft = useCallback((index: number) => {
+        reorderDetailImages(index, index - 1);
     }, [reorderDetailImages]);
 
-    const onDetailImageDrop = useCallback((_index: number) => {
-        setDraggingIndex(null);
-    }, []);
-
-    const onDetailImageDragEnd = useCallback(() => {
-        setDraggingIndex(null);
-    }, []);
-
-    const uploadImage = useCallback(async (file: File, folder: "main" | "detail") => {
-        const res = await fetch("/api/product/upload-url", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ folder, fileName: file.name, fileType: file.type, fileSize: file.size }),
-        });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.error || "이미지 업로드 준비에 실패했습니다.");
-
-        const { error } = await supabaseClient.storage
-            .from(STORAGE_BUCKET)
-            .uploadToSignedUrl(result.path, result.token, file);
-        if (error) throw new Error("이미지 업로드에 실패했습니다.");
-
-        return result.publicUrl as string;
-    }, []);
+    const moveDetailImageRight = useCallback((index: number) => {
+        reorderDetailImages(index, index + 1);
+    }, [reorderDetailImages]);
 
     const onSubmitForm = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         if (loading || uploading) return;
 
-        if (!form.name.trim()) {
-            setVaild("제품 이름을 입력해주세요.");
-            return;
-        }
-        if (!form.category) {
-            setVaild("카테고리를 선택해주세요.");
-            return;
-        }
-        if (!form.rating_number.trim()) {
-            setVaild("등급분류번호를 입력해주세요.");
-            return;
-        }
-        if (!form.spec.trim()) {
-            setVaild("규격을 입력해주세요.");
-            return;
-        }
-        if (form.price && Number.isNaN(Number(form.price))) {
-            setVaild("가격은 숫자로 입력해주세요.");
-            return;
-        }
-        if (form.display_order && (!Number.isInteger(Number(form.display_order)) || Number(form.display_order) < 1)) {
-            setVaild("순서 번호는 1 이상의 숫자로 입력해주세요.");
-            return;
-        }
-        if (form.youtube_url.trim() && !/^https?:\/\/.+/i.test(form.youtube_url.trim())) {
-            setVaild("유튜브 링크는 http(s):// 형식의 URL로 입력해주세요.");
-            return;
-        }
-        if (!mainImage && !existingMainImageUrl) {
-            setVaild("대표이미지를 등록해주세요.");
+        const validationError = validateProductForm(form, !!mainImage || !!existingMainImageUrl);
+        if (validationError) {
+            setToastMessage(validationError);
             return;
         }
 
         setUploading(true);
-        
+
         try {
-            const mainImageUrl = mainImage ? await uploadImage(mainImage, "main") : existingMainImageUrl!;
+            const mainImageUrl = mainImage ? await uploadProductImage(mainImage, "main") : existingMainImageUrl!;
             const detailImageUrls = await Promise.all(
-                detailImages.map((item) => (item.kind === "existing" ? item.url : uploadImage(item.file, "detail")))
+                detailImages.map((item) => (item.kind === "existing" ? item.url : uploadProductImage(item.file, "detail")))
             );
 
             const payload = {
@@ -354,7 +228,6 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                 spec: form.spec,
                 features: form.features,
                 price: form.price,
-                display_order: form.display_order,
                 youtube_url: form.youtube_url.trim(),
                 main_image_url: mainImageUrl,
                 detail_images: detailImageUrls,
@@ -366,19 +239,19 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                 await createMutation.mutateAsync(payload).catch(() => {});
             }
         } catch (err) {
-            setVaild(err instanceof Error ? err.message : "이미지 업로드에 실패했습니다.");
+            setToastMessage(err instanceof Error ? err.message : "이미지 업로드에 실패했습니다.");
         } finally {
             setUploading(false);
         }
-    }, [form, mainImage, existingMainImageUrl, detailImages, createMutation, updateMutation, loading, uploading, isEditMode, editId, uploadImage]);
+    }, [form, mainImage, existingMainImageUrl, detailImages, createMutation, updateMutation, loading, uploading, isEditMode, editId]);
 
     return (
         <>
             <form onSubmit={onSubmitForm}>
-                <div className="card p-6 md:p-8 space-y-5">
+                <div className="card p-6 md:p-8 space-y-10">
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="name" className="form-label">
+                        <label htmlFor="name" className="form-label font-bold text-xl">
                             제품 이름 <span className="text-red-400">*</span>
                         </label>
                         <input
@@ -393,7 +266,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="category" className="form-label">
+                        <label htmlFor="category" className="form-label font-bold text-xl">
                             카테고리 <span className="text-red-400">*</span>
                         </label>
                         <div className="relative">
@@ -405,8 +278,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                                 className="form-input appearance-none pr-9"
                             >
                                 <option value="">카테고리를 선택해주세요</option>
-                                {PRODUCT_GAME_CATEGORIES.map((c) => (
-                                    <option key={c.url} value={c.url}>{c.name}</option>
+                                {categories.map((c) => (
+                                    <option key={c.slug} value={c.slug}>{c.name}</option>
                                 ))}
                             </select>
                             <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -414,10 +287,10 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="product_type" className="form-label">
+                        <label htmlFor="product_type" className="form-label font-bold text-xl">
                             분류 <span className="text-red-400">*</span>
                         </label>
-                        <p className="text-base text-muted">사용자 페이지의 신제품/히트상품/추천상품 분류에 사용됩니다.</p>
+                        <p className="text-base text-muted mb-2">사용자 페이지의 신제품/히트상품/추천상품 분류에 사용됩니다.</p>
                         <div className="relative">
                             <select
                                 id="product_type"
@@ -435,7 +308,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="rating_number" className="form-label">
+                        <label htmlFor="rating_number" className="form-label font-bold text-xl">
                             등급분류번호 <span className="text-red-400">*</span>
                         </label>
                         <input
@@ -450,10 +323,10 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="spec" className="form-label">
+                        <label htmlFor="spec" className="form-label font-bold text-xl">
                             규격 <span className="text-red-400">*</span>
                         </label>
-                        <p className="text-base text-muted">예) 900 x 900 x 2050 mm, 220V, 180kg 와 같이 제품의 규격을 입력해주세요.</p>
+                        <p className="text-base text-muted mb-2">예) 900 x 900 x 2050 mm, 220V, 180kg 와 같이 제품의 규격을 입력해주세요.</p>
                         <textarea
                             id="spec"
                             name="spec"
@@ -466,8 +339,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="features" className="form-label">특징</label>
-                        <p className="text-base text-muted">특징 입력은 필수가 아닙니다. 공란일 시, 제품 상세 정보란에 공란으로 표시됩니다.</p>
+                        <label htmlFor="features" className="form-label font-bold text-xl">특징</label>
+                        <p className="text-base text-muted mb-2">특징 입력은 필수가 아닙니다. 공란일 시, 제품 상세 정보란에 공란으로 표시됩니다.</p>
                         <textarea
                             id="features"
                             name="features"
@@ -480,8 +353,8 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label htmlFor="price" className="form-label">가격</label>
-                        <p className="text-base text-muted">가격 미입력 시, &apos;가격 문의&apos;로 표시됩니다.</p>
+                        <label htmlFor="price" className="form-label font-bold text-xl">가격</label>
+                        <p className="text-base text-muted mb-2">가격 미입력 시, &apos;가격 문의&apos;로 표시됩니다.</p>
                         <input
                             type="number"
                             id="price"
@@ -493,47 +366,27 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                         />
                     </div>
 
-                    <div className="flex flex-col gap-5 pc:flex-row">
-                        <div className="flex flex-col gap-1.5 pc:flex-1">
-                            <label htmlFor="display_order" className="form-label">진열 순서</label>
-                            <p className="text-base text-muted">
-                                숫자가 작을수록 목록에서 먼저 표시됩니다. 비워두면 가장 마지막 순서로 등록됩니다. <br />
-                                목록에서 드래그로 순서를 바꾸면 이 번호도 자동으로 변경됩니다.
-                            </p>
-                            <input
-                                type="number"
-                                id="display_order"
-                                name="display_order"
-                                min={1}
-                                placeholder="진열 순서 번호를 입력해주세요."
-                                value={form.display_order}
-                                onChange={onChangeForm}
-                                className="form-input"
-                            />
-                        </div>
-
-                        <div className="flex flex-col gap-1.5 pc:flex-1">
-                            <label htmlFor="youtube_url" className="form-label">유튜브 링크</label>
-                            <p className="text-base text-muted">
-                                입력 시, 제품 상세페이지의 &apos;제품 문의하기&apos; 버튼 옆에 영상보기 버튼이 추가됩니다.
-                            </p>
-                            <input
-                                type="text"
-                                id="youtube_url"
-                                name="youtube_url"
-                                placeholder="https://www.youtube.com/watch?v=..."
-                                value={form.youtube_url}
-                                onChange={onChangeForm}
-                                className="form-input"
-                            />
-                        </div>
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="youtube_url" className="form-label font-bold text-xl">유튜브 링크</label>
+                        <p className="text-base text-muted mb-2">
+                            입력 시, 제품 상세페이지의 &apos;제품 문의하기&apos; 버튼 옆에 영상보기 버튼이 추가됩니다.
+                        </p>
+                        <input
+                            type="text"
+                            id="youtube_url"
+                            name="youtube_url"
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            value={form.youtube_url}
+                            onChange={onChangeForm}
+                            className="form-input"
+                        />
                     </div>
 
                     <div className="flex flex-col gap-1.5 mb-7">
-                        <label className="form-label">
+                        <label className="form-label font-bold text-xl">
                             대표이미지 <span className="text-red-400">*</span>
                         </label>
-                        <p className="text-base text-muted mb-4">
+                        <p className="text-base text-muted mb-2 md:mb-4">
                             제품의 대표 이미지를 선택해주세요. <br />
                             이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.
                         </p>
@@ -545,7 +398,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             >
                                 파일 선택
                             </label>
-                            <span className="min-w-0 flex-1 truncate text-base text-muted">
+                            <span className="min-w-0 flex-1 truncate text-base text-muted mb-2">
                                 {mainImage?.name ?? (existingMainImageUrl ? "기존 이미지 사용 중" : "선택된 파일 없음")}
                             </span>
                         </div>
@@ -553,7 +406,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             <Image
                                 src={mainImagePreview ?? existingMainImageUrl ?? ""}
                                 alt="대표이미지 미리보기"
-                                className="mt-1 h-28 w-28 rounded-lg border border-black/10 object-cover"
+                                className="mt-1 h-40 w-40 rounded-lg border border-black/10 object-contain"
                                 width={112}
                                 height={112}
                             />
@@ -561,12 +414,12 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label className="form-label">상세이미지 (여러 장 등록 가능)</label>
-                        <p className="text-base text-muted mb-4">
+                        <label className="form-label font-bold text-xl">상세이미지 (여러 장 등록 가능)</label>
+                        <p className="text-base text-muted mb-2 md:mb-4">
                             제품의 상세 이미지를 선택해주세요. 상세 이미지 등록은 필수가 아닙니다.<br />
                             이미지를 등록하지 않을 경우, 제품 상세 정보란에 이미지를 표시하지 않습니다.<br />
                             이미지는 jpg, png, webp, gif 파일만 등록할 수 있으며, 용량은 5MB 이하를 권장드립니다.<br />
-                            썸네일을 드래그하면 순서를 바꿀 수 있으며, 등록된 순서대로 상세 페이지에 표시됩니다.
+                            썸네일의 화살표 버튼으로 순서를 바꿀 수 있으며, 등록된 순서대로 상세 페이지에 표시됩니다.
                         </p>
                         <div className="flex items-center gap-3">
                             <input type="file" id="detail_images" accept="image/*" multiple className="hidden" onChange={onChangeDetailImages} />
@@ -576,7 +429,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                             >
                                 파일 추가
                             </label>
-                            <span className="text-base text-muted">
+                            <span className="text-base text-muted mb-2">
                                 {detailImages.length}장 등록됨
                             </span>
                         </div>
@@ -587,24 +440,22 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                                     <DetailImageThumb
                                         key={item.id}
                                         item={item}
-                                        index={index}
+                                        isFirst={index === 0}
+                                        isLast={index === detailImages.length - 1}
                                         onRemove={() => removeDetailImage(item.id)}
-                                        onDragStart={onDetailImageDragStart}
-                                        onDragOver={onDetailImageDragOver}
-                                        onDrop={onDetailImageDrop}
-                                        onDragEnd={onDetailImageDragEnd}
-                                        isDragging={draggingIndex === index}
+                                        onMoveLeft={() => moveDetailImageLeft(index)}
+                                        onMoveRight={() => moveDetailImageRight(index)}
                                     />
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    <div className="flex gap-3 pt-5 pb-7 border-t border-gray-100 mt-10">
-                        <Link href="/admin" className="btn-ghost flex-1 text-center">
+                    <div className="flex justify-end gap-3 pt-5 pb-7 border-t border-gray-100 mt-10">
+                        <Link href="/admin" className="btn-ghost text-center">
                             취소
                         </Link>
-                        <button type="submit" disabled={loading || uploading} className="btn-primary flex-1 cursor-pointer">
+                        <button type="submit" disabled={loading || uploading} className="btn-primary cursor-pointer">
                             {uploading
                                 ? "이미지 업로드 중..."
                                 : loading
@@ -614,7 +465,7 @@ export default function ProductForm({ editId, initialData }: ProductFormOwnProps
                     </div>
                 </div>
             </form>
-            <Toast vaild={vaild} setVaild={handleCloseToast} />
+            <Toast message={toastMessage} setMessage={handleCloseToast} />
         </>
     );
 }

@@ -2,13 +2,15 @@
 import { Suspense, useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
-import { PRODUCT_GAME_CATEGORIES } from "@/datas/categories";
+import { Category } from "@/types/category";
 import ProductGalley from "./ProductGalley";
 
 interface ProductGalleryFilterProps {
   products: Product[];
   initialCategory?: string | null;
   categories?: string;
+  // 게임 카테고리(크레인/슈팅 등) 선택 목록. /admin/categories에서 관리하는 categories 테이블 기준
+  gameCategories: Category[];
 }
 
 function SearchIcon({ className }: { className?: string }) {
@@ -50,7 +52,7 @@ export default function ProductGalleryFilter(props: ProductGalleryFilterProps) {
   );
 }
 
-function ProductGalleryFilterInner({ products, initialCategory = null, categories = "all" }: ProductGalleryFilterProps) {
+function ProductGalleryFilterInner({ products, initialCategory = null, categories = "all", gameCategories }: ProductGalleryFilterProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -103,8 +105,8 @@ function ProductGalleryFilterInner({ products, initialCategory = null, categorie
             className="w-full cursor-pointer appearance-none rounded-lg border border-black/10 bg-white py-2.5 pl-4 pr-9 text-base font-medium text-body outline-none focus:border-point"
           >
             <option value="">전체 카테고리</option>
-            {PRODUCT_GAME_CATEGORIES.map((category) => (
-              <option key={category.url} value={category.url}>
+            {gameCategories.map((category) => (
+              <option key={category.slug} value={category.slug}>
                 {category.name}
               </option>
             ))}

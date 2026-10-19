@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { isOwnStorageUrl } from "@/lib/uploadImage";
+import { isOwnStorageUrl, verifyOwnImageUrls } from "@/lib/uploadImage";
 import { requireAdmin } from "@/lib/auth";
-import { makeRoomForNewOrder } from "@/lib/productOrder";
+import { attachCategoryNames } from "@/lib/categories";
+import { Product } from "@/types/product";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "제품 목록을 불러오지 못했습니다." }, { status: 500 });
     }
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: await attachCategoryNames((data as unknown as Product[]) ?? []) });
 }
 
 export async function POST(request: Request) { 
@@ -43,7 +44,6 @@ export async function POST(request: Request) {
         const spec = String(body.spec ?? "").trim();
         const features = String(body.features ?? "").trim();
         const priceRaw = body.price != null ? String(body.price).trim() : "";
-        const displayOrderRaw = body.display_order != null ? String(body.display_order).trim() : "";
         const youtubeUrl = String(body.youtube_url ?? "").trim();
         const mainImageUrl = body.main_image_url;
         const detailImageUrls: unknown[] = Array.isArray(body.detail_images) ? body.detail_images : [];
@@ -72,39 +72,35 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "가격은 숫자로 입력해주세요." }, { status: 400 });
         }
 
-        let display_order: number | null = null;
-        let shouldMakeRoom = false;
-        if (displayOrderRaw) {
-            display_order = Number(displayOrderRaw);
-            if (!Number.isInteger(display_order) || display_order < 1) {
-                return NextResponse.json({ error: "순서 번호는 1 이상의 숫자로 입력해주세요." }, { status: 400 });
-            }
-            shouldMakeRoom = true;
-        } else {
-            const { data: lastOrder } = await supabaseAdmin
-                .from("products")
-                .select("display_order")
-                .order("display_order", { ascending: false, nullsFirst: false })
-                .limit(1)
-                .maybeSingle();
-            display_order = (lastOrder?.display_order ?? 0) + 1;
-        }
+        // 신규 등록은 항상 맨 뒤 순서로 추가한다. 순서 변경은 목록의 위/아래 버튼(또는 드래그)으로만 할 수 있다.
+        const { data: lastOrder } = await supabaseAdmin
+            .from("products")
+            .select("display_order")
+            .order("display_order", { ascending: false, nullsFirst: false })
+            .limit(1)
+            .maybeSingle();
+        const display_order = (lastOrder?.display_order ?? 0) + 1;
+
+        // 분류(신제품/히트/추천) 안에서도 맨 뒤 순서로 추가 (같은 분류 안에서만 비교)
+        const { data: lastTypeOrder } = await supabaseAdmin
+            .from("products")
+            .select("type_order")
+            .eq("product_type", product_type)
+            .order("type_order", { ascending: false, nullsFirst: false })
+            .limit(1)
+            .maybeSingle();
+        const type_order = (lastTypeOrder?.type_order ?? 0) + 1;
 
         if (!isOwnStorageUrl(mainImageUrl)) {
             return NextResponse.json({ error: "대표이미지를 등록해주세요." }, { status: 400 });
         }
 
-        if (!detailImageUrls.every(isOwnStorageUrl)) {
+        if (!(await verifyOwnImageUrls([mainImageUrl, ...detailImageUrls]))) {
             return NextResponse.json({ error: "잘못된 이미지 URL이 포함되어 있습니다." }, { status: 400 });
         }
 
         if (youtubeUrl && !/^https?:\/\/.+/i.test(youtubeUrl)) {
             return NextResponse.json({ error: "유튜브 링크는 http(s):// 형식의 URL로 입력해주세요." }, { status: 400 });
-        }
-
-        // 이미 사용 중인 순서 번호를 지정한 경우, 그 번호 이후 제품들을 한 칸씩 뒤로 밀어 자리를 만든다.
-        if (shouldMakeRoom) {
-            await makeRoomForNewOrder(display_order!);
         }
 
         const { data, error } = await supabaseAdmin
@@ -121,6 +117,7 @@ export async function POST(request: Request) {
                 detail_images: detailImageUrls,
                 youtube_url: youtubeUrl || null,
                 display_order,
+                type_order,
             })
             .select()
             .single();

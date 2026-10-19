@@ -8,12 +8,14 @@ interface QuickInquiryValues {
     phone: string;
 }
 
+const PHONE_REGEX = /^0\d{1,2}-?\d{3,4}-?\d{4}$/;
+
 const INITIAL_VALUES: QuickInquiryValues = { name: "", phone: "" };
 
 export default function QuickInquiryForm() {
     const [form, setForm] = useState<QuickInquiryValues>(INITIAL_VALUES);
     const [agree, setAgree] = useState(false);
-    const [vaild, setVaild] = useState<string | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
     const onChangeForm = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -25,19 +27,23 @@ export default function QuickInquiryForm() {
             e.preventDefault();
 
             if (!form.name.trim()) {
-                setVaild("성함을 입력해주세요.");
+                setToastMessage("성함을 입력해주세요.");
                 return;
             }
             if (!form.phone.trim()) {
-                setVaild("연락처를 입력해주세요.");
+                setToastMessage("연락처를 입력해주세요.");
+                return;
+            }
+            if (!PHONE_REGEX.test(form.phone.trim())) {
+                setToastMessage("올바른 연락처를 입력해주세요.");
                 return;
             }
             if (!agree) {
-                setVaild("개인정보 수집동의가 필요합니다.");
+                setToastMessage("개인정보 수집동의가 필요합니다.");
                 return;
             }
 
-            setVaild("문의가 접수되었습니다. 담당자가 확인 후 연락드리겠습니다.");
+            setToastMessage("문의가 접수되었습니다. 담당자가 확인 후 연락드리겠습니다.");
             setForm(INITIAL_VALUES);
             setAgree(false);
         },
@@ -107,7 +113,7 @@ export default function QuickInquiryForm() {
                     </div>
                 </div>
             </form>
-            <Toast vaild={vaild} setVaild={setVaild} />
+            <Toast message={toastMessage} setMessage={setToastMessage} />
         </>
     );
 }

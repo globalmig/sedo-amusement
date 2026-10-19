@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ProductGalleryFilter from "@/components/board/ProductGalleryFilter";
 import { getProducts } from "@/lib/products";
+import { getCategories } from "@/lib/categories";
 
 export const metadata: Metadata = {
   title: "전체 제품",
@@ -15,14 +16,14 @@ interface ProductListPageProps {
 
 export default async function ProductListPage({ searchParams }: ProductListPageProps) {
   const { category } = await searchParams;
-  const products = await getProducts();
+  const [products, gameCategories] = await Promise.all([getProducts(), getCategories()]);
 
   return (
     <article>
       <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
         {/* 이 페이지엔 CategoryBanner(제목 배너)가 없어 h1이 비어 있었으므로 화면에는 보이지 않는 제목을 추가 */}
         <h1 className="sr-only">전체 제품</h1>
-        <ProductGalleryFilter products={products} initialCategory={category ?? null} />
+        <ProductGalleryFilter products={products} initialCategory={category ?? null} gameCategories={gameCategories} />
       </div>
     </article>
   );

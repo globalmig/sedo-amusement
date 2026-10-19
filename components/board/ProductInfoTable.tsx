@@ -1,5 +1,4 @@
 import { Product } from "@/types/product";
-import { getProductCategoryLabel } from "@/datas/categories";
 
 function formatPrice(price: number | null) {
   if (price === null) return "가격 문의";
@@ -29,7 +28,7 @@ export default function ProductInfoTable({ product }: ProductInfoTableProps) {
             <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 pc:py-6 text-left font-medium text-title pc:w-40">
               카테고리
             </th>
-            <td className="px-6 py-4 pc:py-6 text-body">{getProductCategoryLabel(product.category)}</td>
+            <td className="px-6 py-4 pc:py-6 text-body">{product.category_name}</td>
           </tr>
           <tr>
             <th scope="row" className="w-28 shrink-0 bg-surface px-6 py-4 pc:py-6 text-left font-medium text-title pc:w-40">

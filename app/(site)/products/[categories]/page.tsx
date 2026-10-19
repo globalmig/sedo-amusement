@@ -4,6 +4,7 @@ import CategoryBanner from "@/components/common/CategoryBanner";
 import ProductGalleryFilter from "@/components/board/ProductGalleryFilter";
 import { USER_CATEGORY } from "@/datas/categories";
 import { getProducts, getProductsByType } from "@/lib/products";
+import { getCategories } from "@/lib/categories";
 
 interface ProductListPageProps {
   params: Promise<{ categories: string }>;
@@ -38,7 +39,10 @@ export default async function ProductListPage({ params }: ProductListPageProps) 
   if (!category) notFound();
 
   const displayTitle = categories === "all" ? "제품소개" : category.name;
-  const products = categories === "all" ? await getProducts() : await getProductsByType(categories);
+  const [products, gameCategories] = await Promise.all([
+    categories === "all" ? getProducts() : getProductsByType(categories),
+    getCategories(),
+  ]);
 
   return (
     <>
@@ -54,7 +58,7 @@ export default async function ProductListPage({ params }: ProductListPageProps) 
       />
       <article>
         <div className="mx-auto max-w-300 px-[5%] py-12 pc:px-0 pc:py-16">
-          <ProductGalleryFilter products={products} categories={categories} />
+          <ProductGalleryFilter products={products} categories={categories} gameCategories={gameCategories} />
         </div>
       </article>
     </>

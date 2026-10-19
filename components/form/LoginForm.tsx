@@ -15,7 +15,7 @@ export default function LoginForm() {
         admin_id: "", password_hash: ""
     });
     const [loading, setLoading] = useState<boolean>(false);
-    const [vaild, setVaild] = useState<string | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
     const onChangeForm = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -30,12 +30,12 @@ export default function LoginForm() {
         if (loading) return;
 
         if (!form.admin_id.trim()) {
-            setVaild("아이디를 입력해주세요.")
+            setToastMessage("아이디를 입력해주세요.")
             return;
         }
 
         if (!form.password_hash.trim()) {
-            setVaild("비밀번호를 입력해주세요.")
+            setToastMessage("비밀번호를 입력해주세요.")
             return;
         }
 
@@ -63,7 +63,7 @@ export default function LoginForm() {
             setLoading(false);
 
         } catch (err: any) {
-            setVaild(err.message);
+            setToastMessage(err.message);
             setForm({ admin_id: "", password_hash: "" })
         } finally {
             setLoading(false);
@@ -102,7 +102,7 @@ export default function LoginForm() {
                     {loading ? "로그인 중..." : "로그인"}
                 </button>
             </form>
-            <Toast vaild={vaild} setVaild={setVaild} />
+            <Toast message={toastMessage} setMessage={setToastMessage} />
         </>
     )
 }

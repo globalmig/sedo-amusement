@@ -1,12 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { Product } from "@/types/product";
 import ProductImageGallery from "@/components/board/ProductImageGallery";
 import ProductInfoTable from "@/components/board/ProductInfoTable";
 import DeleteProductButton from "@/components/board/DeleteProductButton";
 import PrevNextNavbar from "@/components/common/PrevNextNavbar";
-import { getAdminProducts } from "@/lib/products";
+import { getAdminProducts, getProductById } from "@/lib/products";
 import { filterAdminProducts } from "@/lib/adminProductFilter";
 
 interface AdminProductViewPageProps {
@@ -18,11 +16,7 @@ export default async function AdminProductViewPage({ params, searchParams }: Adm
     const { categories, id } = await params;
     const { filterCategory, filterType, q, page } = await searchParams;
 
-    const { data: product } = await supabaseAdmin
-        .from("products")
-        .select("*")
-        .eq("id", id)
-        .single<Product>();
+    const product = await getProductById(Number(id));
 
     if (!product) notFound();
 

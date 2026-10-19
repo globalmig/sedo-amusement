@@ -21,9 +21,19 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         return NextResponse.json({ error: "올바르지 않은 분류입니다." }, { status: 400 });
     }
 
+    // 분류가 바뀌면 이전 분류에서 쓰던 type_order는 더 이상 의미가 없으므로, 새 분류의 맨 뒤 순서로 다시 배정한다.
+    const { data: lastTypeOrder } = await supabaseAdmin
+        .from("products")
+        .select("type_order")
+        .eq("product_type", product_type)
+        .order("type_order", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+    const type_order = (lastTypeOrder?.type_order ?? 0) + 1;
+
     const { data, error } = await supabaseAdmin
         .from("products")
-        .update({ product_type })
+        .update({ product_type, type_order })
         .eq("id", id)
         .select()
         .single();

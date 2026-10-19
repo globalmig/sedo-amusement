@@ -1,14 +1,14 @@
 "use client"
-import ProductList from "@/components/board/ProductList";
+import ProductList, { OrderColumn } from "@/components/board/ProductList";
 import Link from "next/link";
 import { Suspense, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
-import { PRODUCT_GAME_CATEGORIES, USER_CATEGORY } from "@/datas/categories";
+import { Category } from "@/types/category";
+import { USER_CATEGORY } from "@/datas/categories";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { filterAdminProducts } from "@/lib/adminProductFilter";
 
-const PRODUCT_CATEGORIES = PRODUCT_GAME_CATEGORIES;
 const PRODUCT_TYPE_OPTIONS = USER_CATEGORY.products.categories ?? [];
 
 function ChevronDownIcon({ className }: { className?: string }) {
@@ -56,6 +56,19 @@ function AdminProductListPageInner() {
         },
     });
 
+    // 카테고리 필터 탭용 (제품 카테고리 관리 화면에서 등록/수정/순서변경한 목록)
+    const { data: productCategories = [] } = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => {
+            const res = await fetch("/api/category");
+            const { data, error } = await res.json();
+            if (!res.ok || error) {
+                console.error("카테고리 목록 조회 실패:", error ?? res.status);
+            }
+            return (data ?? []) as Category[];
+        },
+    });
+
     const updateQuery = useCallback((updates: Record<string, string | null>) => {
         const params = new URLSearchParams(searchParams.toString());
         Object.entries(updates).forEach(([key, value]) => {
@@ -85,16 +98,14 @@ function AdminProductListPageInner() {
         [products, activeCategory, activeProductType, searchTerm]
     );
 
-    // 번호 컬럼에 쓸 "실제 사용자페이지 노출 순서" (전체 제품 기준, 필터와 무관하게 고정)
-    const rankMap = useMemo(() => {
-        const map = new Map<number, number>();
-        products.forEach((product, index) => map.set(product.id, index + 1));
-        return map;
-    }, [products]);
-
-    // 필터가 걸려 있으면 "전체 제품" 기준 순서와 화면에 보이는 순서가 달라져 드래그 정렬이 꼬일 수 있으므로,
-    // 필터 없는 전체 목록 상태에서만 드래그로 순서를 바꿀 수 있게 한다.
-    const canReorder = !activeCategory && !activeProductType && !searchTerm.trim();
+    // 카테고리 필터만 켜져 있으면 카테고리 안 순서(display_order), 분류 필터만 켜져 있으면 분류 안 순서(type_order)를 바꾼다.
+    // 두 필터가 같이 걸려 있거나 검색 중이면 어느 기준으로 바꿔야 할지 알 수 없어 순서 변경을 막는다.
+    const orderColumn: OrderColumn =
+        searchTerm.trim() || (activeCategory && activeProductType)
+            ? null
+            : activeProductType
+                ? "type_order"
+                : "display_order";
 
     return (
         <div className="space-y-6">
@@ -165,12 +176,12 @@ function AdminProductListPageInner() {
                     >
                         전체
                     </button>
-                    {PRODUCT_CATEGORIES.map((category) => (
+                    {productCategories.map((category) => (
                         <button
-                            key={category.url}
+                            key={category.slug}
                             type="button"
-                            onClick={() => onSelectCategory(category.url)}
-                            className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-base font-medium transition-colors ${activeCategory === category.url
+                            onClick={() => onSelectCategory(category.slug)}
+                            className={`inline-block cursor-pointer border-b-2 px-4 py-3 text-base font-medium transition-colors ${activeCategory === category.slug
                                 ? "border-primary font-semibold text-primary"
                                 : "border-transparent text-muted hover:text-title"
                                 }`}
@@ -190,8 +201,7 @@ function AdminProductListPageInner() {
                     activeCategory={activeCategory}
                     activeProductType={activeProductType}
                     searchTerm={searchTerm}
-                    rankMap={rankMap}
-                    canReorder={canReorder}
+                    orderColumn={orderColumn}
                 />
             )}
         </div>

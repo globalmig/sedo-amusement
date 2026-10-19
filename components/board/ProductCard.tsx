@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Skeleton from "../common/Skeleton";
 import { Product } from "@/types/product";
-import { getProductCategoryLabel, getProductTypeBadge } from "@/datas/categories";
+import { getProductTypeBadge } from "@/datas/categories";
 
 function formatPrice(price: number | null) {
   if (price === null) return "가격 문의";
@@ -54,7 +54,7 @@ export default function ProductCard({ product, categories = "all", filterQuery =
           </span>
         ) : (
           <span className="absolute left-3 top-3 rounded-full bg-base-dark/80 px-2.5 py-1 text-base font-medium text-white">
-            {getProductCategoryLabel(product.category)}
+            {product.category_name}
           </span>
         )}
       </div>
@@ -63,6 +63,7 @@ export default function ProductCard({ product, categories = "all", filterQuery =
         <h3 className="line-clamp-1 text-base font-semibold text-title transition-colors duration-300 sm:text-lg pc:text-[20px]">
           {product.name}
         </h3>
+        <p className="mt-1 text-base text-base-dark">{product.spec}</p>
         <p className="mt-1 text-base font-medium text-point transition-colors duration-300">
           {formatPrice(product.price)}
         </p>
